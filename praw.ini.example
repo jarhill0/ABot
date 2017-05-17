@@ -1,0 +1,5 @@
+[MyUsername]
+username=MyUsername
+password=MyPassword
+client_id=[client id goes here]
+client_secret=[client secret goes here]
