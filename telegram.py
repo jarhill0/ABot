@@ -1,4 +1,5 @@
 import json
+import time
 
 import requests
 
@@ -23,11 +24,16 @@ class Telegram:
     def send_message(self, data):
         response = json.loads(requests.post(self.url + 'sendMessage', data=data).content.decode('utf-8'))
 
-        return _check_and_return(response)
+        for i in range(5):
+            try:
+                return _check_and_return(response)
+            except ConnectionRefusedError:
+                time.sleep(7)
 
 
 def _check_and_return(data):
     if not data['ok']:
+        print(data)
         raise ConnectionRefusedError('Message did not send successfully.')
     else:
         return data
