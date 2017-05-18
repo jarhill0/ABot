@@ -4,7 +4,7 @@ wolframalphaClient = wolframalpha.Client("GG48T9-HA9P3QKQAU")
 
 
 def query_wa(args):
-    a = wolframalphaClient.query(" ".join(args))
+    a = wolframalphaClient.query(args)
     array = []
     for pod in a.pods:
         if pod.text is not None:
