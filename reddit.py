@@ -35,7 +35,7 @@ def hot_posts(subreddit, number):
 
 def post_proxy(link):
     post = reddit.submission(url=link)
-    output = '*' post.title
+    output = post.title
     if post.is_self:
         is_image = False
         output += '\n\n---\n\n' + post.selftext
