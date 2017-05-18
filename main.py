@@ -20,7 +20,6 @@ def restart():
 
 
 def main():
-    print('Starting main()')
     launchlibrary.update_json_on_disk()
 
     global go, tg, next_launch
