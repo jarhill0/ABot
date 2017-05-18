@@ -7,6 +7,7 @@ import launchreminders
 import reddit
 from config import token, owner_un
 from telegram import Telegram
+from wolfram_alpha import query_wa
 
 tg = Telegram(token)
 next_launch = None
@@ -102,6 +103,16 @@ def handle(response):
                         data = {'chat_id': current_chat,
                                 'text': "doesn’t work any more, you cheeky devil :)",
                                 'reply_to_message_id': orig_message_id}
+                        tg.send_message(data)
+                    elif command == '/wa':
+                        command_block = message_text[message_text.index('/wa')+3:].strip()
+                        if command_block == '':
+                            bot_message = 'Specify a subreddit after /redditposts (e.g. /redditposts funny)'
+                        else:
+                            bot_message = query_wa(command_block)
+                        data = {'chat_id': current_chat,
+                                'text': bot_message,
+                                'parse_mode': 'Markdown'}
                         tg.send_message(data)
 
 
