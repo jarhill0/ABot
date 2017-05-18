@@ -33,6 +33,22 @@ def hot_posts(subreddit, number):
     return body
 
 
+def post_proxy(link):
+    post = reddit.submission(url=link)
+    output = '*' post.title
+    if post.is_self:
+        is_image = False
+        output += '\n\n---\n\n' + post.selftext
+        return (output, is_image, None)
+    elif post.url[:17] in ['https://i.redd.it', 'http://i.redd.it/']:
+        is_image = True
+        return (output, is_image, post.url)
+    else:
+        is_image = False
+        output += '\n\n' + post.url
+        return (output, is_image, None)
+
+
 if __name__ == '__main__':
     # quick test
     print(hot_posts('funny', 5))

@@ -117,6 +117,30 @@ def handle(response):
                                 'text': bot_message,
                                 'parse_mode': 'Markdown'}
                         tg.send_message(data)
+                    elif command == '/reddit':
+                        command_block = message_text[message_text.index('/reddit'):]
+
+                        try:
+                            url = command_block.split(' ')[1]
+                        except IndexError:
+                            bot_message = 'Specify a url after /reddit (e.g. /reddit https://redd.it/robin)'
+                            continue
+                        else:
+                            text, is_image, image_url = reddit.post_proxy(url)
+                            if not is_image:
+                                data = {'chat_id': current_chat,
+                                        'text': text,
+                                        'disable_web_page_preview': False,
+                                        'parse_mode': 'Markdown'}
+                                tg.send_message(data)
+                            else:
+                                data = {'chat_id': current_chat,
+                                        'photo': image_url,
+                                        }
+                                if len(text) >= 200:
+                                    text = text[:199] + '…'
+                                data['caption'] = text
+                                tg.send_photo(data)
 
 
 def send_launch_message(launch, chat_id):

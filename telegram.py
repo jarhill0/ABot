@@ -22,13 +22,22 @@ class Telegram:
         return _check_and_return(response)
 
     def send_message(self, data):
-        response = json.loads(requests.post(self.url + 'sendMessage', data=data).content.decode('utf-8'))
 
         for i in range(5):
+            response = json.loads(requests.post(self.url + 'sendMessage', data=data).content.decode('utf-8'))
             try:
                 return _check_and_return(response)
             except ConnectionRefusedError:
-                time.sleep(7)
+                time.sleep(2)
+
+    def send_photo(self, data):
+
+        for i in range(5):
+            response = json.loads(requests.post(self.url + 'sendPhoto', data=data).content.decode('utf-8'))
+            try:
+                return _check_and_return(response)
+            except ConnectionRefusedError:
+                time.sleep(2)
 
 
 def _check_and_return(data):
