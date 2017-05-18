@@ -10,7 +10,7 @@ def query_wa(args):
         if pod.text is not None:
             string = ""
             string += "*" + pod.title + "*\n"
-            string += pod.text
+            string += '`' + pod.text + '`'
             array.append(string)
     m = "\n\n".join(array)
     if not m:
