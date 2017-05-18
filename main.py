@@ -105,11 +105,14 @@ def handle(response):
                                 'reply_to_message_id': orig_message_id}
                         tg.send_message(data)
                     elif command == '/wa':
-                        command_block = message_text[message_text.index('/wa')+3:].strip()
+                        command_block = message_text[message_text.index('/wa') + 3:].strip()
                         if command_block == '':
-                            bot_message = 'Specify a subreddit after /redditposts (e.g. /redditposts funny)'
+                            bot_message = 'Specify a query after /wa (e.g. /wa calories in a bagel)'
                         else:
-                            bot_message = query_wa(command_block)
+                            try:
+                                bot_message = query_wa(command_block)
+                            except (KeyError, AttributeError):
+                                bot_message = 'Error processing query.'
                         data = {'chat_id': current_chat,
                                 'text': bot_message,
                                 'parse_mode': 'Markdown'}
