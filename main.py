@@ -155,8 +155,7 @@ def handle(response):
                                     text = text[:199] + '…'
                                 data['caption'] = text
                                 tg.send_photo(data)
-
-                    elif command == '/frogs':
+                    elif command in ['/frogs', '/frog']:
                         image_url = rand_frog.main()
                         data = {'chat_id': current_chat,
                                 'photo': image_url, }
