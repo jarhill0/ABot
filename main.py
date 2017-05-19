@@ -66,14 +66,23 @@ def handle(response):
                         tg.send_message(data)
                     elif command == '/start':
                         user = message['from']['first_name']
-                        bot_message = 'Hello %s! I am A Bot, and at the moment I do very little.' % user
-                        bot_message += "\n\nHere's a list of my commands:\n/helloworld - Say hello!\n/redditposts [subreddit] - list 5 hot posts from /r/[subreddit]\n/nextlaunch - get information on the next SpaceX launch"
+                        bot_message = 'Hello %s! I am A Bot.' % user
+                        bot_message += "\n\nHere's a list of my commands:" \
+                                       "\n/redditposts [subreddit] - List 5 hot posts from /r/[subreddit]" \
+                                       "\n/reddit [shortlink] - Get info on the linked Reddit post." \
+                                       "\n/wa - Follow with a query to get information from WolframAlpha" \
+                                       "\n/nextlaunch - Get information on the next SpaceX launch"
                         data = {'chat_id': current_chat,
                                 'text': bot_message, }
                         tg.send_message(data)
                     elif command == '/help':
                         data = {'chat_id': current_chat,
-                                'text': "I can't help you. Sorry."}
+                                'text': "*Commands*:\n"
+                                        "\n/redditposts [subreddit] - List 5 hot posts from /r/[subreddit]"
+                                        "\n/reddit [shortlink] - Get info on the linked Reddit post."
+                                        "\n/wa - Follow with a query to get information from WolframAlpha"
+                                        "\n/nextlaunch - Get information on the next SpaceX launch",
+                                'parse_mode': 'Markdown'}
                         tg.send_message(data)
                     elif command == '/settings':
                         data = {'chat_id': current_chat,
