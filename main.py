@@ -4,6 +4,7 @@ import time
 
 import launchlibrary
 import launchreminders
+import rand_frog
 import reddit
 from config import token, owner_un
 from telegram import Telegram
@@ -52,7 +53,7 @@ def handle(response):
                 bot_commands = []
                 for entity in entities:
                     if entity['type'] == 'bot_command':
-                        command = message_text[entity['offset']:entity['offset'] + entity['length']]
+                        command = message_text[entity['offset']:entity['offset'] + entity['length']].lower()
                         if '@' in command:
                             if command[-11:] == 'a_group_bot':
                                 bot_commands.append(command[:-12])
@@ -154,6 +155,12 @@ def handle(response):
                                     text = text[:199] + '…'
                                 data['caption'] = text
                                 tg.send_photo(data)
+
+                    elif command == '/frogs':
+                        image_url = rand_frog.main()
+                        data = {'chat_id': current_chat,
+                                'photo': image_url, }
+                        tg.send_photo(data)
 
 
 def send_launch_message(launch, chat_id):
