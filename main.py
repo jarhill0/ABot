@@ -77,12 +77,11 @@ def handle(response):
                         tg.send_message(data)
                     elif command == '/help':
                         data = {'chat_id': current_chat,
-                                'text': "*Commands*:\n"
+                                'text': "Commands:\n"
                                         "\n/redditposts [subreddit] - List 5 hot posts from /r/[subreddit]"
                                         "\n/reddit [shortlink] - Get info on the linked Reddit post."
                                         "\n/wa - Follow with a query to get information from WolframAlpha"
-                                        "\n/nextlaunch - Get information on the next SpaceX launch",
-                                'parse_mode': 'Markdown'}
+                                        "\n/nextlaunch - Get information on the next SpaceX launch", }
                         tg.send_message(data)
                     elif command == '/settings':
                         data = {'chat_id': current_chat,
