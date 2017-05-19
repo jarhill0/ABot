@@ -28,6 +28,7 @@ class Telegram:
             try:
                 return _check_and_return(response)
             except ConnectionRefusedError:
+                print(data)
                 time.sleep(2)
 
     def send_photo(self, data):
@@ -37,6 +38,7 @@ class Telegram:
             try:
                 return _check_and_return(response)
             except ConnectionRefusedError:
+                print(data)
                 time.sleep(2)
 
 

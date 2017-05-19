@@ -34,8 +34,11 @@ def hot_posts(subreddit, number):
 
 
 def post_proxy(link):
-    post = reddit.submission(url=link)
-    output = post.title
+    try:
+        post = reddit.submission(url=link)
+    except praw.exceptions.ClientException:
+        return ('Invalid URL. URL should be a reddit shortlink.', False, None)
+    output = post.title + ' (' + post.subreddit_name_prefixed + ')'
     if post.is_self:
         is_image = False
         output += '\n\n---\n\n' + post.selftext

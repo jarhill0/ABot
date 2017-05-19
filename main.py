@@ -124,6 +124,11 @@ def handle(response):
                             url = command_block.split(' ')[1]
                         except IndexError:
                             bot_message = 'Specify a url after /reddit (e.g. /reddit https://redd.it/robin)'
+                            data = {'chat_id': current_chat,
+                                    'text': bot_message,
+                                    'disable_web_page_preview': True,
+                                    }
+                            tg.send_message(data)
                             continue
                         else:
                             text, is_image, image_url = reddit.post_proxy(url)
@@ -131,7 +136,7 @@ def handle(response):
                                 data = {'chat_id': current_chat,
                                         'text': text,
                                         'disable_web_page_preview': False,
-                                        'parse_mode': 'Markdown'}
+                                        }
                                 tg.send_message(data)
                             else:
                                 data = {'chat_id': current_chat,
