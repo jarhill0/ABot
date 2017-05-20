@@ -8,6 +8,7 @@ class Telegram:
     def __init__(self, token):
         self.url = 'https://api.telegram.org/bot' + token + '/'
         self.max_id = 0
+        self.rates = dict()
 
     def get_updates(self):
         # call getUpdates method and parse as JSON
@@ -43,6 +44,29 @@ class Telegram:
             except ConnectionRefusedError:
                 print(data)
                 time.sleep(2)
+
+    def is_limited(self, id_number):
+        now = time.time()
+
+        if id_number not in self.rates.keys():
+            self.rates[id_number] = [now, ]
+            return False
+        else:
+            times = self.rates[id_number]  # direct reference to the actual list; modifications hold
+            if len(times) < 10:
+                # if fewer than 10 messages sent to that chat on record, no rate limiting.
+                times.append(now)
+                return False
+            else:
+                if now - times[0] >= 60:
+                    # if the time since the tenth message is more than a minute, update the list and post message
+                    del times[0]
+                    times.append(now)
+                    return False
+                else:
+                    # if the time since the tenth message is less than a minute, this message will not be sent, so do
+                    # not update the times list
+                    return True
 
 
 def _check_and_return(data):
