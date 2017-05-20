@@ -29,6 +29,9 @@ class Telegram:
                 return _check_and_return(response)
             except ConnectionRefusedError:
                 print(data)
+                if response['error_code'] == 403:
+                    break
+
                 time.sleep(2)
 
     def send_photo(self, data):
