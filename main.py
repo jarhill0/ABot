@@ -6,7 +6,7 @@ import launchlibrary
 import launchreminders
 import rand_frog
 import reddit
-from config import token, owner_un
+from config import token, owner_un, owner_uns
 from telegram import Telegram
 from wolfram_alpha import query_wa
 
@@ -104,7 +104,7 @@ def handle(response):
                             tg.send_message(data)
                     elif command == '/stop':
                         username = message['from'].get('username', None)
-                        if username == owner_un and time.time() - message['date'] < 15:
+                        if (username == owner_un or username in owner_uns) and time.time() - message['date'] < 15:
                             sys.exit()
                     elif command == '/nextlaunch':
                         send_launch_message(next_launch, current_chat)
