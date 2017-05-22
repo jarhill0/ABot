@@ -2,6 +2,7 @@ import datetime
 import sys
 import time
 
+import choice
 import launchlibrary
 import launchreminders
 import rand_frog
@@ -161,6 +162,16 @@ def handle(response):
                             data = {'chat_id': current_chat,
                                     'photo': image_url, }
                             tg.send_photo(data)
+                        elif command == 'choice':
+                            command_block = message_text[message_text.index('/choice'):]
+                            if ';' not in command_block:
+                                data = {'chat_id': current_chat,
+                                        'text': 'List two or more options separated by a semicolon.',
+                                        'reply_to_message_id': orig_message_id}
+                            else:
+                                data = {'chat_id': current_chat,
+                                        'text': choice.choice(command_block), }
+                            tg.send_message(data)
 
 
 def send_launch_message(launch, chat_id):
