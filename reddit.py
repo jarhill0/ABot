@@ -14,7 +14,8 @@ def hot_posts(subreddit, number):
 
     try:
         reddit.subreddit(subreddit).fullname
-    except (prawcore.Forbidden, prawcore.NotFound, prawcore.Redirect, prawcore.BadRequest, AttributeError, TypeError):
+    except (prawcore.Forbidden, prawcore.NotFound, prawcore.Redirect, prawcore.BadRequest, AttributeError, TypeError,
+            AssertionError):
         return 'Error. Could not access /r/%s.' % subreddit
 
     for i in range(1, 3):
