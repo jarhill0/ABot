@@ -162,7 +162,7 @@ def handle(response):
                             data = {'chat_id': current_chat,
                                     'photo': image_url, }
                             tg.send_photo(data)
-                        elif command == 'choice':
+                        elif command == '/choice':
                             command_block = message_text[message_text.index('/choice'):]
                             if ';' not in command_block:
                                 data = {'chat_id': current_chat,
