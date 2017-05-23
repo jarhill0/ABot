@@ -6,7 +6,7 @@ with open('data/frogs.json', 'r') as f:
 
 
 def main():
-    return frogs[random.randint(0, len(frogs) - 1)]['url']
+    return random.choice(frogs)['url']
 
 
 if __name__ == '__main__':
