@@ -71,6 +71,10 @@ def handle(response):
                             data = {'chat_id': current_chat,
                                     'text': 'Inspect my insides! http://github.com/jarhill0/ABot', }
                             tg.send_message(data)
+                        elif command == '/shrug':
+                            data = {'chat_id': current_chat,
+                                    'text': '¯\_(ツ)_/¯', }
+                            tg.send_message(data)
                         elif command == '/start':
                             user = message['from']['first_name']
                             bot_message = 'Hello %s! I am A Bot.' % user
