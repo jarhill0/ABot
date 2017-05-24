@@ -79,7 +79,7 @@ def _check_and_return(data):
 
 def user_name(user):
     if 'username' in user.keys():
-        return user['username']
+        return '@' + user['username']
     else:
         name = user['first_name']
         if 'last_name' in user.keys():
