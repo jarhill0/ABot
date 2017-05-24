@@ -110,9 +110,9 @@ def execute(code, input_):
 def main(my_code, input_=''):
     try:
         return execute(my_code, input_)
-    except:
+    except Exception:
         return "Error!"
 
 
 if __name__ == '__main__':
-    print(main(',>,[-<+>]<.', input_='A!'))
+    print(main(',. g', input_=''))
