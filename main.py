@@ -8,7 +8,7 @@ import launchreminders
 import rand_frog
 import reddit
 from config import token, owner_un, owner_uns
-from telegram import Telegram
+from telegram import Telegram, user_name
 from wolfram_alpha import query_wa
 
 tg = Telegram(token)
@@ -179,7 +179,8 @@ def handle(response):
                                         'reply_to_message_id': orig_message_id}
                             else:
                                 data = {'chat_id': current_chat,
-                                        'text': choice.choice(command_block), }
+                                        'text': choice.choice(command_block) + '\n\n(chosen for ' + user_name(
+                                            message['from']) + ')', }
                             print(data)
                             tg.send_message(data)
 

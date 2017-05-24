@@ -75,3 +75,13 @@ def _check_and_return(data):
         raise ConnectionRefusedError('Message did not send successfully.')
     else:
         return data
+
+
+def user_name(user):
+    if 'username' in user.keys():
+        return user['username']
+    else:
+        name = user['first_name']
+        if 'last_name' in user.keys():
+            name += ' ' + user['last_name']
+        return name
