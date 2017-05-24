@@ -109,10 +109,10 @@ def execute(code, input_):
 
 def main(my_code, input_=''):
     try:
-        return execute(my_code, input_)
+        return execute(my_code, input_)[:500]
     except BaseException as e:
         return str(e)
 
 
 if __name__ == '__main__':
-    print(main(',. g', input_=''))
+    print(main(',[.]', input_='a'))
