@@ -111,8 +111,8 @@ def main(my_code, input_=''):
     try:
         x = execute(my_code, input_)
         return x
-    except Exception:
-        return "Error!"
+    except BaseException as e:
+        return str(e)
 
 
 if __name__ == '__main__':
