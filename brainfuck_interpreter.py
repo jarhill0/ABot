@@ -109,7 +109,8 @@ def execute(code, input_):
 
 def main(my_code, input_=''):
     try:
-        return execute(my_code, input_)
+        x = execute(my_code, input_)
+        return x
     except Exception:
         return "Error!"
 
