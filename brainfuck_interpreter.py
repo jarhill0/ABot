@@ -109,8 +109,7 @@ def execute(code, input_):
 
 def main(my_code, input_=''):
     try:
-        x = execute(my_code, input_)
-        return x
+        return execute(my_code, input_)
     except BaseException as e:
         return str(e)
 
