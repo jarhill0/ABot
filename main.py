@@ -2,6 +2,7 @@ import datetime
 import sys
 import time
 
+import brainfuck_interpreter
 import choice
 import launchlibrary
 import launchreminders
@@ -182,6 +183,17 @@ def handle(response):
                                         'text': choice.choice(command_block) + '\n\n(chosen for ' + user_name(
                                             message['from']) + ')', }
                             print(data)
+                            tg.send_message(data)
+                        elif command == '/bf':
+                            command_block = message_text[message_text.index('/bf') + 3:]
+                            input_ = ''
+                            if ';' in command_block:
+                                command_block = command_block[:command_block.index(';')]
+                                input_ = command_block[command_block.index(';'):]
+                            response = brainfuck_interpreter.execute(command_block, input_=input_)
+                            data = {'chat_id': current_chat,
+                                    'text': response,
+                                    'reply_to_message_id': orig_message_id}
                             tg.send_message(data)
 
 
