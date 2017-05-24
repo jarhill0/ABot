@@ -188,7 +188,7 @@ def handle(response):
                             command_block = message_text[message_text.index('/bf') + 3:]
                             input_ = ''
                             if ';' in command_block:
-                                input_ = command_block[command_block.index(';'):]
+                                input_ = command_block[command_block.index(';') + 1:]
                                 command_block = command_block[:command_block.index(';')]
                             response = brainfuck_interpreter.main(command_block, input_=input_)
                             data = {'chat_id': current_chat,
