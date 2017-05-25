@@ -109,10 +109,10 @@ def execute(code, input_):
 
 def main(my_code, input_=''):
     try:
-        return execute(my_code, input_)[:500]
+        return execute(my_code, input_)[:1000]
     except BaseException as e:
         return str(e)
 
 
 if __name__ == '__main__':
-    print(main(',[.]', input_='a'))
+    print(main('random test', input_='hello'))

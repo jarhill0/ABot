@@ -8,6 +8,7 @@ import launchlibrary
 import launchreminders
 import rand_frog
 import reddit
+import xkcd
 from config import token, owner_un, owner_uns
 from telegram import Telegram, user_name
 from wolfram_alpha import query_wa
@@ -30,6 +31,7 @@ def main():
     tg = Telegram(token)
     next_launch = launchreminders.get_next_launch()
     go = True
+    last_time = time.time() - (60 * 61)
 
     launchreminders.set_launch_triggers(next_launch)
 
@@ -38,6 +40,12 @@ def main():
         # noinspection PySimplifyBooleanCheck
         if response['result'] != []:
             handle(response)
+        if time.time() + 60 * 60 > last_time:
+            last_time = time.time()
+            new_comic = xkcd.check_update()
+            if new_comic is not None:
+                tg.send_photo(new_comic[0])
+                tg.send_message(new_comic[1])
 
 
 def handle(response):
