@@ -8,6 +8,7 @@ import config
 def get_submitted():
     with open('data/xkcd.json', 'r') as f:
         submitted = json.load(f)
+    return submitted
 
 
 def check_update():
