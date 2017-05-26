@@ -40,7 +40,7 @@ def main():
         # noinspection PySimplifyBooleanCheck
         if response['result'] != []:
             handle(response)
-        if time.time() + 60 * 60 > last_time:
+        if time.time() - 60 * 60 > last_time:
             last_time = time.time()
             new_comic = xkcd.check_update()
             if new_comic is not None:
