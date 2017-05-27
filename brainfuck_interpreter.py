@@ -8,10 +8,16 @@ class Cell:
         self.value = 0
 
     def increment(self):
-        self.value += 1
+        if self.value == 255:
+            self.value = 0
+        else:
+            self.value += 1
 
     def decrement(self):
-        self.value -= 1
+        if self.value == 0:
+            self.value = 255
+        else:
+            self.value -= 1
 
 
 def step_right(cell):
