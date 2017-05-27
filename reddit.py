@@ -38,14 +38,14 @@ def post_proxy(link):
     try:
         post = reddit.submission(url=link)
     except praw.exceptions.ClientException:
-        return ('Invalid URL. URL should be a reddit shortlink.', False, None)
+        return 'Invalid URL. URL should be a reddit shortlink.', False, None
     try:
         output = post.title + ' (' + post.subreddit_name_prefixed + ')'
     except prawcore.Forbidden:
-        return ('Reddit post: access denied.', False, None)
+        return 'Reddit post: access denied.', False, None
 
     if post.over_18:
-        return ('NSFW. Click it wourself.', False, None)
+        return 'NSFW. Click it yourself.', False, None
 
     if post.is_self:
         is_image = False
