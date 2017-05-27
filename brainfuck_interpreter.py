@@ -97,8 +97,13 @@ def execute(code, input_):
                 output_text += chr(pointer.value)
 
             elif char == ',':
-                pointer.value = ord(input_[0]) % 256
-                input_ = input_[1:]
+                try:
+                    pointer.value = ord(input_[0]) % 256
+                except IndexError:
+                    return 'Error. Expected input.'
+                finally:
+                    input_ = input_[1:]
+
 
             elif char == '[':
                 if pointer.value == 0:
