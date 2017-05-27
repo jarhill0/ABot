@@ -97,7 +97,7 @@ def execute(code, input_):
                 output_text += chr(pointer.value)
 
             elif char == ',':
-                pointer.value = ord(input_[0])
+                pointer.value = ord(input_[0]) % 256
                 input_ = input_[1:]
 
             elif char == '[':
