@@ -44,6 +44,9 @@ def post_proxy(link):
     except prawcore.Forbidden:
         return ('Reddit post: access denied.', False, None)
 
+    if post.over_18:
+        return ('NSFW. Click it wourself.', False, None)
+
     if post.is_self:
         is_image = False
         output += '\n\n---\n\n' + post.selftext
@@ -59,4 +62,4 @@ def post_proxy(link):
 
 if __name__ == '__main__':
     # quick test
-    print(hot_posts('funny', 5))
+    post_proxy('https://www.reddit.com/r/pics/comments/6dkkea/both_my_mom_and_i_are_graduating_today/')
