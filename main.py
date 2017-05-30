@@ -72,137 +72,141 @@ def handle(response):
 
                 for command in bot_commands:
                     if not tg.is_limited(current_chat):
-                        if command == '/helloworld':
-                            data = {'chat_id': current_chat,
-                                    'text': 'Hello World!', }
-                            tg.send_message(data)
-                        elif command == '/source':
-                            data = {'chat_id': current_chat,
-                                    'text': 'Inspect my insides! http://github.com/jarhill0/ABot', }
-                            tg.send_message(data)
-                        elif command == '/shrug':
-                            data = {'chat_id': current_chat,
-                                    'text': '¯\_(ツ)_/¯', }
-                            tg.send_message(data)
-                        elif command == '/start':
-                            user = message['from']['first_name']
-                            bot_message = 'Hello %s! I am A Bot.' % user
-                            bot_message += "\n\nHere's a list of my commands:" \
-                                           "\n/redditposts [subreddit] - List 5 hot posts from /r/[subreddit]" \
-                                           "\n/reddit [shortlink] - Get info on the linked Reddit post." \
-                                           "\n/wa - Follow with a query to get information from WolframAlpha" \
-                                           "\n/nextlaunch - Get information on the next SpaceX launch"
-                            data = {'chat_id': current_chat,
-                                    'text': bot_message, }
-                            tg.send_message(data)
-                        elif command == '/help':
-                            data = {'chat_id': current_chat,
-                                    'text': "Commands:\n"
-                                            "\n/redditposts [subreddit] - List 5 hot posts from /r/[subreddit]"
-                                            "\n/reddit [shortlink] - Get info on the linked Reddit post."
-                                            "\n/wa - Follow with a query to get information from WolframAlpha"
-                                            "\n/nextlaunch - Get information on the next SpaceX launch", }
-                            tg.send_message(data)
-                        elif command == '/settings':
-                            data = {'chat_id': current_chat,
-                                    'text': "At the moment, I have no settings. Sorry."}
-                            tg.send_message(data)
-                        elif command == '/redditposts':
-                            command_block = message_text[message_text.index('/redditposts'):]
-                            try:
-                                subreddit = command_block.split(' ')[1]
-                            except IndexError:
-                                bot_message = 'Specify a subreddit after /redditposts (e.g. /redditposts funny)'
-                                continue
-                            else:
-                                bot_message = reddit.hot_posts(subreddit, 5)
-                            finally:
+                        try:
+                            if command == '/helloworld':
                                 data = {'chat_id': current_chat,
-                                        'text': bot_message,
-                                        'disable_web_page_preview': True}
+                                        'text': 'Hello World!', }
                                 tg.send_message(data)
-                        elif command == '/stop':
-                            username = message['from'].get('username', None)
-                            if (username == owner_un or username in owner_uns) and time.time() - message['date'] < 15:
-                                sys.exit()
-                        elif command == '/nextlaunch':
-                            send_launch_message(next_launch, current_chat)
-                        elif command == '/secretcommand':
-                            data = {'chat_id': current_chat,
-                                    'text': "doesn’t work any more, you cheeky devil :)",
-                                    'reply_to_message_id': orig_message_id}
-                            tg.send_message(data)
-                        elif command == '/wa':
-                            command_block = message_text[message_text.index('/wa') + 3:].strip()
-                            if command_block == '':
-                                bot_message = 'Specify a query after /wa (e.g. /wa calories in a bagel)'
-                            else:
+                            elif command == '/source':
+                                data = {'chat_id': current_chat,
+                                        'text': 'Inspect my insides! http://github.com/jarhill0/ABot', }
+                                tg.send_message(data)
+                            elif command == '/shrug':
+                                data = {'chat_id': current_chat,
+                                        'text': '¯\_(ツ)_/¯', }
+                                tg.send_message(data)
+                            elif command == '/start':
+                                user = message['from']['first_name']
+                                bot_message = 'Hello %s! I am A Bot.' % user
+                                bot_message += "\n\nHere's a list of my commands:" \
+                                               "\n/redditposts [subreddit] - List 5 hot posts from /r/[subreddit]" \
+                                               "\n/reddit [shortlink] - Get info on the linked Reddit post." \
+                                               "\n/wa - Follow with a query to get information from WolframAlpha" \
+                                               "\n/nextlaunch - Get information on the next SpaceX launch"
+                                data = {'chat_id': current_chat,
+                                        'text': bot_message, }
+                                tg.send_message(data)
+                            elif command == '/help':
+                                data = {'chat_id': current_chat,
+                                        'text': "Commands:\n"
+                                                "\n/redditposts [subreddit] - List 5 hot posts from /r/[subreddit]"
+                                                "\n/reddit [shortlink] - Get info on the linked Reddit post."
+                                                "\n/wa - Follow with a query to get information from WolframAlpha"
+                                                "\n/nextlaunch - Get information on the next SpaceX launch", }
+                                tg.send_message(data)
+                            elif command == '/settings':
+                                data = {'chat_id': current_chat,
+                                        'text': "At the moment, I have no settings. Sorry."}
+                                tg.send_message(data)
+                            elif command == '/redditposts':
+                                command_block = message_text[message_text.index('/redditposts'):]
                                 try:
-                                    bot_message = query_wa(command_block)
-                                except:
-                                    bot_message = 'Error processing query.'
-                            data = {'chat_id': current_chat,
-                                    'text': bot_message,
-                                    'parse_mode': 'Markdown'}
-                            tg.send_message(data)
-                        elif command == '/reddit':
-                            command_block = message_text[message_text.index('/reddit'):]
-
-                            try:
-                                url = command_block.split(' ')[1]
-                            except IndexError:
-                                bot_message = 'Specify a url after /reddit (e.g. /reddit https://redd.it/robin)'
+                                    subreddit = command_block.split(' ')[1]
+                                except IndexError:
+                                    bot_message = 'Specify a subreddit after /redditposts (e.g. /redditposts funny)'
+                                    continue
+                                else:
+                                    bot_message = reddit.hot_posts(subreddit, 5)
+                                finally:
+                                    data = {'chat_id': current_chat,
+                                            'text': bot_message,
+                                            'disable_web_page_preview': True}
+                                    tg.send_message(data)
+                            elif command == '/stop':
+                                username = message['from'].get('username', None)
+                                if (username == owner_un or username in owner_uns) and time.time() - message[
+                                    'date'] < 15:
+                                    sys.exit()
+                            elif command == '/nextlaunch':
+                                send_launch_message(next_launch, current_chat)
+                            elif command == '/secretcommand':
+                                data = {'chat_id': current_chat,
+                                        'text': "doesn’t work any more, you cheeky devil :)",
+                                        'reply_to_message_id': orig_message_id}
+                                tg.send_message(data)
+                            elif command == '/wa':
+                                command_block = message_text[message_text.index('/wa') + 3:].strip()
+                                if command_block == '':
+                                    bot_message = 'Specify a query after /wa (e.g. /wa calories in a bagel)'
+                                else:
+                                    try:
+                                        bot_message = query_wa(command_block)
+                                    except:
+                                        bot_message = 'Error processing query.'
                                 data = {'chat_id': current_chat,
                                         'text': bot_message,
-                                        'disable_web_page_preview': True,
-                                        }
+                                        'parse_mode': 'Markdown'}
                                 tg.send_message(data)
-                                continue
-                            else:
-                                text, is_image, image_url = reddit.post_proxy(url)
-                                if not is_image:
+                            elif command == '/reddit':
+                                command_block = message_text[message_text.index('/reddit'):]
+
+                                try:
+                                    url = command_block.split(' ')[1]
+                                except IndexError:
+                                    bot_message = 'Specify a url after /reddit (e.g. /reddit https://redd.it/robin)'
                                     data = {'chat_id': current_chat,
-                                            'text': text,
-                                            'disable_web_page_preview': False,
+                                            'text': bot_message,
+                                            'disable_web_page_preview': True,
                                             }
                                     tg.send_message(data)
+                                    continue
+                                else:
+                                    text, is_image, image_url = reddit.post_proxy(url)
+                                    if not is_image:
+                                        data = {'chat_id': current_chat,
+                                                'text': text,
+                                                'disable_web_page_preview': False,
+                                                }
+                                        tg.send_message(data)
+                                    else:
+                                        data = {'chat_id': current_chat,
+                                                'photo': image_url,
+                                                }
+                                        if len(text) >= 200:
+                                            text = text[:199] + '…'
+                                        data['caption'] = text
+                                        tg.send_photo(data)
+                            elif command in ['/frogs', '/frog']:
+                                image_url = rand_frog.main()
+                                data = {'chat_id': current_chat,
+                                        'photo': image_url, }
+                                tg.send_photo(data)
+                            elif command == '/choice':
+                                command_block = message_text[message_text.index('/choice') + 8:]
+                                print(command_block)
+                                if ';' not in command_block:
+                                    data = {'chat_id': current_chat,
+                                            'text': 'List two or more options separated by a semicolon.',
+                                            'reply_to_message_id': orig_message_id}
                                 else:
                                     data = {'chat_id': current_chat,
-                                            'photo': image_url,
-                                            }
-                                    if len(text) >= 200:
-                                        text = text[:199] + '…'
-                                    data['caption'] = text
-                                    tg.send_photo(data)
-                        elif command in ['/frogs', '/frog']:
-                            image_url = rand_frog.main()
-                            data = {'chat_id': current_chat,
-                                    'photo': image_url, }
-                            tg.send_photo(data)
-                        elif command == '/choice':
-                            command_block = message_text[message_text.index('/choice') + 8:]
-                            print(command_block)
-                            if ';' not in command_block:
+                                            'text': choice.choice(command_block) + '\n\n(chosen for ' + user_name(
+                                                message['from']) + ')', }
+                                print(data)
+                                tg.send_message(data)
+                            elif command == '/bf':
+                                command_block = message_text[message_text.index('/bf') + 3:]
+                                input_ = ''
+                                if ';' in command_block:
+                                    input_ = command_block[command_block.index(';') + 1:]
+                                    command_block = command_block[:command_block.index(';')]
+                                response = brainfuck_interpreter.main(command_block, input_=input_)
                                 data = {'chat_id': current_chat,
-                                        'text': 'List two or more options separated by a semicolon.',
+                                        'text': response,
                                         'reply_to_message_id': orig_message_id}
-                            else:
-                                data = {'chat_id': current_chat,
-                                        'text': choice.choice(command_block) + '\n\n(chosen for ' + user_name(
-                                            message['from']) + ')', }
-                            print(data)
-                            tg.send_message(data)
-                        elif command == '/bf':
-                            command_block = message_text[message_text.index('/bf') + 3:]
-                            input_ = ''
-                            if ';' in command_block:
-                                input_ = command_block[command_block.index(';') + 1:]
-                                command_block = command_block[:command_block.index(';')]
-                            response = brainfuck_interpreter.main(command_block, input_=input_)
-                            data = {'chat_id': current_chat,
-                                    'text': response,
-                                    'reply_to_message_id': orig_message_id}
-                            tg.send_message(data)
+                                tg.send_message(data)
+                        except:
+                            pass
 
 
 def send_launch_message(launch, chat_id):
