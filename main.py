@@ -139,7 +139,7 @@ def handle(response):
                             else:
                                 try:
                                     bot_message = query_wa(command_block)
-                                except (KeyError, AttributeError):
+                                except:
                                     bot_message = 'Error processing query.'
                             data = {'chat_id': current_chat,
                                     'text': bot_message,
