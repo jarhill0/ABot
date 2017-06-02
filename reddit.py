@@ -2,6 +2,7 @@ import praw
 import prawcore
 
 reddit = praw.Reddit('k8IA', user_agent='k8IA Telegram bot')
+reddit_posts_dict = dict()
 
 
 def hot_posts(subreddit, number):
@@ -16,7 +17,7 @@ def hot_posts(subreddit, number):
         reddit.subreddit(subreddit).fullname
     except (prawcore.Forbidden, prawcore.NotFound, prawcore.Redirect, prawcore.BadRequest, AttributeError, TypeError,
             AssertionError):
-        return 'Error. Could not access /r/%s.' % subreddit
+        return 'Error. Could not access /r/%s.' % subreddit, None
 
     for i in range(1, 3):
         try:
@@ -26,12 +27,14 @@ def hot_posts(subreddit, number):
         else:
             num_stickies = i
 
+    posts_dict = dict()
     for true_count, submission in enumerate(reddit.subreddit(subreddit).hot(limit=number + num_stickies)):
         if true_count >= num_stickies:
             body += '#%d: %s - %s\n' % (num, submission.title, submission.shortlink)
+            posts_dict[num] = submission.shortlink
             num += 1
 
-    return body
+    return body, posts_dict
 
 
 def post_proxy(link):
@@ -58,6 +61,23 @@ def post_proxy(link):
         is_image = False
         output += '\n\n' + post.url
         return (output, is_image, None)
+
+
+def add_posts_to_dict(chat_id, posts):
+    global reddit_posts_dict
+    reddit_posts_dict[chat_id] = posts
+
+
+def get_post_from_dict(chat_id, post_id):
+    section = reddit_posts_dict.get(chat_id, None)
+    if section is None:
+        return False, None
+    else:
+        post_url = section.get(post_id, None)
+        if post_url is None:
+            return True, None
+        else:
+            return True, post_url
 
 
 if __name__ == '__main__':

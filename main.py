@@ -114,12 +114,18 @@ def handle(response):
                                     bot_message = 'Specify a subreddit after /redditposts (e.g. /redditposts funny)'
                                     continue
                                 else:
-                                    bot_message = reddit.hot_posts(subreddit, 5)
+                                    bot_message, posts_dict = reddit.hot_posts(subreddit, 5)
                                 finally:
                                     data = {'chat_id': current_chat,
                                             'text': bot_message,
                                             'disable_web_page_preview': True}
                                     tg.send_message(data)
+                                    try:
+                                        if posts_dict is not None:
+                                            reddit.add_posts_to_dict(current_chat, posts_dict)
+                                    except NameError:
+                                        pass
+
                             elif command == '/stop':
                                 username = message['from'].get('username', None)
                                 if (username == config.owner_un or username in config.owner_uns) and time.time() - \
@@ -150,7 +156,7 @@ def handle(response):
                                 command_block = message_text[message_text.index('/reddit'):]
 
                                 try:
-                                    url = command_block.split(' ')[1]
+                                    input_url = command_block.split(' ')[1]
                                 except IndexError:
                                     bot_message = 'Specify a url after /reddit (e.g. /reddit https://redd.it/robin)'
                                     data = {'chat_id': current_chat,
@@ -160,6 +166,10 @@ def handle(response):
                                     tg.send_message(data)
                                     continue
                                 else:
+                                    if input_url.isdigit():
+                                        url = reddit.get_post_from_dict(current_chat, int(input_url))
+                                    else:
+                                        url = input_url
                                     text, is_image, image_url = reddit.post_proxy(url)
                                     if not is_image:
                                         data = {'chat_id': current_chat,
