@@ -23,17 +23,24 @@ class Telegram:
         return _check_and_return(response)
 
     def send_message(self, data):
+        datae = []
+        while len(data['text']) > 4000:
+            temp = data.copy()
+            temp['text'] = data['text'][4000:]
+            datae.append(temp)
+        datae.append(data)
 
-        for i in range(5):
-            response = json.loads(requests.post(self.url + 'sendMessage', data=data).content.decode('utf-8'))
-            try:
-                return _check_and_return(response)
-            except ConnectionRefusedError:
-                print(data)
-                if response['error_code'] == 403:
-                    break
+        for data in datae:
+            for i in range(5):
+                response = json.loads(requests.post(self.url + 'sendMessage', data=data).content.decode('utf-8'))
+                try:
+                    return _check_and_return(response)
+                except ConnectionRefusedError:
+                    print(data)
+                    if response['error_code'] == 403:
+                        break
 
-                time.sleep(2)
+                    time.sleep(2)
 
     def send_photo(self, data):
 
