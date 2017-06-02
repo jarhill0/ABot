@@ -54,6 +54,7 @@ def handle(response):
 
             message_text = message.get('text', None)
             current_chat = message['chat']['id']
+            chat_type = message['chat']['type']
             orig_message_id = message['message_id']
 
             if 'entities' in message.keys():
@@ -182,7 +183,7 @@ def handle(response):
                                             tg.send_message(data)
                                     else:
                                         url = input_url
-                                    text, is_image, image_url = reddit.post_proxy(url)
+                                    text, is_image, image_url = reddit.post_proxy(url, chat_type)
                                     if not is_image:
                                         data = {'chat_id': current_chat,
                                                 'text': text,

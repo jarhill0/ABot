@@ -37,7 +37,7 @@ def hot_posts(subreddit, number):
     return body, posts_dict
 
 
-def post_proxy(link):
+def post_proxy(link, chat_type):
     try:
         post = reddit.submission(url=link)
     except praw.exceptions.ClientException:
@@ -47,7 +47,7 @@ def post_proxy(link):
     except prawcore.Forbidden:
         return 'Reddit post: access denied.', False, None
 
-    if post.over_18:
+    if post.over_18 and chat_type != 'private':
         return 'NSFW. Click it yourself.', False, None
 
     if post.is_self:
