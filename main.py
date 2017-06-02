@@ -4,16 +4,16 @@ import time
 
 import brainfuck_interpreter
 import choice
+import config
 import launchlibrary
 import launchreminders
 import rand_frog
 import reddit
 import xkcd
-from config import token, owner_un, owner_uns
 from telegram import Telegram, user_name
 from wolfram_alpha import query_wa
 
-tg = Telegram(token)
+tg = Telegram(config.token)
 next_launch = None
 
 
@@ -28,7 +28,7 @@ def main():
     launchlibrary.update_json_on_disk()
 
     global tg, next_launch
-    tg = Telegram(token)
+    tg = Telegram(config.token)
     next_launch = launchreminders.get_next_launch()
     launchreminders.set_launch_triggers(next_launch)
     last_time = time.time() - (60 * 61)
@@ -122,14 +122,15 @@ def handle(response):
                                     tg.send_message(data)
                             elif command == '/stop':
                                 username = message['from'].get('username', None)
-                                if (username == owner_un or username in owner_uns) and time.time() - message[
-                                    'date'] < 15:
+                                if (username == config.owner_un or username in config.owner_uns) and time.time() - \
+                                        message[
+                                            'date'] < 15:
                                     sys.exit()
                             elif command == '/nextlaunch':
                                 send_launch_message(next_launch, current_chat)
                             elif command == '/secretcommand':
                                 data = {'chat_id': current_chat,
-                                        'text': "doesn’t work any more, you cheeky devil :)",
+                                        'text': "Doesn't work any more, you cheeky devil :)",
                                         'reply_to_message_id': orig_message_id}
                                 tg.send_message(data)
                             elif command == '/wa':
@@ -203,7 +204,8 @@ def handle(response):
                                         'text': response,
                                         'reply_to_message_id': orig_message_id}
                                 tg.send_message(data)
-                        except:
+                        except BaseException as e:
+                            print(e)
                             pass
 
 
