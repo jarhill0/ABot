@@ -19,6 +19,7 @@ next_launch = None
 
 def restart():
     time.sleep(10)
+    global next_launch
     next_launch = launchreminders.get_next_launch()
     launchreminders.set_launch_triggers(next_launch)
 
