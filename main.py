@@ -167,7 +167,19 @@ def handle(response):
                                     continue
                                 else:
                                     if input_url.isdigit():
-                                        url = reddit.get_post_from_dict(current_chat, int(input_url))
+                                        valid_id, tentative_url = reddit.get_post_from_dict(current_chat, int(input_url))
+                                        if valid_id and tentative_url is not None:
+                                            url = tentative_url
+                                        else:
+                                            if not valid_id:
+                                                bot_message = 'Use /redditposts followed by a subreddit name to use /reddit [number] syntax',
+                                            elif tentative_url is None:
+                                                bot_message = 'Invalid number.'
+                                            data = {'chat_id': current_chat,
+                                                    'text': bot_message,
+                                                    'disable_web_page_preview': True,
+                                                    }
+                                            tg.send_message(data)
                                     else:
                                         url = input_url
                                     text, is_image, image_url = reddit.post_proxy(url)
