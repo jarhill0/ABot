@@ -18,24 +18,21 @@ next_launch = None
 
 
 def restart():
-    global go
-    go = False
-    time.sleep(1)
-    main()
+    time.sleep(10)
+    next_launch = launchreminders.get_next_launch()
+    launchreminders.set_launch_triggers(next_launch)
 
 
 def main():
     launchlibrary.update_json_on_disk()
 
-    global go, tg, next_launch
+    global tg, next_launch
     tg = Telegram(token)
     next_launch = launchreminders.get_next_launch()
-    go = True
+    launchreminders.set_launch_triggers(next_launch)
     last_time = time.time() - (60 * 61)
 
-    launchreminders.set_launch_triggers(next_launch)
-
-    while go:
+    while True:
         response = tg.get_updates()
         # noinspection PySimplifyBooleanCheck
         if response['result'] != []:
