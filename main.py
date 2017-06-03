@@ -20,6 +20,7 @@ next_launch = None
 def restart():
     time.sleep(10)
     global next_launch
+    launchlibrary.update_json_on_disk()
     next_launch = launchreminders.get_next_launch()
     launchreminders.set_launch_triggers(next_launch)
 
@@ -168,7 +169,8 @@ def handle(response):
                                     continue
                                 else:
                                     if input_url.isdigit():
-                                        valid_id, tentative_url = reddit.get_post_from_dict(current_chat, int(input_url))
+                                        valid_id, tentative_url = reddit.get_post_from_dict(current_chat,
+                                                                                            int(input_url))
                                         if valid_id and tentative_url is not None:
                                             url = tentative_url
                                         else:
