@@ -17,7 +17,8 @@ def send_automated_message(launch, triggertime):
     if abs(time.time() - triggertime) < 60:
         send_launch_message(launch, a_group_id)
         time.sleep(70)
-        restart()
+        if time.time() + 120 > launch['wsstamp']:
+            restart()
 
 
 def set_launch_triggers(launch):
