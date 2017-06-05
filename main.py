@@ -61,6 +61,7 @@ bot_commands["/helloworld"] = helloworld
 
 
 def source(message):
+    current_chat = message['chat']['id']
     data = {'chat_id': current_chat,
             'text': 'Inspect my insides! http://github.com/jarhill0/ABot'}
     tg.send_message(data)
@@ -70,6 +71,7 @@ bot_commands["/source"] = source
 
 
 def start(message):
+    current_chat = message['chat']['id']
     user = message['from']['first_name']
     bot_message = 'Hello %s! I am A Bot.' % user
     bot_message += "\n\nHere's a list of my commands:" \
@@ -86,6 +88,7 @@ bot_commands["/start"] = start
 
 
 def help(message):
+    current_chat = message['chat']['id']
     data = {'chat_id': current_chat,
             'text': "Commands:\n"
                     "\n/redditposts [subreddit] - List 5 hot posts from /r/[subreddit]"
@@ -99,6 +102,7 @@ bot_commands["/help"] = help
 
 
 def settings(message):
+    current_chat = message['chat']['id']
     data = {'chat_id': current_chat,
             'text': "At the moment, I have no settings. Sorry."}
     tg.send_message(data)
@@ -108,6 +112,7 @@ bot_commands["/settings"] = settings
 
 
 def shrug(message):
+    current_chat = message['chat']['id']
     data = {'chat_id': current_chat,
             'text': '¯\_(ツ)_/¯',}
     tg.send_message(data)
@@ -117,6 +122,7 @@ bot_commands["/shrug"] = shrug
 
 
 def redditposts(message):
+    current_chat = message['chat']['id']
     message_text = message.get('text', None)
     command_block = message_text[message_text.index('/redditposts'):]
     try:
@@ -141,6 +147,7 @@ bot_commands["/redditposts"] = redditposts
 
 
 def stop(message):
+    current_chat = message['chat']['id']
     username = message['from'].get('username', None)
     if (username == config.owner_un or username in config.owner_uns) and time.time() - \
             message[
@@ -154,6 +161,7 @@ bot_commands["/stop"] = stop
 
 
 def secretcommand(message):
+    current_chat = message['chat']['id']
     orig_message_id = message['message_id']
     data = {'chat_id': current_chat,
             'text': "Doesn't work any more, you cheeky devil :)",
@@ -165,6 +173,7 @@ bot_commands["/secretcommand"] = secretcommand
 
 
 def wa(message):
+    current_chat = message['chat']['id']
     message_text = message.get('text', None)
     command_block = message_text[message_text.index('/wa') + 3:].strip()
     if command_block == '':
@@ -184,6 +193,7 @@ bot_commands["/wa"] = wa
 
 
 def reddit(message):
+    current_chat = message['chat']['id']
     message_text = message.get('text', None)
     chat_type = message['chat']['type']
     command_block = message_text[message_text.index('/reddit'):]
@@ -235,6 +245,7 @@ bot_commands["/reddit"] = reddit
 
 
 def frog(message):
+    current_chat = message['chat']['id']
     image_url = rand_frog.main()
     data = {'chat_id': current_chat,
             'photo': image_url,}
@@ -246,6 +257,7 @@ bot_commands["/frogs"] = frog
 
 
 def choice(message):
+    current_chat = message['chat']['id']
     orig_message_id = message['message_id']
     message_text = message.get('text', None)
     command_block = message_text[message_text.index('/choice') + 8:]
@@ -266,6 +278,7 @@ bot_commands["/choice"] = choice
 
 
 def bf(message):
+    current_chat = message['chat']['id']
     orig_message_id = message['message_id']
 
     message_text = message.get('text', None)
