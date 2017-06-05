@@ -310,7 +310,7 @@ def handle(response):
 
             if 'entities' in message.keys():
                 entities = message['entities']
-                bot_commands = []
+                bot_commands_in_message = []
                 for entity in entities:
                     if entity['type'] == 'bot_command':
                         command = message_text[entity['offset']:entity['offset'] + entity['length']].lower()
