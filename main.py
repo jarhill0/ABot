@@ -291,6 +291,7 @@ def handle(response):
             message = item['message']
 
             message_text = message.get('text', None)
+            current_chat = message['chat']['id']
             chat_type = message['chat']['type']
             orig_message_id = message['message_id']
 
