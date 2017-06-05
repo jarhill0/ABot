@@ -1,6 +1,7 @@
 import datetime
 import sys
 import time
+import traceback
 
 import brainfuck_interpreter
 import choice
@@ -335,6 +336,7 @@ def handle(response):
                                 # call the function stored in bot_commands with message
                                 bot_commands[command](message)
                         except BaseException as e:
+                            traceback.print_exc()
                             print(type(e))
                             print(e)
                             pass
