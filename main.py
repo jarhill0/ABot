@@ -334,6 +334,7 @@ def handle(response):
                                 # call the function stored in bot_commands with message
                                 bot_commands[command](message)
                         except BaseException as e:
+                            print(type(e))
                             print(e)
                             pass
 
