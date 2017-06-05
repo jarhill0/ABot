@@ -159,6 +159,7 @@ bot_commands["/stop"] = stop
 
 
 def launch(message):
+    current_chat = message['chat']['id']
     send_launch_message(next_launch, current_chat)
 
 
