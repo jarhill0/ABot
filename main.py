@@ -154,10 +154,17 @@ def stop(message):
                 'date'] < 15:
         sys.exit()
 
+        
+bot_commands["/stop"] = stop
+
+
+def launch(message):
     send_launch_message(next_launch, current_chat)
 
 
-bot_commands["/stop"] = stop
+bot_commands["/nextlaunch"] = launch
+
+
 
 
 def secretcommand(message):
