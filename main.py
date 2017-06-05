@@ -199,7 +199,7 @@ def wa(message):
 bot_commands["/wa"] = wa
 
 
-def reddit(message):
+def reddits(message):
     current_chat = message['chat']['id']
     message_text = message.get('text', None)
     chat_type = message['chat']['type']
@@ -249,7 +249,7 @@ def reddit(message):
             tg.send_photo(data)
 
 
-bot_commands["/reddit"] = reddit
+bot_commands["/reddit"] = reddits
 
 
 def frog(message):
