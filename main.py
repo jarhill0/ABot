@@ -256,7 +256,7 @@ bot_commands["/frog"] = frog
 bot_commands["/frogs"] = frog
 
 
-def choice(message):
+def choices(message):
     current_chat = message['chat']['id']
     orig_message_id = message['message_id']
     message_text = message.get('text', None)
@@ -274,7 +274,7 @@ def choice(message):
     tg.send_message(data)
 
 
-bot_commands["/choice"] = choice
+bot_commands["/choice"] = choices
 
 
 def bf(message):
