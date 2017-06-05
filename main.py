@@ -127,10 +127,9 @@ def redditposts(message):
     command_block = message_text[message_text.index('/redditposts'):]
     try:
         subreddit = command_block.split(' ')[1]
+        bot_message, posts_dict = reddit.hot_posts(subreddit, 5)
     except IndexError:
         bot_message = 'Specify a subreddit after /redditposts (e.g. /redditposts funny)'
-    else:
-        bot_message, posts_dict = reddit.hot_posts(subreddit, 5)
     finally:
         data = {'chat_id': current_chat,
                 'text': bot_message,
@@ -215,6 +214,7 @@ def reddit(message):
                 'disable_web_page_preview': True,
                 }
         tg.send_message(data)
+    else:
         if input_url.isdigit():
             valid_id, tentative_url = reddit.get_post_from_dict(current_chat,
                                                                 int(input_url))
