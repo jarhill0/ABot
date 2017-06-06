@@ -104,13 +104,33 @@ bot_commands["/help"] = help_
 
 
 def settings(message):
-    current_chat = message['chat']['id']
+    current_chat = message['from']['id']  # respond always in PM
     data = {'chat_id': current_chat,
-            'text': "At the moment, I have no settings. Sorry."}
+            'text': "Current settings:\n/redditlimit followed by a number to set limit of reddit posts displayed by /redditposts (example usage: /redditlimit 5)"}
     tg.send_message(data)
 
 
 bot_commands["/settings"] = settings
+
+
+def redditlimit(message):
+    from_id = message['from']['id']  # respond always in PM
+    message_text = message.get('text', None)
+    command_block = message_text[message_text.index('/redditlimit'):]
+    try:
+        limit = max(min(int(command_block.split(' ')[1]), 20), 1)
+    except (IndexError, ValueError):
+        bot_message = 'Specify a number after /redditlimit (e.g. /redditlimit 5)'
+    else:
+        reddit.set_redditposts_limit(from_id, limit)
+        bot_message = 'Limit set to %d.' % limit
+    finally:
+        data = {'chat_id': from_id,
+                'text': bot_message}
+        tg.send_message(data)
+
+
+bot_commands['/redditlimit'] = redditlimit
 
 
 def shrug(message):
@@ -127,9 +147,11 @@ def redditposts(message):
     current_chat = message['chat']['id']
     message_text = message.get('text', None)
     command_block = message_text[message_text.index('/redditposts'):]
+    from_id = message['from']['id']
+    num_posts = reddit.get_redditposts_limit(from_id)
     try:
         subreddit = command_block.split(' ')[1]
-        bot_message, posts_dict = reddit.hot_posts(subreddit, 5)
+        bot_message, posts_dict = reddit.hot_posts(subreddit, num_posts)
     except IndexError:
         bot_message = 'Specify a subreddit after /redditposts (e.g. /redditposts funny)'
     finally:
@@ -334,7 +356,7 @@ def handle(response):
                         try:
                             if command in bot_commands:
                                 # call the function stored in bot_commands with message
-                                bot_commands[command](message)
+                                bot_commands[command.lower()](message)
                         except BaseException as e:
                             traceback.print_exc()
                             print(type(e))
