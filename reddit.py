@@ -92,7 +92,7 @@ def get_post_from_dict(chat_id, post_id):
 def set_redditposts_limit(user_id, limit):
     global reddit_limits_dict
     reddit_limits_dict[user_id] = limit
-    with open(redditposts_path) as f:
+    with open(redditposts_path, 'w') as f:
         json.dump(reddit_limits_dict, f)
 
 
