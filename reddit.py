@@ -1,3 +1,6 @@
+import json
+import os
+
 import praw
 import prawcore
 
@@ -84,6 +87,9 @@ def get_post_from_dict(chat_id, post_id):
 def set_redditposts_limit(user_id, limit):
     global reddit_limits_dict
     reddit_limits_dict[user_id] = limit
+    path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data', 'redditlimit.json'))
+    with open(path) as f:
+        json.dump(reddit_limits_dict, f)
 
 
 def get_redditposts_limit(user_id):
