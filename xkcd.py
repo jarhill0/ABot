@@ -1,3 +1,4 @@
+import html
 import json
 
 import feedparser
@@ -48,7 +49,7 @@ def get_newest_comic():
     output['img_url'] = img_url[:img_url.index('"')]
 
     alt_text = summary[summary.index(' alt="') + 6:]
-    output['alt_text'] = alt_text[:alt_text.index('"')]
+    output['alt_text'] = html.unescape(alt_text[:alt_text.index('"')])
 
     return output
 
