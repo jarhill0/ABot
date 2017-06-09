@@ -1,8 +1,17 @@
+import json
+import os
+
 import praw
 import prawcore
 
 reddit = praw.Reddit('k8IA', user_agent='k8IA Telegram bot')
 reddit_posts_dict = dict()
+redditposts_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data', 'redditlimit.json'))
+try:
+    with open(redditposts_path, 'r') as f:
+        reddit_limits_dict = json.load(f)
+except FileNotFoundError:
+    reddit_limits_dict = dict()
 
 
 def hot_posts(subreddit, number):
@@ -78,6 +87,17 @@ def get_post_from_dict(chat_id, post_id):
             return True, None
         else:
             return True, post_url
+
+
+def set_redditposts_limit(user_id, limit):
+    global reddit_limits_dict
+    reddit_limits_dict[user_id] = limit
+    with open(redditposts_path, 'w') as f:
+        json.dump(reddit_limits_dict, f)
+
+
+def get_redditposts_limit(user_id):
+    return reddit_limits_dict.setdefault(user_id, 5)
 
 
 if __name__ == '__main__':
