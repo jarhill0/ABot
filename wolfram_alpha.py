@@ -1,6 +1,8 @@
 import wolframalpha
 
-wolframalphaClient = wolframalpha.Client("GG48T9-HA9P3QKQAU")
+import config
+
+wolframalphaClient = wolframalpha.Client(config.wa_token)
 
 
 def query_wa(args):
