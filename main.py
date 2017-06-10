@@ -143,6 +143,16 @@ def shrug(message):
 bot_commands["/shrug"] = shrug
 
 
+def lenny(message):
+    current_chat = message['chat']['id']
+    data = {'chat_id': current_chat,
+            'text': '(͡° ͜ʖ͡°)', }
+    tg.send_message(data)
+
+
+bot_commands['/lenny'] = lenny
+
+
 def redditposts(message):
     current_chat = message['chat']['id']
     message_text = message.get('text', None)
