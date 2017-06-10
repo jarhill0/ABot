@@ -2,3 +2,5 @@ token = '123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11'
 owner_un = 'my_username'
 a_group_id = -123456789
 owner_uns = ['owner_1', 'owner_2']
+wa_token = 'ABCDEF-HIJKLMNOPQ'
+reddit_username = 'my_username'
