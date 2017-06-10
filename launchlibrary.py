@@ -1,13 +1,16 @@
 import json
+import os
 import time
 
 import requests
 
-filepath = 'data/launches.json'
-current_time = time.time()
+import helpers
+
+filepath = os.path.join(helpers.folder_path(), 'data', 'launches.json')
 
 
 def filter_upcoming(launches):
+    current_time = time.time()
     later_launches = []
 
     for launch in launches:

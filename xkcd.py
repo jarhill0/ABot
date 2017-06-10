@@ -1,13 +1,17 @@
 import html
 import json
+import os
 
 import feedparser
 
 import config
+import helpers
+
+xkcd_data_filepath = os.path.join(helpers.folder_path(), 'data', 'xkcd.json')
 
 
 def get_submitted():
-    with open('data/xkcd.json', 'r') as f:
+    with open(xkcd_data_filepath, 'r') as f:
         submitted = json.load(f)
     return submitted
 
@@ -29,7 +33,7 @@ def check_update():
 
         submitted.append(new_comic['id'])
 
-        with open('data/xkcd.json', 'w') as f:
+        with open(xkcd_data_filepath, 'w') as f:
             json.dump(submitted, f)
 
         return (data_1, data_2)
