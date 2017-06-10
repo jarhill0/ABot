@@ -146,7 +146,7 @@ bot_commands["/shrug"] = shrug
 def lenny(message):
     current_chat = message['chat']['id']
     data = {'chat_id': current_chat,
-            'text': '(͡° ͜ʖ͡°)', }
+            'text': '( ͡° ͜ʖ ͡°)', }
     tg.send_message(data)
 
 
