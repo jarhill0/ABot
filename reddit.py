@@ -4,9 +4,12 @@ import os
 import praw
 import prawcore
 
-reddit = praw.Reddit('k8IA', user_agent='k8IA Telegram bot')
+import config
+import helpers
+
+reddit = praw.Reddit(config.reddit_username, user_agent='%s Telegram bot' % config.reddit_username)
 reddit_posts_dict = dict()
-redditposts_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data', 'redditlimit.json'))
+redditposts_path = os.path.join(helpers.folder_path(), 'data', 'redditlimit.json')
 try:
     with open(redditposts_path, 'r') as f:
         reddit_limits_dict = json.load(f)
