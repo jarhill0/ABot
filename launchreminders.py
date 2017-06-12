@@ -32,6 +32,7 @@ def set_launch_triggers(launch):
 
     scheduler = sched.scheduler(time.time, time.sleep)
     t = threading.Thread(target=scheduler.run)
+    t.daemon = True
 
     for key in alert_times.keys():
         scheduler.enterabs(alert_times[key], 1, send_automated_message, (launch, alert_times[key]))
