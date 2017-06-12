@@ -132,7 +132,7 @@ def xkcd_command(message):
 
     try:
         comic_num = int(command_block.split(' ')[1])
-    except ValueError:
+    except (ValueError, IndexError):
         comic = xkcd.getLatestComic()
     else:
         comic = xkcd.getComic(comic_num)
