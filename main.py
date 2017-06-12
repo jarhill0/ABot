@@ -56,6 +56,7 @@ bot_commands = {}
 
 
 def helloworld(message):
+    """Say hello."""
     current_chat = message['chat']['id']
     data = {'chat_id': current_chat,
             'text': 'Hello World!'}
@@ -66,6 +67,7 @@ bot_commands["/helloworld"] = helloworld
 
 
 def source(message):
+    """View source."""
     current_chat = message['chat']['id']
     data = {'chat_id': current_chat,
             'text': 'Inspect my insides! http://github.com/jarhill0/ABot'}
@@ -93,6 +95,7 @@ bot_commands["/start"] = start
 
 
 def help_(message):
+    """View list of commands."""
     current_chat = message['chat']['id']
     data = {'chat_id': current_chat,
             'text': "Commands:\n"
@@ -107,6 +110,7 @@ bot_commands["/help"] = help_
 
 
 def settings(message):
+    """View available settings."""
     current_chat = message['from']['id']  # respond always in PM
     data = {'chat_id': current_chat,
             'text': "Current settings:\n/redditlimit followed by a number to set limit of reddit posts displayed by"
@@ -118,6 +122,7 @@ bot_commands["/settings"] = settings
 
 
 def parable(message):
+    """Generate reassuring parable."""
     current_chat = message['chat']['id']
     data = {'chat_id': current_chat, 'text': text_gen.text_gen(1)}
     tg.send_message(data)
@@ -127,6 +132,7 @@ bot_commands['/parable'] = parable
 
 
 def xkcd_command(message):
+    """View latest xkcd comic, or view comic specified by number."""
     current_chat = message['chat']['id']
     message_text = message.get('text', None)
     command_block = message_text[message_text.index('/xkcd'):]
@@ -159,6 +165,7 @@ bot_commands['/xkcd'] = xkcd_command
 
 
 def redditlimit(message):
+    """Set limit for /redditposts."""
     from_id = message['from']['id']  # respond always in PM
     message_text = message.get('text', None)
     command_block = message_text[message_text.index('/redditlimit'):]
@@ -179,6 +186,7 @@ bot_commands['/redditlimit'] = redditlimit
 
 
 def shrug(message):
+    """¯\_(ツ)_/¯."""
     current_chat = message['chat']['id']
     data = {'chat_id': current_chat,
             'text': '¯\_(ツ)_/¯', }
@@ -189,6 +197,7 @@ bot_commands["/shrug"] = shrug
 
 
 def lenny(message):
+    """( ͡° ͜ʖ ͡°)."""
     current_chat = message['chat']['id']
     data = {'chat_id': current_chat,
             'text': '( ͡° ͜ʖ ͡°)', }
@@ -199,6 +208,7 @@ bot_commands['/lenny'] = lenny
 
 
 def redditposts(message):
+    """View posts from the specified subreddit."""
     current_chat = message['chat']['id']
     message_text = message.get('text', None)
     command_block = message_text[message_text.index('/redditposts'):]
@@ -239,6 +249,7 @@ bot_commands["/stop"] = stop
 
 
 def launch_(message):
+    """View information about the next SpaceX launch."""
     current_chat = message['chat']['id']
     send_launch_message(next_launch, current_chat)
 
@@ -259,6 +270,7 @@ bot_commands["/secretcommand"] = secretcommand
 
 
 def wa(message):
+    """Interpret statement with WolframAlpha."""
     current_chat = message['chat']['id']
     message_text = message.get('text', None)
     command_block = message_text[message_text.index('/wa') + 3:].strip()
@@ -280,6 +292,7 @@ bot_commands["/wa"] = wa
 
 
 def reddits(message):
+    """View Reddit post specified by link or number."""
     current_chat = message['chat']['id']
     message_text = message.get('text', None)
     chat_type = message['chat']['type']
@@ -333,6 +346,7 @@ bot_commands["/reddit"] = reddits
 
 
 def frog(message):
+    """View an image of a frog."""
     current_chat = message['chat']['id']
     image_url = rand_frog.main()
     data = {'chat_id': current_chat,
@@ -341,10 +355,10 @@ def frog(message):
 
 
 bot_commands["/frog"] = frog
-bot_commands["/frogs"] = frog
 
 
 def choices(message):
+    """Choose between two or more options, separated by a semicolon."""
     current_chat = message['chat']['id']
     orig_message_id = message['message_id']
     message_text = message.get('text', None)
@@ -366,6 +380,7 @@ bot_commands["/choice"] = choices
 
 
 def bf(message):
+    """Execute Brainfuck, including optional input after an optional semicolon."""
     current_chat = message['chat']['id']
     orig_message_id = message['message_id']
 
