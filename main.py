@@ -81,11 +81,7 @@ def start(message):
     current_chat = message['chat']['id']
     user = message['from']['first_name']
     bot_message = 'Hello %s! I am A Bot.' % user
-    bot_message += "\n\nHere's a list of my commands:" \
-                   "\n/redditposts [subreddit] - List 5 hot posts from /r/[subreddit]" \
-                   "\n/reddit [shortlink] - Get info on the linked Reddit post." \
-                   "\n/wa - Follow with a query to get information from WolframAlpha" \
-                   "\n/nextlaunch - Get information on the next SpaceX launch"
+    bot_message += "\n\nHere's a list of my commands:\n\n" + build_command_list(bot_commands)
     data = {'chat_id': current_chat,
             'text': bot_message, }
     tg.send_message(data)
@@ -98,11 +94,7 @@ def help_(message):
     """View list of commands."""
     current_chat = message['chat']['id']
     data = {'chat_id': current_chat,
-            'text': "Commands:\n"
-                    "\n/redditposts [subreddit] - List 5 hot posts from /r/[subreddit]"
-                    "\n/reddit [shortlink] - Get info on the linked Reddit post."
-                    "\n/wa - Follow with a query to get information from WolframAlpha"
-                    "\n/nextlaunch - Get information on the next SpaceX launch", }
+            'text': 'Commands:\n\n%s' % build_command_list(bot_commands), }
     tg.send_message(data)
 
 
