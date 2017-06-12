@@ -434,6 +434,20 @@ def handle(response):
                             pass
 
 
+def build_command_list(commands):
+    commands_list = []
+    for command in commands:
+        if commands[command].__doc__ is not None:
+            commands_list.append((command, commands[command].__doc__))
+
+    commands_list = sorted(commands_list)
+    return '\n'.join(['%s - %s' % (name, job) for name, job in commands_list])
+
+
+def test():
+    print(build_command_list(bot_commands))
+
+
 def send_launch_message(launch, chat_id):
     launch_time = launch['wsstamp']
     human_local_launch_time = datetime.datetime.fromtimestamp(launch_time).strftime('%B %d, %Y %H:%M:%S')
