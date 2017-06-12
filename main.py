@@ -130,9 +130,11 @@ def xkcd_command(message):
     command_block = message_text[message_text.index('/xkcd'):]
 
     try:
-        comic_num = int(command_block.split(' ')[1])
-    except (ValueError, IndexError):
-        if command_block.split(' ')[1].lower() in ['rand', 'random']:
+        comic_num = command_block.split(' ')[1]
+    except (ValueError, IndexError) as e:
+        if type(e) is IndexError:
+            comic = xkcd.getLatestComic()
+        elif command_block.split(' ')[1].lower() in ['rand', 'random']:
             comic = xkcd.getRandomComic()
         else:
             comic = xkcd.getLatestComic()
