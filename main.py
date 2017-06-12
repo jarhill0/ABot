@@ -3,15 +3,17 @@ import sys
 import time
 import traceback
 
+import xkcd
+
 import brainfuck_interpreter
 import choice
 import config
 import launchlibrary
 import launchreminders
+import new_xkcd
 import rand_frog
 import reddit
 import text_gen
-import xkcd
 from telegram import Telegram, user_name
 from wolfram_alpha import query_wa
 
@@ -43,7 +45,7 @@ def main():
             handle(response)
         if time.time() - 60 * 60 > last_time:
             last_time = time.time()
-            new_comic = xkcd.check_update()
+            new_comic = new_xkcd.check_update()
             if new_comic is not None:
                 tg.send_photo(new_comic[0])
                 tg.send_message(new_comic[1])
@@ -121,6 +123,35 @@ def parable(message):
 
 
 bot_commands['/parable'] = parable
+
+
+def xkcd_command(message):
+    current_chat = message['chat']['id']
+    message_text = message.get('text', None)
+    command_block = message_text[message_text.index('/xkcd'):]
+
+    try:
+        comic_num = int(command_block.split(' ')[1])
+    except ValueError:
+        comic = xkcd.getLatestComic()
+    else:
+        comic = xkcd.getComic(comic_num)
+
+    if comic.number != -1:
+        title = comic.getTitle()[:200]
+        alt_text = comic.getAltText()
+        img_url = comic.getImageLink()
+
+        data = {'chat_id': current_chat, 'caption': title, 'photo': img_url}
+        tg.send_photo(data)
+        data = {'chat_id': current_chat, 'text': alt_text}
+        tg.send_message(data)
+    else:
+        data = {'chat_id': current_chat, 'text': '%d is not a valid comic number.' % comic_num}
+        tg.send_message(data)
+
+
+bot_commands['/xkcd'] = xkcd_command
 
 
 def redditlimit(message):
