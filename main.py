@@ -10,6 +10,7 @@ import launchlibrary
 import launchreminders
 import rand_frog
 import reddit
+import text_gen
 import xkcd
 from telegram import Telegram, user_name
 from wolfram_alpha import query_wa
@@ -111,6 +112,15 @@ def settings(message):
 
 
 bot_commands["/settings"] = settings
+
+
+def parable(message):
+    current_chat = message['chat']['id']
+    data = {'chat_id': current_chat, 'text': text_gen.text_gen(1)}
+    tg.send_message(data)
+
+
+bot_commands['/parable'] = parable
 
 
 def redditlimit(message):
