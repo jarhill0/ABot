@@ -109,7 +109,8 @@ bot_commands["/help"] = help_
 def settings(message):
     current_chat = message['from']['id']  # respond always in PM
     data = {'chat_id': current_chat,
-            'text': "Current settings:\n/redditlimit followed by a number to set limit of reddit posts displayed by /redditposts (example usage: /redditlimit 5)"}
+            'text': "Current settings:\n/redditlimit followed by a number to set limit of reddit posts displayed by"
+                    "/redditposts (example usage: /redditlimit 5)"}
     tg.send_message(data)
 
 
