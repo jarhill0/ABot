@@ -141,7 +141,7 @@ def xkcd_command(message):
         comic = xkcd.getComic(comic_num)
 
     if comic.number != -1:
-        title = comic.getTitle()[:200]
+        title = (comic.getTitle() + ' (#%d)' % comic.number)[:200]
         alt_text = comic.getAltText()
         img_url = comic.getImageLink()
 
