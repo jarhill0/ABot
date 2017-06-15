@@ -127,7 +127,7 @@ def xkcd_command(message):
     """View latest xkcd comic, or view comic specified by number."""
     current_chat = message['chat']['id']
     message_text = message.get('text', None)
-    command_block = message_text[message_text.index('/xkcd'):]
+    command_block = message_text[message_text.lower().index('/xkcd'):]
 
     try:
         comic_num = int(command_block.split(' ')[1])
@@ -162,7 +162,7 @@ def redditlimit(message):
     """Set limit for /redditposts."""
     from_id = message['from']['id']  # respond always in PM
     message_text = message.get('text', None)
-    command_block = message_text[message_text.index('/redditlimit'):]
+    command_block = message_text[message_text.lower().index('/redditlimit'):]
     try:
         limit = max(min(int(command_block.split(' ')[1]), 20), 1)
     except (IndexError, ValueError):
@@ -205,7 +205,7 @@ def redditposts(message):
     """View posts from the specified subreddit."""
     current_chat = message['chat']['id']
     message_text = message.get('text', None)
-    command_block = message_text[message_text.index('/redditposts'):]
+    command_block = message_text[message_text.lower().index('/redditposts'):]
     from_id = message['from']['id']
     num_posts = reddit.get_redditposts_limit(from_id)
     try:
@@ -267,7 +267,7 @@ def wa(message):
     """Interpret statement with WolframAlpha."""
     current_chat = message['chat']['id']
     message_text = message.get('text', None)
-    command_block = message_text[message_text.index('/wa') + 3:].strip()
+    command_block = message_text[message_text.lower().index('/wa') + 3:].strip()
     if command_block == '':
         bot_message = 'Specify a query after /wa (e.g. /wa calories in a bagel)'
     else:
@@ -290,7 +290,7 @@ def reddits(message):
     current_chat = message['chat']['id']
     message_text = message.get('text', None)
     chat_type = message['chat']['type']
-    command_block = message_text[message_text.index('/reddit'):]
+    command_block = message_text[message_text.lower().index('/reddit'):]
 
     try:
         input_url = command_block.split(' ')[1]
@@ -356,7 +356,7 @@ def choices(message):
     current_chat = message['chat']['id']
     orig_message_id = message['message_id']
     message_text = message.get('text', None)
-    command_block = message_text[message_text.index('/choice') + 8:]
+    command_block = message_text[message_text.lower().index('/choice') + 8:]
     if ';' not in command_block:
         data = {'chat_id': current_chat,
                 'text': 'List two or more options separated by a semicolon.',
@@ -377,7 +377,7 @@ def bf(message):
     orig_message_id = message['message_id']
 
     message_text = message.get('text', None)
-    command_block = message_text[message_text.index('/bf') + 3:]
+    command_block = message_text[message_text.lower().index('/bf') + 3:]
     input_ = ''
     if ';' in command_block:
         input_ = command_block[command_block.index(';') + 1:]
