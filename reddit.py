@@ -100,8 +100,4 @@ def set_redditposts_limit(user_id, limit):
 
 
 def get_redditposts_limit(user_id):
-    print(user_id)
-    print(type(user_id))
-    for key in reddit_limits_dict.keys():
-        print(key, type(key))
     return reddit_limits_dict.setdefault(str(user_id), 5)
