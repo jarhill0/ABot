@@ -426,7 +426,7 @@ def handle(response):
                 for command in bot_commands_in_message:
                     if not tg.is_limited(current_chat):
                         try:
-                            if command in bot_commands:
+                            if command.lower() in bot_commands:
                                 # call the function stored in bot_commands with message
                                 bot_commands[command.lower()](message)
                         except BaseException as e:
