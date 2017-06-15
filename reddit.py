@@ -94,7 +94,7 @@ def get_post_from_dict(chat_id, post_id):
 
 def set_redditposts_limit(user_id, limit):
     global reddit_limits_dict
-    reddit_limits_dict[user_id] = limit
+    reddit_limits_dict[str(user_id)] = limit
     with open(redditposts_path, 'w') as fi:
         json.dump(reddit_limits_dict, fi)
 
@@ -104,4 +104,4 @@ def get_redditposts_limit(user_id):
     print(type(user_id))
     for key in reddit_limits_dict.keys():
         print(key, type(key))
-    return reddit_limits_dict.setdefault(user_id, 5)
+    return reddit_limits_dict.setdefault(str(user_id), 5)
