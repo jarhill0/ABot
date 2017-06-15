@@ -208,6 +208,7 @@ def redditposts(message):
     command_block = message_text[message_text.index('/redditposts'):]
     from_id = message['from']['id']
     num_posts = reddit.get_redditposts_limit(from_id)
+    print(num_posts)
     try:
         subreddit = command_block.split(' ')[1]
         bot_message, posts_dict = reddit.hot_posts(subreddit, num_posts)

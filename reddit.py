@@ -15,7 +15,6 @@ try:
         reddit_limits_dict = json.load(f)
 except FileNotFoundError:
     reddit_limits_dict = dict()
-print(reddit_limits_dict)
 
 
 def hot_posts(subreddit, number):
