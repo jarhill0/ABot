@@ -15,6 +15,7 @@ try:
         reddit_limits_dict = json.load(f)
 except FileNotFoundError:
     reddit_limits_dict = dict()
+print(reddit_limits_dict)
 
 
 def hot_posts(subreddit, number):
@@ -65,14 +66,14 @@ def post_proxy(link, chat_type):
     if post.is_self:
         is_image = False
         output += '\n\n---\n\n' + post.selftext
-        return (output, is_image, None)
+        return output, is_image, None
     elif post.url[:17] in ['https://i.redd.it', 'http://i.redd.it/']:
         is_image = True
-        return (output, is_image, post.url)
+        return output, is_image, post.url
     else:
         is_image = False
         output += '\n\n' + post.url
-        return (output, is_image, None)
+        return output, is_image, None
 
 
 def add_posts_to_dict(chat_id, posts):
@@ -95,14 +96,9 @@ def get_post_from_dict(chat_id, post_id):
 def set_redditposts_limit(user_id, limit):
     global reddit_limits_dict
     reddit_limits_dict[user_id] = limit
-    with open(redditposts_path, 'w') as f:
-        json.dump(reddit_limits_dict, f)
+    with open(redditposts_path, 'w') as fi:
+        json.dump(reddit_limits_dict, fi)
 
 
 def get_redditposts_limit(user_id):
     return reddit_limits_dict.setdefault(user_id, 5)
-
-
-if __name__ == '__main__':
-    # quick test
-    post_proxy('https://www.reddit.com/r/pics/comments/6dkkea/both_my_mom_and_i_are_graduating_today/')
