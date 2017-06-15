@@ -357,7 +357,6 @@ def choices(message):
     orig_message_id = message['message_id']
     message_text = message.get('text', None)
     command_block = message_text[message_text.index('/choice') + 8:]
-    print(command_block)
     if ';' not in command_block:
         data = {'chat_id': current_chat,
                 'text': 'List two or more options separated by a semicolon.',
@@ -366,7 +365,6 @@ def choices(message):
         data = {'chat_id': current_chat,
                 'text': choice.choice(command_block) + '\n\n(chosen for ' + user_name(
                     message['from']) + ')', }
-    print(data)
     tg.send_message(data)
 
 
