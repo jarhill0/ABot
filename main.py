@@ -410,7 +410,7 @@ def myscore(message):
     orig_message_id = message['message_id']
     message_text = message.get('text', None)
     try:
-        change_input = message_text[message_text.lower().index('/choice'):].split(' ')[1]
+        change_input = message_text[message_text.lower().index('/myscore'):].split(' ')[1]
     except IndexError:
         bot_message = 'Your score is %d.' % scores.get_score(from_id)
     else:
