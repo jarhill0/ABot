@@ -13,6 +13,7 @@ import launchreminders
 import new_xkcd
 import rand_frog
 import reddit
+import scores
 import text_gen
 from telegram import Telegram, user_name
 from wolfram_alpha import query_wa
@@ -400,6 +401,41 @@ def my_id(message):
 
 
 bot_commands['/myid'] = my_id
+
+
+def myscore(message):
+    """View or change your score."""
+    current_chat = message['chat']['id']
+    from_id = str(message['from']['id'])
+    orig_message_id = message['message_id']
+    message_text = message.get('text', None)
+    try:
+        change_input = message_text[message_text.lower().index('/choice'):].split(' ')[1]
+    except IndexError:
+        bot_message = 'Your score is %d.' % scores.get_score(from_id)
+    else:
+        if change_input[0] not in ['+', '-']:
+            bot_message = 'Your score is %d. To change it, follow /myscore with a number that starts ' \
+                          'with "+" or "-".' % scores.get_score(from_id)
+        else:
+            try:
+                change = int(change_input)
+            except ValueError:
+                bot_message = 'Change value should be an integer that starts with "+" or "-".'
+            else:
+                if abs(change) > 1000:
+                    bot_message = 'Absolute change value should be no greater than 1000.'
+                else:
+                    scores.change_score(from_id, change)
+                    bot_message = 'Your score has been updated to %d.' % scores.get_score(from_id)
+
+    data = {'chat_id': current_chat,
+            'text': bot_message,
+            'reply_to_message_id': orig_message_id}
+    tg.send_message(data)
+
+
+bot_commands['/myscore'] = myscore
 
 
 def handle(response):
