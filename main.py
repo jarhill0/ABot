@@ -337,6 +337,7 @@ def reddits(message):
                         text = text[:199] + '…'
                     data['caption'] = text
                     tg.send_photo(data)
+            return
 
         else:
             url = input_url
