@@ -304,8 +304,7 @@ def reddits(message):
         tg.send_message(data)
     else:
         if input_url.isdigit():
-            valid_id, tentative_url = reddit.get_post_from_dict(current_chat,
-                                                                int(input_url))
+            valid_id, tentative_url = reddit.get_post_from_dict(current_chat, int(input_url))
             if valid_id and tentative_url is not None:
                 url = tentative_url
             else:
@@ -318,6 +317,27 @@ def reddits(message):
                         'disable_web_page_preview': True
                         }
                 tg.send_message(data)
+        elif input_url == 'all' and chat_type == 'private':
+            for i in range(1, 21):
+                valid_id, tentative_url = reddit.get_post_from_dict(current_chat, int(input_url))
+                if valid_id and tentative_url is not None:
+                    url = tentative_url
+                text, is_image, image_url = reddit.post_proxy(url, chat_type)
+                if not is_image:
+                    data = {'chat_id': current_chat,
+                            'text': text,
+                            'disable_web_page_preview': False,
+                            }
+                    tg.send_message(data)
+                else:
+                    data = {'chat_id': current_chat,
+                            'photo': image_url
+                            }
+                    if len(text) >= 200:
+                        text = text[:199] + '…'
+                    data['caption'] = text
+                    tg.send_photo(data)
+
         else:
             url = input_url
         text, is_image, image_url = reddit.post_proxy(url, chat_type)
