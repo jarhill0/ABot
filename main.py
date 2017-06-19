@@ -318,7 +318,7 @@ def reddits(message):
                         }
                 tg.send_message(data)
         elif input_url == 'all' and chat_type == 'private':
-            for i in range(1, 21):
+            for i in range(1, len(reddit.reddit_limits_dict[current_chat])+1):
                 valid_id, tentative_url = reddit.get_post_from_dict(current_chat, i)
                 if valid_id and tentative_url is not None:
                     url = tentative_url
