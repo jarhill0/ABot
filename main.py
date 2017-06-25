@@ -40,8 +40,13 @@ def main():
 
     global tg, next_launch
     tg = Telegram(config.token)
-    next_launch = launchreminders.get_next_launch()
-    launchreminders.set_launch_triggers(next_launch)
+    try:
+        next_launch = launchreminders.get_next_launch()
+    except IndexError:
+        # there is no next launch
+        pass
+    else:
+        launchreminders.set_launch_triggers(next_launch)
     last_time = time.time() - (60 * 61)
 
     while True:
