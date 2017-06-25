@@ -26,8 +26,13 @@ def restart():
     time.sleep(10)
     global next_launch
     launchlibrary.update_json_on_disk()
-    next_launch = launchreminders.get_next_launch()
-    launchreminders.set_launch_triggers(next_launch)
+    try:
+        next_launch = launchreminders.get_next_launch()
+    except IndexError:
+        # there is no next launch
+        pass
+    else:
+        launchreminders.set_launch_triggers(next_launch)
 
 
 def main():
@@ -318,7 +323,7 @@ def reddits(message):
                         }
                 tg.send_message(data)
         elif input_url == 'all' and chat_type == 'private':
-            for i in range(1, len(reddit.reddit_posts_dict[current_chat])+1):
+            for i in range(1, len(reddit.reddit_posts_dict[current_chat]) + 1):
                 valid_id, tentative_url = reddit.get_post_from_dict(current_chat, i)
                 if valid_id and tentative_url is not None:
                     url = tentative_url
