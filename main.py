@@ -375,15 +375,16 @@ def choices(message):
     current_chat = message['chat']['id']
     orig_message_id = message['message_id']
     message_text = message.get('text', None)
-    command_block = message_text[message_text.lower().index('/choice') + 8:]
-    if ';' not in command_block:
+    choice_regex = re.compile(r'/choice(?:@a_group_bot)?(?:\s(.+))?', re.I)
+    command_opt = choice_regex.search(message_text).group(1)
+
+    if command_opt is None or ';' not in command_opt:
         data = {'chat_id': current_chat,
                 'text': 'List two or more options separated by a semicolon.',
                 'reply_to_message_id': orig_message_id}
     else:
         data = {'chat_id': current_chat,
-                'text': choice.choice(command_block) + '\n\n(chosen for ' + user_name(
-                    message['from']) + ')', }
+                'text': choice.choice(command_opt) + '\n\n(chosen for %s)' % user_name(message['from'])}
     tg.send_message(data)
 
 
