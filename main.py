@@ -138,7 +138,7 @@ def xkcd_command(message):
     """View latest xkcd comic, or view comic specified by number."""
     current_chat = message['chat']['id']
     message_text = message.get('text', None).lower()
-    xkcd_regex = re.compile(r'/xkcd(?:@a_group_bot)?(?:\s(\d+|rand(?:om)?))?(?:\s|$)', re.I)
+    xkcd_regex = re.compile(r'/xkcd(?:@a_group_bot)?(?:\s(\d+|rand(?:om)?))?(?:\s|$)')
     command_opt = xkcd_regex.search(message_text).group(1)
 
     if command_opt is None:
@@ -169,7 +169,7 @@ def redditlimit(message):
     """Set limit for /redditposts."""
     from_id = message['from']['id']  # respond always in PM
     message_text = message.get('text', None).lower()
-    limit_regex = re.compile(r'/redditlimit(?:@a_group_bot)?(?:\s(\d+))?(?:\s|$)', re.I)
+    limit_regex = re.compile(r'/redditlimit(?:@a_group_bot)?(?:\s(\d+))?(?:\s|$)')
     command_opt = limit_regex.search(message_text).group(1)
 
     if command_opt is None:
@@ -212,7 +212,7 @@ def redditposts(message):
     """View posts from the specified subreddit."""
     current_chat = message['chat']['id']
     message_text = message.get('text', None).lower()
-    posts_regex = re.compile(r'/redditposts(?:@a_group_bot)?(?:\s(\w+))?(?:\s|$)', re.I)
+    posts_regex = re.compile(r'/redditposts(?:@a_group_bot)?(?:\s(\w+))?(?:\s|$)')
     command_opt = posts_regex.search(message_text).group(1)
 
     from_id = message['from']['id']
