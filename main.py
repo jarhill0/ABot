@@ -1,4 +1,5 @@
 import datetime
+import re
 import sys
 import time
 import traceback
@@ -137,20 +138,17 @@ bot_commands['/parable'] = parable
 def xkcd_command(message):
     """View latest xkcd comic, or view comic specified by number."""
     current_chat = message['chat']['id']
-    message_text = message.get('text', None)
-    command_block = message_text[message_text.lower().index('/xkcd'):]
+    message_text = message.get('text', None).lower()
+    xkcd_regex = re.compile(r'/xkcd\s?(\d+|rand(om)?)?(\s|$)', re.I)
+    # command_block = message_text[message_text.lower().index('/xkcd'):]
+    command_opt = xkcd_regex.search(message_text).group(1)
 
-    try:
-        comic_num = int(command_block.split(' ')[1])
-    except (ValueError, IndexError) as e:
-        if type(e) is IndexError:
-            comic = xkcd.getLatestComic()
-        elif command_block.split(' ')[1].lower() in ['rand', 'random']:
-            comic = xkcd.getRandomComic()
-        else:
-            comic = xkcd.getLatestComic()
+    if command_opt is None:
+        comic = xkcd.getLatestComic()
+    elif command_opt.startswith('rand'):
+        comic = xkcd.getRandomComic()
     else:
-        comic = xkcd.getComic(comic_num)
+        comic = xkcd.getComic(int(command_opt))
 
     if comic.number != -1:
         title = (comic.getTitle() + ' (#%d)' % comic.number)[:200]
@@ -162,7 +160,7 @@ def xkcd_command(message):
         data = {'chat_id': current_chat, 'text': alt_text}
         tg.send_message(data)
     else:
-        data = {'chat_id': current_chat, 'text': '%d is not a valid comic number.' % comic_num}
+        data = {'chat_id': current_chat, 'text': '%s is not a valid comic number.' % command_opt}
         tg.send_message(data)
 
 
