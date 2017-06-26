@@ -139,7 +139,7 @@ def xkcd_command(message):
     """View latest xkcd comic, or view comic specified by number."""
     current_chat = message['chat']['id']
     message_text = message.get('text', None).lower()
-    xkcd_regex = re.compile(r'/xkcd\s?(\d+|rand(om)?)?(\s|$)', re.I)
+    xkcd_regex = re.compile(r'/xkcd(?:@a_group_bot)?\s?(\d+|rand(?:om)?)?(?:\s|$)', re.I)
     command_opt = xkcd_regex.search(message_text).group(1)
 
     if command_opt is None:
