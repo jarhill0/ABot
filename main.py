@@ -212,28 +212,29 @@ bot_commands['/lenny'] = lenny
 def redditposts(message):
     """View posts from the specified subreddit."""
     current_chat = message['chat']['id']
-    message_text = message.get('text', None)
-    command_block = message_text[message_text.lower().index('/redditposts'):]
+    message_text = message.get('text', None).lower()
+    posts_regex = re.compile(r'/redditposts(?:@a_group_bot)?(?:\s(\w+))?(?:\s|$)', re.I)
+    command_opt = posts_regex.search(message_text).group(1)
+
     from_id = message['from']['id']
     num_posts = reddit.get_redditposts_limit(from_id)
-    try:
-        subreddit = command_block.split(' ')[1]
-        bot_message, posts_dict = reddit.hot_posts(subreddit, num_posts)
-    except IndexError:
+    if command_opt is None:
         bot_message = 'Specify a subreddit after /redditposts (e.g. /redditposts funny)'
-    finally:
+    else:
+        subreddit = command_opt
+        bot_message, posts_dict = reddit.hot_posts(subreddit, num_posts)
+    # noinspection PyUnboundLocalVariable
+    data = {'chat_id': current_chat,
+            'text': bot_message,
+            'disable_web_page_preview': True}
+    tg.send_message(data)
+    try:
         # noinspection PyUnboundLocalVariable
-        data = {'chat_id': current_chat,
-                'text': bot_message,
-                'disable_web_page_preview': True}
-        tg.send_message(data)
-        try:
+        if posts_dict is not None:
             # noinspection PyUnboundLocalVariable
-            if posts_dict is not None:
-                # noinspection PyUnboundLocalVariable
-                reddit.add_posts_to_dict(current_chat, posts_dict)
-        except NameError:
-            pass
+            reddit.add_posts_to_dict(current_chat, posts_dict)
+    except NameError:
+        pass
 
 
 bot_commands["/redditposts"] = redditposts
