@@ -412,14 +412,7 @@ def bf(message):
 bot_commands["/bf"] = bf
 
 
-def my_id(message):
-    current_chat = message['chat']['id']
-    from_id = message['from']['id']
-    data = {'chat_id': current_chat, 'text': str(from_id)}
-    tg.send_message(data)
 
-
-bot_commands['/myid'] = my_id
 
 
 def myscore(message):
