@@ -1,6 +1,5 @@
 import datetime
 import re
-import sys
 import time
 import traceback
 
@@ -238,17 +237,6 @@ def redditposts(message):
 
 
 bot_commands["/redditposts"] = redditposts
-
-
-def stop(message):
-    username = message['from'].get('username', None)
-    if (username == config.owner_un or username in config.owner_uns) and time.time() - \
-            message[
-                'date'] < 15:
-        sys.exit()
-
-
-bot_commands["/stop"] = stop
 
 
 def launch_(message):
