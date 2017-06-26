@@ -263,16 +263,18 @@ bot_commands["/secretcommand"] = secretcommand
 def wa(message):
     """Interpret statement with WolframAlpha."""
     current_chat = message['chat']['id']
-    message_text = message.get('text', None)
-    command_block = message_text[message_text.lower().index('/wa') + 3:].strip()
-    if command_block == '':
+    message_text = message.get('text', None).lower()
+    wa_regex = re.compile(r'/wa(?:@a_group_bot)?(?:\s(.+))?')
+    command_opt = wa_regex.search(message_text).group(1)
+    if command_opt is None:
         bot_message = 'Specify a query after /wa (e.g. /wa calories in a bagel)'
     else:
         # noinspection PyBroadException
         try:
-            bot_message = query_wa(command_block)
+            bot_message = query_wa(command_opt)
         except:
             bot_message = 'Error processing query.'
+
     data = {'chat_id': current_chat,
             'text': bot_message,
             'parse_mode': 'Markdown'}
