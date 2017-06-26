@@ -31,7 +31,6 @@ class Telegram:
             datae.append(temp)
         datae.append(data)
 
-
         for data_ in datae:
             for i in range(5):
                 response = json.loads(requests.post(self.url + 'sendMessage', data=data_).content.decode('utf-8'))
