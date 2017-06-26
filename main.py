@@ -397,12 +397,16 @@ def bf(message):
     orig_message_id = message['message_id']
 
     message_text = message.get('text', None)
-    command_block = message_text[message_text.lower().index('/bf') + 3:]
-    input_ = ''
-    if ';' in command_block:
-        input_ = command_block[command_block.index(';') + 1:]
-        command_block = command_block[:command_block.index(';')]
-    response = brainfuck_interpreter.main(command_block, input_=input_)
+    bf_regex = re.compile(r'/bf(?:@a_group_bot)?(?:\s([\w+-\.,<>\[\]]+))?;?(.+)?(?:\s|$)?', re.I)
+    results = bf_regex.search(message_text)
+    code = results.group(1)
+    user_input = results.group(2)
+
+    if user_input is None:
+        input_ = ''
+    else:
+        input_ = user_input
+    response = brainfuck_interpreter.main(code, input_=input_)
     data = {'chat_id': current_chat,
             'text': response,
             'reply_to_message_id': orig_message_id}
@@ -410,9 +414,6 @@ def bf(message):
 
 
 bot_commands["/bf"] = bf
-
-
-
 
 
 def myscore(message):
