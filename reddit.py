@@ -20,16 +20,15 @@ except FileNotFoundError:
 def hot_posts(subreddit, number):
     if number < 1:
         raise ValueError('More than 0 posts must be requested.')
-
-    body = 'Hot posts from /r/%s:\n\n' % subreddit
-    num = 1
-    num_stickies = 0
-
     try:
         reddit.subreddit(subreddit).fullname
     except (prawcore.Forbidden, prawcore.NotFound, prawcore.Redirect, prawcore.BadRequest, AttributeError, TypeError,
             AssertionError):
-        return 'Error. Could not access /r/%s.' % subreddit, None
+        return 'Error. Could not access r/%s.' % subreddit, None
+
+    body = 'Hot posts from %s:\n\n' % reddit.subreddit(subreddit).display_name_prefixed
+    num = 1
+    num_stickies = 0
 
     for i in range(1, 3):
         try:
