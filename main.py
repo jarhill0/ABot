@@ -169,19 +169,19 @@ bot_commands['/xkcd'] = xkcd_command
 def redditlimit(message):
     """Set limit for /redditposts."""
     from_id = message['from']['id']  # respond always in PM
-    message_text = message.get('text', None)
-    command_block = message_text[message_text.lower().index('/redditlimit'):]
-    try:
-        limit = max(min(int(command_block.split(' ')[1]), 20), 1)
-    except (IndexError, ValueError):
+    message_text = message.get('text', None).lower()
+    limit_regex = re.compile(r'/redditlimit(?:@a_group_bot)?\s?(\d+)?(?:\s|$)', re.I)
+    command_opt = limit_regex.search(message_text).group(1)
+
+    if command_opt is None:
         bot_message = 'Specify a number after /redditlimit (e.g. /redditlimit 5)'
     else:
+        limit = min(max(int(command_opt), 1), 20)
         reddit.set_redditposts_limit(from_id, limit)
         bot_message = 'Limit set to %d.' % limit
-    finally:
-        data = {'chat_id': from_id,
-                'text': bot_message}
-        tg.send_message(data)
+    data = {'chat_id': from_id,
+            'text': bot_message}
+    tg.send_message(data)
 
 
 bot_commands['/redditlimit'] = redditlimit
