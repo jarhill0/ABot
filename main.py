@@ -140,7 +140,6 @@ def xkcd_command(message):
     current_chat = message['chat']['id']
     message_text = message.get('text', None).lower()
     xkcd_regex = re.compile(r'/xkcd\s?(\d+|rand(om)?)?(\s|$)', re.I)
-    # command_block = message_text[message_text.lower().index('/xkcd'):]
     command_opt = xkcd_regex.search(message_text).group(1)
 
     if command_opt is None:
