@@ -287,13 +287,12 @@ bot_commands["/wa"] = wa
 def reddits(message):
     """View Reddit post specified by link or number."""
     current_chat = message['chat']['id']
-    message_text = message.get('text', None)
+    message_text = message.get('text', None).lower()
     chat_type = message['chat']['type']
-    command_block = message_text[message_text.lower().index('/reddit'):]
+    reddit_regex = re.compile(r'/reddit(?:@a_group_bot)?(?:\s(\d+|all|http(?:s)?://[a-z0-9:/\.\?=]*))?(?:\s|$)')
+    command_opt = reddit_regex.search(message_text).group(1)
 
-    try:
-        input_url = command_block.split(' ')[1]
-    except IndexError:
+    if command_opt is None:
         bot_message = 'Specify a url after /reddit (e.g. /reddit https://redd.it/robin)'
         data = {'chat_id': current_chat,
                 'text': bot_message,
@@ -301,8 +300,8 @@ def reddits(message):
                 }
         tg.send_message(data)
     else:
-        if input_url.isdigit():
-            valid_id, tentative_url = reddit.get_post_from_dict(current_chat, int(input_url))
+        if command_opt.isdigit():
+            valid_id, tentative_url = reddit.get_post_from_dict(current_chat, int(command_opt))
             if valid_id and tentative_url is not None:
                 url = tentative_url
             else:
@@ -315,7 +314,7 @@ def reddits(message):
                         'disable_web_page_preview': True
                         }
                 tg.send_message(data)
-        elif input_url == 'all' and chat_type == 'private':
+        elif command_opt == 'all' and chat_type == 'private':
             for i in range(1, len(reddit.reddit_posts_dict[current_chat]) + 1):
                 valid_id, tentative_url = reddit.get_post_from_dict(current_chat, i)
                 if valid_id and tentative_url is not None:
@@ -338,7 +337,7 @@ def reddits(message):
             return
 
         else:
-            url = input_url
+            url = command_opt
         text, is_image, image_url = reddit.post_proxy(url, chat_type)
         if not is_image:
             data = {'chat_id': current_chat,
