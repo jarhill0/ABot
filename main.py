@@ -445,6 +445,34 @@ def myscore(message):
 bot_commands['/myscore'] = myscore
 
 
+def redditguessing(message, nsfw=False):
+    """View posts from a random subreddit without the name and try to guess where they're from."""
+    current_chat = message['chat']['id']
+    num_posts = 6
+
+    subreddit = 'random' if not nsfw else 'randnsfw'
+    bot_message, posts_dict = reddit.hot_posts(subreddit, num_posts)
+    data = {'chat_id': current_chat,
+            'text': bot_message,
+            'disable_web_page_preview': True}
+    tg.send_message(data)
+    try:
+        if posts_dict is not None:
+            reddit.add_posts_to_dict(current_chat, posts_dict)
+    except NameError:
+        pass
+
+
+bot_commands['/redditguess'] = redditguessing
+
+
+def redditguessing_nsfw(message):
+    redditguessing(message, nsfw=True)
+
+
+bot_commands['/redditguessnsfw'] = redditguessing_nsfw
+
+
 def handle(response):
     for item in response['result']:
         if 'message' in item.keys():
