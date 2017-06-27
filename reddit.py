@@ -26,7 +26,9 @@ def hot_posts(subreddit, number):
             AssertionError):
         return 'Error. Could not access r/%s.' % subreddit, None
 
-    body = 'Hot posts from %s:\n\n' % reddit.subreddit(subreddit).display_name_prefixed
+    sub = reddit.subreddit(subreddit)
+
+    body = 'Hot posts from %s:\n\n' % sub.display_name_prefixed
     num = 1
     num_stickies = 0
 
@@ -39,7 +41,7 @@ def hot_posts(subreddit, number):
             num_stickies = i
 
     posts_dict = dict()
-    for true_count, submission in enumerate(reddit.subreddit(subreddit).hot(limit=number + num_stickies)):
+    for true_count, submission in enumerate(sub.hot(limit=number + num_stickies)):
         if true_count >= num_stickies:
             body += '#%d: %s - %s\n' % (num, submission.title, submission.shortlink)
             posts_dict[num] = submission.shortlink
