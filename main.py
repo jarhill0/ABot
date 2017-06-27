@@ -451,7 +451,7 @@ def redditguessing(message, nsfw=False):
     num_posts = 6
 
     subreddit = 'random' if not nsfw else 'randnsfw'
-    bot_message, posts_dict = reddit.hot_posts(subreddit, num_posts)
+    bot_message, posts_dict = reddit.hot_posts(subreddit, num_posts, guessing_game=True)
     data = {'chat_id': current_chat,
             'text': bot_message,
             'disable_web_page_preview': True}

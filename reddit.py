@@ -17,7 +17,7 @@ except FileNotFoundError:
     reddit_limits_dict = dict()
 
 
-def hot_posts(subreddit, number):
+def hot_posts(subreddit, number, *, guessing_game=False):
     if number < 1:
         raise ValueError('More than 0 posts must be requested.')
     try:
@@ -29,6 +29,8 @@ def hot_posts(subreddit, number):
     sub = reddit.subreddit(subreddit)
 
     body = 'Hot posts from %s:\n\n' % sub.display_name_prefixed
+    if guessing_game:
+        body = 'Hot posts from a random subreddit. Take a guess!\n\n'
     num = 1
     num_stickies = 0
 
