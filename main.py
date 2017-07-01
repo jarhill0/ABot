@@ -289,7 +289,7 @@ def reddits(message):
     current_chat = message['chat']['id']
     message_text = message.get('text', None).lower()
     chat_type = message['chat']['type']
-    reddit_regex = re.compile(r'/reddit(?:@a_group_bot)?(?:\s(\d+|all|http(?:s)?://[a-z0-9:/\.\?=]*))?(?:\s|$)')
+    reddit_regex = re.compile(r'/reddit(?:@a_group_bot)?(?:\s(\d+|all|http(?:s)?://[a-z0-9:/\.\?_\-=]*))?(?:\s|$)')
     command_opt = reddit_regex.search(message_text).group(1)
 
     if command_opt is None:
