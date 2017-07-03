@@ -522,9 +522,14 @@ def test():
 
 
 def send_launch_message(launch, chat_id):
-    launch_time = launch['wsstamp']
-    human_local_launch_time = datetime.datetime.fromtimestamp(launch_time).strftime('%B %d, %Y %H:%M:%S')
-    human_gmt_launch_time = launch['windowstart']
+    window_open = launch['wsstamp']
+    human_local_window_open = datetime.datetime.fromtimestamp(window_open).strftime('%B %d, %Y %H:%M:%S')
+    human_gmt_window_open = launch['windowstart']
+
+    window_close = launch['westamp']
+    human_local_window_close = datetime.datetime.fromtimestamp(window_close).strftime('%B %d, %Y %H:%M:%S')
+    human_gmt_window_close = launch['windowend']
+
     location_name = launch['location']['name']
     vid_urls = launch['vidURLs']
     launch_name = launch['name']
@@ -535,7 +540,9 @@ def send_launch_message(launch, chat_id):
     for agen in launch['rocket']['agencies'][1:]:
         agency += ', %s' % agen['name']
 
-    message = 'Upcoming %s launch at %s (CA time %s):\n\n' % (agency, human_gmt_launch_time, human_local_launch_time)
+    message = 'Upcoming %s launch at %s – %s (CA time %s - %s):\n\n' % (
+        agency, human_gmt_window_open, human_gmt_window_close, human_local_window_open, human_local_window_close)
+
     message += '*%s*\n%s\n\nMissions:\n' % (launch_name, location_name)
     for mission in missions:
         message += '*%s* (%s): _%s_\n' % (mission[0], mission[1], mission[2])
