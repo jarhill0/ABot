@@ -558,4 +558,8 @@ def send_launch_message(launch, chat_id):
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except:
+        traceback.print_exc()
+        time.sleep(60)
