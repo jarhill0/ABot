@@ -474,13 +474,13 @@ def redditguessing_nsfw(message):
 bot_commands['/redditguessnsfw'] = redditguessing_nsfw
 
 
-def proxy(message):
-    """View a proxied version of a webpage."""
+def archive(message):
+    """View an archived version of a webpage."""
     current_chat = message['chat']['id']
     orig_message_id = message['message_id']
     message_text = message.get('text', None)
 
-    proxy_re = re.compile(r'/proxy(?:@a_group_bot)? (\S+) ?', re.I)
+    proxy_re = re.compile(r'/archive(?:@a_group_bot)? (\S+) ?', re.I)
     url_search = proxy_re.search(message_text)
     if url_search is not None:
         url = url_search.group(1)
@@ -494,7 +494,7 @@ def proxy(message):
     tg.send_message(data)
 
 
-bot_commands['/proxy'] = proxy
+bot_commands['/archive'] = archive
 
 
 def handle(response):
