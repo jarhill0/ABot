@@ -480,7 +480,7 @@ def proxy(message):
     orig_message_id = message['message_id']
     message_text = message.get('text', None)
 
-    proxy_re = re.compile(r'/proxy (\S+) ?')
+    proxy_re = re.compile(r'/proxy(?:@a_group_bot)? (\S+) ?')
     url_search = proxy_re.search(message_text)
     if url_search is not None:
         url = url_search.group(1)
