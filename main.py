@@ -5,6 +5,7 @@ import traceback
 
 import xkcd
 
+import archive_is
 import brainfuck_interpreter
 import choice
 import config
@@ -471,6 +472,29 @@ def redditguessing_nsfw(message):
 
 
 bot_commands['/redditguessnsfw'] = redditguessing_nsfw
+
+
+def proxy(message):
+    """View a proxied version of a webpage."""
+    current_chat = message['chat']['id']
+    orig_message_id = message['message_id']
+    message_text = message.get('text', None)
+
+    proxy_re = re.compile(r'/proxy (\S+) ?')
+    url_search = proxy_re.search(message_text)
+    if url_search is not None:
+        url = url_search.group(1)
+    else:
+        # will be handled in the uploading function.
+        url = None
+
+    data = {'chat_id': current_chat,
+            'text': archive_is.archive_message(url),
+            'reply_to_message_id': orig_message_id}
+    tg.send_message(data)
+
+
+bot_commands['/proxy'] = proxy
 
 
 def handle(response):
