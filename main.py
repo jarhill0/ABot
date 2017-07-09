@@ -585,6 +585,9 @@ if __name__ == '__main__':
     while True:
         try:
             main()
-        except:
-            traceback.print_exc()
-            time.sleep(60)
+        except Exception as e:
+            if e is KeyboardInterrupt:
+                raise e
+            else:
+                traceback.print_exc()
+                time.sleep(60)
