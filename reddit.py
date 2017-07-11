@@ -20,34 +20,29 @@ except FileNotFoundError:
 def hot_posts(subreddit, number, *, guessing_game=False):
     if number < 1:
         raise ValueError('More than 0 posts must be requested.')
+
+    sub = reddit.subreddit(subreddit)
+
     try:
-        reddit.subreddit(subreddit).fullname
+        sub.fullname
     except (prawcore.Forbidden, prawcore.NotFound, prawcore.Redirect, prawcore.BadRequest, AttributeError, TypeError,
             AssertionError):
         return 'Error. Could not access r/%s.' % subreddit, None
 
-    sub = reddit.subreddit(subreddit)
-
-    body = 'Hot posts from %s:\n\n' % sub.display_name_prefixed
     if guessing_game:
         body = 'Hot posts from a random subreddit. Take a guess!\n\n'
-    num = 1
-    num_stickies = 0
-
-    for i in range(1, 3):
-        try:
-            sub.sticky(number=i)
-        except prawcore.NotFound:
-            pass
-        else:
-            num_stickies = i
+    else:
+        body = 'Hot posts from %s:\n\n' % sub.display_name_prefixed
 
     posts_dict = dict()
-    for true_count, submission in enumerate(sub.hot(limit=number + num_stickies)):
-        if true_count >= num_stickies:
-            body += '#%d: %s - %s\n' % (num, submission.title, submission.shortlink)
-            posts_dict[num] = submission.shortlink
-            num += 1
+    n = 1
+
+    for submission in sub.hot(limit=number + 5):
+        while len(posts_dict) < number:
+            if not submission.stickied:
+                body += '#%d: %s - %s\n' % (n, submission.title, submission.shortlink)
+                posts_dict[n] = submission.shortlink
+                n += 1
 
     return body, posts_dict
 
