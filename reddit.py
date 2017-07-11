@@ -36,7 +36,7 @@ def hot_posts(subreddit, number, *, guessing_game=False):
 
     for i in range(1, 3):
         try:
-            reddit.subreddit(subreddit).sticky(number=i)
+            sub.sticky(number=i)
         except prawcore.NotFound:
             pass
         else:
