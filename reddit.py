@@ -105,7 +105,7 @@ def post_proxy(link, chat_type, chat_id, tg):
                 data['caption'] = output[:200]
             else:
                 data['video'] = post.media['reddit_video']['scrubber_media_url']
-                data['caption'] = (output + ' Silent preview. Full video available at %s' % post.url)[:200]
+                data['caption'] = (output + ' (Silent preview. Full video available at %s)' % post.url)[:200]
 
             return data, response_type
         else:
