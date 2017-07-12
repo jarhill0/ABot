@@ -54,6 +54,15 @@ class Telegram:
                 print(data)
                 time.sleep(2)
 
+    def send_video(self, data):
+        for i in range(2):
+            response = json.loads(requests.post(self.url + 'sendVideo', data=data).content.decode('utf-8'))
+            try:
+                return _check_and_return(response)
+            except ConnectionRefusedError:
+                print(data)
+                time.sleep(2)
+
     def is_limited(self, id_number):
         now = time.time()
 
