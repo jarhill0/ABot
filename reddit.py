@@ -6,6 +6,7 @@ import prawcore
 
 import config
 import helpers
+from main import tg
 
 reddit = praw.Reddit(config.reddit_username, user_agent='%s Telegram bot' % config.reddit_username)
 reddit_posts_dict = dict()
@@ -47,30 +48,80 @@ def hot_posts(subreddit, number, *, guessing_game=False):
     return body, posts_dict
 
 
-def post_proxy(link, chat_type):
-    try:
-        post = reddit.submission(url=link)
-    except praw.exceptions.ClientException:
-        return 'Invalid URL. URL should be a reddit shortlink.', False, None
-    try:
-        output = post.title + ' (' + post.subreddit_name_prefixed + ')'
-    except prawcore.Forbidden:
-        return 'Reddit post: access denied.', False, None
+def post_proxy(link, chat_type, chat_id):
+    TEXT = 10
+    PICTURE = 20
+    VIDEO = 30
 
-    if post.over_18 and chat_type != 'private':
-        return 'NSFW. Click it yourself.', False, None
+    def proxy_helper(link, chat_type, chat_id):
 
-    if post.is_self:
-        is_image = False
-        output += '\n\n---\n\n' + post.selftext
-        return output, is_image, None
-    elif post.url[:17] in ['https://i.redd.it', 'http://i.redd.it/']:
-        is_image = True
-        return output, is_image, post.url
-    else:
-        is_image = False
-        output += '\n\n' + post.url
-        return output, is_image, None
+        try:
+            post = reddit.submission(url=link)
+        except praw.exceptions.ClientException:
+            data = {'text': 'Invalid URL. URL should be a reddit shortlink.',
+                    'chat_id': chat_id}
+            response_type = TEXT
+
+            return data, response_type
+
+        try:
+            output = post.title + ' (' + post.subreddit_name_prefixed + ')'
+        except prawcore.Forbidden:
+            data = {'text': 'Reddit post: access denied.',
+                    'chat_id': chat_id}
+            response_type = TEXT
+
+            return data, response_type
+
+        if post.over_18 and chat_type != 'private':
+            data = {'text': 'NSFW. Click it yourself.',
+                    'chat_id': chat_id}
+            response_type = TEXT
+
+            return data, response_type
+
+        if post.is_self:
+            output += '\n\n---\n\n' + post.selftext
+
+            data = {'text': output,
+                    'chat_id': chat_id}
+            response_type = TEXT
+
+            return data, response_type
+
+        elif post.url[:17] in ['https://i.redd.it', 'http://i.redd.it/']:
+            data = {'chat_id': chat_id,
+                    'photo': post.url,
+                    'caption': output}
+            response_type = PICTURE
+
+            return data, response_type
+
+        elif post.url[:17] in ['https://v.redd.it', 'http://v.redd.it/']:
+            response_type = VIDEO
+            data = {'chat_id': chat_id}
+            if post.media['reddit_video']['is_gif']:
+                data['video'] = post.media['reddit_video']['fallback_url']
+                data['caption'] = output[:200]
+            else:
+                data['video'] = post.media['reddit_video']['scrubber_media_url']
+                data['caption'] = (output + ' Silent preview. Full video available at %s' % post.url)[:200]
+
+            return data, response_type
+        else:
+            response_type = TEXT
+            output += '\n\n' + post.url
+            data = {'text': output,
+                    'chat_id': chat_id}
+            return data, response_type
+
+    data_, response_type_ = proxy_helper(link, chat_type, chat_id)
+    if response_type_ == TEXT:
+        tg.send_message(data_)
+    elif response_type_ == PICTURE:
+        tg.send_photo(data_)
+    elif response_type_ == VIDEO:
+        tg.send_video(data_)
 
 
 def add_posts_to_dict(chat_id, posts):

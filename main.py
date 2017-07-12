@@ -305,6 +305,7 @@ def reddits(message):
             valid_id, tentative_url = reddit.get_post_from_dict(current_chat, int(command_opt))
             if valid_id and tentative_url is not None:
                 url = tentative_url
+                reddit.post_proxy(url, chat_type, current_chat)
             else:
                 if not valid_id:
                     bot_message = 'Use /redditposts followed by a subreddit name to use /reddit [number] syntax',
@@ -320,40 +321,11 @@ def reddits(message):
                 valid_id, tentative_url = reddit.get_post_from_dict(current_chat, i)
                 if valid_id and tentative_url is not None:
                     url = tentative_url
-                text, is_image, image_url = reddit.post_proxy(url, chat_type)
-                if not is_image:
-                    data = {'chat_id': current_chat,
-                            'text': text,
-                            'disable_web_page_preview': False,
-                            }
-                    tg.send_message(data)
-                else:
-                    data = {'chat_id': current_chat,
-                            'photo': image_url
-                            }
-                    if len(text) >= 200:
-                        text = text[:199] + '…'
-                    data['caption'] = text
-                    tg.send_photo(data)
-            return
+                reddit.post_proxy(url, chat_type, current_chat)
 
         else:
             url = command_opt
-        text, is_image, image_url = reddit.post_proxy(url, chat_type)
-        if not is_image:
-            data = {'chat_id': current_chat,
-                    'text': text,
-                    'disable_web_page_preview': False,
-                    }
-            tg.send_message(data)
-        else:
-            data = {'chat_id': current_chat,
-                    'photo': image_url
-                    }
-            if len(text) >= 200:
-                text = text[:199] + '…'
-            data['caption'] = text
-            tg.send_photo(data)
+            reddit.post_proxy(url, chat_type, current_chat)
 
 
 bot_commands["/reddit"] = reddits
