@@ -6,7 +6,7 @@ import prawcore
 
 import config
 import helpers
-from main import tg
+
 
 reddit = praw.Reddit(config.reddit_username, user_agent='%s Telegram bot' % config.reddit_username)
 reddit_posts_dict = dict()
@@ -48,7 +48,7 @@ def hot_posts(subreddit, number, *, guessing_game=False):
     return body, posts_dict
 
 
-def post_proxy(link, chat_type, chat_id):
+def post_proxy(link, chat_type, chat_id, tg):
     TEXT = 10
     PICTURE = 20
     VIDEO = 30

@@ -305,7 +305,7 @@ def reddits(message):
             valid_id, tentative_url = reddit.get_post_from_dict(current_chat, int(command_opt))
             if valid_id and tentative_url is not None:
                 url = tentative_url
-                reddit.post_proxy(url, chat_type, current_chat)
+                reddit.post_proxy(url, chat_type, current_chat, tg)
             else:
                 if not valid_id:
                     bot_message = 'Use /redditposts followed by a subreddit name to use /reddit [number] syntax',
@@ -321,11 +321,11 @@ def reddits(message):
                 valid_id, tentative_url = reddit.get_post_from_dict(current_chat, i)
                 if valid_id and tentative_url is not None:
                     url = tentative_url
-                reddit.post_proxy(url, chat_type, current_chat)
+                reddit.post_proxy(url, chat_type, current_chat, tg)
 
         else:
             url = command_opt
-            reddit.post_proxy(url, chat_type, current_chat)
+            reddit.post_proxy(url, chat_type, current_chat, tg)
 
 
 bot_commands["/reddit"] = reddits
