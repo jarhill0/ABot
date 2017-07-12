@@ -32,7 +32,7 @@ class Telegram:
         datae.append(data)
 
         for data_ in datae:
-            for i in range(5):
+            for i in range(2):
                 response = json.loads(requests.post(self.url + 'sendMessage', data=data_).content.decode('utf-8'))
                 try:
                     _check_and_return(response)
@@ -46,7 +46,7 @@ class Telegram:
 
     def send_photo(self, data):
 
-        for i in range(5):
+        for i in range(2):
             response = json.loads(requests.post(self.url + 'sendPhoto', data=data).content.decode('utf-8'))
             try:
                 return _check_and_return(response)
