@@ -39,7 +39,7 @@ def hot_posts(subreddit, number, *, guessing_game=False):
     n = 1
 
     for submission in sub.hot(limit=number + 5):
-        while len(posts_dict) < number:
+        if len(posts_dict) < number:
             if not submission.stickied:
                 body += '#%d: %s - %s\n' % (n, submission.title, submission.shortlink)
                 posts_dict[n] = submission.shortlink
