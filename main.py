@@ -14,6 +14,7 @@ import launchreminders
 import new_xkcd
 import rand_frog
 import reddit
+import replace_vowels
 import scores
 import text_gen
 from telegram import Telegram, user_name
@@ -281,6 +282,26 @@ def yyy(message):
 
 
 bot_commands['/yyy'] = yyy
+
+
+def whyme(message):
+    """Replace all vowels with the letter y."""
+    current_chat = message['chat']['id']
+    orig_message_id = message['message_id']
+    message_text = message.get('text', None)
+    whyme_regex = re.compile(r'/whyme(?:@a_group_bot)?(?:\s(.+))?(?:/)?', re.IGNORECASE)
+    raw_text = whyme_regex.search(message_text).group(1)
+    if raw_text is None:
+        bot_message = 'Say something after /whyme (e.g. /wa What the hell?!)'
+    else:
+        bot_message = replace_vowels.replace(raw_text)
+    data = {'chat_id': current_chat,
+            'reply_to_message_id': orig_message_id,
+            'text': bot_message}
+    tg.send_message(data)
+
+
+bot_commands['/whyme'] = whyme
 
 
 def redditposts(message):
