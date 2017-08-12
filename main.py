@@ -256,6 +256,33 @@ def wtf(message):
 bot_commands['/wtf'] = wtf
 
 
+def yyy(message):
+    """Whyt thy hyll."""
+    current_chat = message['chat']['id']
+    data = {'chat_id': current_chat,
+            'text': 'Whyt thy fyck dyd yyy yyst fyckyng syy ybyyt my, yyy lyttly bytch? y’ll hyvy yyy knyw Y '
+                    'grydyytyd typ yf my clyss yn thy Nyvy Syyls, ynd Y’ve byyn ynvylvyd yn nymyryys sycryt ryyds yn '
+                    'Yl-Qyyydy, ynd Y hyvy yvyr 300 cynfyrmyd kylls. Y ym tryynyd yn gyrylly wyrfyry ynd Y’m thy typ '
+                    'snypyr yn thy yntyry YS yrmyd fyrcys. Yyy yry nythyng ty my byt jyst ynythyr tyrgyt. Y wyll wypy '
+                    'yyy thy fyck yyt wyth prycysyyn thy lykys yf whych hys nyvyr byyn syyn byfyry yn thys Yyrth, '
+                    'myrk my fyckyng wyrds. Yyy thynk yyy cyn gyt ywyy wyth syyyng thyt shyt ty my yvyr thy Yntyrnyt?'
+                    'Thynk ygyyn, fyckyr. Ys wy spyyk Y ym cyntyctyng my sycryt nytwyrk yf spyys ycryss thy YSY ynd '
+                    'yyyr YP ys byyng trycyd ryght nyw sy yyy byttyr prypyry fyr thy styrm, myggyt. Thy styrm thyt '
+                    'wypys yyt thy pythytyc lyttly thyng yyy cyll yyyr lyfy. Yyy’ry fyckyng dyyd, kyd. Y cyn by '
+                    'ynywhyry, ynytymy, ynd Y cyn kyll yyy yn yvyr syvyn hyndryd wyys, ynd thyt’s jyst wyth my byry '
+                    'hynds. Nyt ynly ym Y yxtynsyvyly tryynyd yn ynyrmyd cymbyt, byt y hyvy yccyss ty thy yntyry '
+                    'yrsynyl yf thy Ynytyd Stytys Myryny Cyrps ynd Y wyll ysy yt ty yts fyll yxtynt ty wypy yyyr '
+                    'mysyrybly yss yff thy fycy yf thy cyntynynt, yyy lyttly shyt. Yf ynly yyy cyyld hyvy knywn whyt '
+                    'ynhyly rytrybytyyn yyyr lyttly “clyvyr” cymmynt wys abyyt ty bryng dywn ypyn yyy, '
+                    'myyby yyy wyyld hyvy hyld yyyr fyckyng tyngyy. Byt yyy cyyldn’t, yyy dydn’t, ynd nyw yyy’ry '
+                    'pyyyng thy prycy, yyy gyddymn ydyyt. Y wyll shyt fyry yll yvyr yyy ynd yyy wyll drywn yn yt. '
+                    'Yyy’ry fyckyng dyyd, kyddy.'}
+    tg.send_message(data)
+
+
+bot_commands['/yyy'] = yyy
+
+
 def redditposts(message):
     """View posts from the specified subreddit."""
     current_chat = message['chat']['id']
