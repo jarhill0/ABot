@@ -11,6 +11,7 @@ import choice
 import config
 import launchlibrary
 import launchreminders
+import new_xkcd
 import rand_frog
 import reddit
 import replace_vowels
@@ -52,17 +53,23 @@ def schedule_launches(calendar):
         launchreminders.set_launch_triggers(next_launch, calendar)
 
 
-def schedule_events(calendar):
-    schedule_launches(calendar)
+def schedule_xkcd(calendar):
+    now = time.time()
 
-    # todo incorporate XKCD check into the scheduler
-    '''
-        last_time = time.time()
+    def check_xkcd():
         new_comic = new_xkcd.check_update()
         if new_comic is not None:
             tg.send_photo(new_comic[0])
             tg.send_message(new_comic[1])
-            '''
+
+    for hour in range(24):
+        calendar.add_event(now + 60 * 60 * hour, check_xkcd)
+    calendar.add_event(now + 60 * 60 * 24, schedule_xkcd, args=[calendar])
+
+
+def schedule_events(calendar):
+    schedule_launches(calendar)
+    schedule_xkcd(calendar)
 
 
 # Dict to store the commands of the bot
