@@ -48,18 +48,20 @@ def hot_posts(subreddit, number, *, guessing_game=False):
     return body, posts_dict
 
 
+# noinspection PyPep8Naming
 def post_proxy(link, chat_type, chat_id, tg):
     TEXT = 10
     PICTURE = 20
     VIDEO = 30
 
-    def proxy_helper(link, chat_type, chat_id):
+    def proxy_helper(link_, chat_type_, chat_id_):
 
+        # noinspection PyUnresolvedReferences
         try:
-            post = reddit.submission(url=link)
+            post = reddit.submission(url=link_)
         except praw.exceptions.ClientException:
             data = {'text': 'Invalid URL. URL should be a reddit shortlink.',
-                    'chat_id': chat_id}
+                    'chat_id': chat_id_}
             response_type = TEXT
 
             return data, response_type
@@ -68,14 +70,14 @@ def post_proxy(link, chat_type, chat_id, tg):
             output = post.title + ' (' + post.subreddit_name_prefixed + ')'
         except prawcore.Forbidden:
             data = {'text': 'Reddit post: access denied.',
-                    'chat_id': chat_id}
+                    'chat_id': chat_id_}
             response_type = TEXT
 
             return data, response_type
 
-        if post.over_18 and chat_type != 'private':
+        if post.over_18 and chat_type_ != 'private':
             data = {'text': 'NSFW. Click it yourself.',
-                    'chat_id': chat_id}
+                    'chat_id': chat_id_}
             response_type = TEXT
 
             return data, response_type
@@ -84,13 +86,13 @@ def post_proxy(link, chat_type, chat_id, tg):
             output += '\n\n---\n\n' + post.selftext
 
             data = {'text': output,
-                    'chat_id': chat_id}
+                    'chat_id': chat_id_}
             response_type = TEXT
 
             return data, response_type
 
         elif post.url[:17] in ['https://i.redd.it', 'http://i.redd.it/']:
-            data = {'chat_id': chat_id,
+            data = {'chat_id': chat_id_,
                     'photo': post.url,
                     'caption': output}
             response_type = PICTURE
@@ -99,7 +101,7 @@ def post_proxy(link, chat_type, chat_id, tg):
 
         elif post.url[:17] in ['https://v.redd.it', 'http://v.redd.it/']:
             response_type = VIDEO
-            data = {'chat_id': chat_id}
+            data = {'chat_id': chat_id_}
             if post.media['reddit_video']['is_gif']:
                 data['video'] = post.media['reddit_video']['fallback_url']
                 data['caption'] = output[:200]
@@ -112,7 +114,7 @@ def post_proxy(link, chat_type, chat_id, tg):
             response_type = TEXT
             output += '\n\n' + post.url
             data = {'text': output,
-                    'chat_id': chat_id}
+                    'chat_id': chat_id_}
             return data, response_type
 
     data_, response_type_ = proxy_helper(link, chat_type, chat_id)

@@ -367,6 +367,7 @@ bot_commands['/redditposts'] = redditposts
 def launch_(message):
     """View information about the next SpaceX launch."""
     current_chat = message['chat']['id']
+    # noinspection PyTypeChecker
     send_launch_message(next_launch, current_chat)
 
 
@@ -435,6 +436,7 @@ def reddits(message):
                     bot_message = 'Use /redditposts followed by a subreddit name to use /reddit [number] syntax',
                 elif tentative_url is None:
                     bot_message = 'Invalid number.'
+                # noinspection PyUnboundLocalVariable
                 data = {'chat_id': current_chat,
                         'text': bot_message,
                         'disable_web_page_preview': True
@@ -445,7 +447,7 @@ def reddits(message):
                 valid_id, tentative_url = reddit.get_post_from_dict(current_chat, i)
                 if valid_id and tentative_url is not None:
                     url = tentative_url
-                reddit.post_proxy(url, chat_type, current_chat, tg)
+                    reddit.post_proxy(url, chat_type, current_chat, tg)
 
         else:
             url = command_opt
@@ -494,6 +496,7 @@ def bf(message):
     orig_message_id = message['message_id']
 
     message_text = message.get('text', None)
+    # noinspection Annotator
     bf_regex = re.compile(r'/bf(?:@a_group_bot)?(?:\s([\w+-\.,<>\[\]]+))?;?(.+)?(?:\s|$)?', re.I)
     results = bf_regex.search(message_text)
     code = results.group(1)
@@ -672,14 +675,13 @@ def handle(response):
 
                 for command in bot_commands_in_message:
                     if not tg.is_limited(current_chat):
+                        # noinspection PyBroadException
                         try:
                             if command.lower() in bot_commands:
                                 # call the function stored in bot_commands with message
                                 bot_commands[command.lower()](message)
-                        except BaseException as e:
+                        except BaseException:
                             traceback.print_exc()
-                            print(type(e))
-                            print(e)
                             pass
 
 

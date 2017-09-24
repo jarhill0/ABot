@@ -4,7 +4,6 @@ import os
 
 import feedparser
 
-import config
 import helpers
 
 xkcd_data_filepath = os.path.join(helpers.folder_path(), 'data', 'xkcd.json')
@@ -44,9 +43,7 @@ def check_update():
 
 def get_newest_comic():
     feed = feedparser.parse('https://xkcd.com/rss.xml')
-    output = {'id': feed['entries'][0]['id'], }
-
-    output['title'] = feed['entries'][0]['title']
+    output = {'id': feed['entries'][0]['id'], 'title': feed['entries'][0]['title']}
 
     summary = feed['entries'][0]['summary']
     img_url = summary[summary.index('<img src="') + 10:]
@@ -56,5 +53,3 @@ def get_newest_comic():
     output['alt_text'] = html.unescape(alt_text[:alt_text.index('"')])
 
     return output
-
-

@@ -82,9 +82,11 @@ def execute(code, input_):
         if char in valid_chars:
 
             if char == '<':
+                # noinspection PyNoneFunctionAssignment
                 pointer = step_left(pointer)
 
             elif char == '>':
+                # noinspection PyNoneFunctionAssignment
                 pointer = step_right(pointer)
 
             elif char == '+':
@@ -103,7 +105,6 @@ def execute(code, input_):
                     return 'Error. Expected input.'
                 finally:
                     input_ = input_[1:]
-
 
             elif char == '[':
                 if pointer.value == 0:

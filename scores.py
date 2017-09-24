@@ -14,5 +14,6 @@ def get_score(id_):
 def change_score(id_, change):
     get_score(id_)  # ensure that a score exists
     scores[id_] += change
+    # noinspection PyShadowingNames
     with open(os.path.join(helpers.folder_path(), 'data', 'scores.json'), 'w') as f:
         json.dump(scores, f)

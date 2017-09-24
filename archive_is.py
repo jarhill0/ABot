@@ -9,11 +9,12 @@ def upload(url):
     return found
 
 
+# noinspection PyBroadException
 def archive_message(url):
     if url is not None and type(url) is str:
         try:
             arc_url = upload(url)
-        except:
+        except BaseException:
             return 'Archiving error or invalid URL.'
         else:
             if arc_url is not None:
