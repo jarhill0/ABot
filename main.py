@@ -130,6 +130,16 @@ def help_(message):
 bot_commands['/help'] = help_
 
 
+def botfather_commands(message):
+    current_chat = message['chat']['id']
+    data = {'chat_id': current_chat,
+            'text': build_command_list(bot_commands, for_botfather=True), }
+    tg.send_message(data)
+
+
+bot_commands['/botfather_commands'] = botfather_commands
+
+
 def settings(message):
     """View available settings."""
     current_chat = message['from']['id']  # respond always in PM
@@ -670,18 +680,16 @@ def handle(response):
                             pass
 
 
-def build_command_list(commands):
+def build_command_list(commands, for_botfather=False):
     commands_list = []
     for command in commands:
         if commands[command].__doc__ is not None:
             commands_list.append((command, commands[command].__doc__))
 
     commands_list = sorted(commands_list)
-    return '\n'.join(['%s - %s' % (name, job) for name, job in commands_list])
-
-
-def test():
-    print(build_command_list(bot_commands))
+    if not for_botfather:
+        return '\n'.join(['%s - %s' % (name, job) for name, job in commands_list])
+    return '\n'.join(['%s - %s' % (name[1:], job) for name, job in commands_list])  # remove leading slash
 
 
 def send_launch_message(launch, chat_id):
