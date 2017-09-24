@@ -628,7 +628,7 @@ def unsubscribe(message):
                     'parse_mode': 'Markdown'}
         else:
             data = {'chat_id': current_chat,
-                    'text': 'This chat will not recieve messages related `{}`.'.format(topic),
+                    'text': 'This chat will not recieve messages related to `{}`.'.format(topic),
                     'parse_mode': 'Markdown'}
     tg.send_message(data)
 
