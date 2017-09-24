@@ -580,6 +580,62 @@ def archive(message):
 bot_commands['/archive'] = archive
 
 
+def subscribe(message):
+    """Subscribe to announcements about a topic (launches, xkcd, etc.)"""
+    current_chat = message['chat']['id']
+    message_text = message.get('text', None).lower()
+    sub_re = re.compile(r'/subscribe(?:@a_group_bot)? (\w+) ?')
+    sub_search = sub_re.search(message_text)
+    if sub_search is None:
+        data = {'chat_id': current_chat,
+                'text': 'Please follow /subscribe with a topic ID like `xkcd` or `launches`.',
+                'parse_mode': 'Markdown'}
+    else:
+        topic = sub_search.group(1)
+        try:
+            subscriptions.subscribe(topic, current_chat)
+        except helpers.SubscriptionNotFoundError:
+            data = {'chat_id': current_chat,
+                    'text': 'Please follow /subscribe with a valid topic ID like `xkcd` or `launches`.',
+                    'parse_mode': 'Markdown'}
+        else:
+            data = {'chat_id': current_chat,
+                    'text': 'This chat will recieve messages related to `{}`.'.format(topic),
+                    'parse_mode': 'Markdown'}
+    tg.send_message(data)
+
+
+bot_commands['/subscribe'] = subscribe
+
+
+def unsubscribe(message):
+    """Unsubscribe from announcements about a topic (launches, xkcd, etc.)"""
+    current_chat = message['chat']['id']
+    message_text = message.get('text', None).lower()
+    unsub_re = re.compile(r'/unsubscribe(?:@a_group_bot)? (\w+) ?')
+    unsub_search = unsub_re.search(message_text)
+    if unsub_search is None:
+        data = {'chat_id': current_chat,
+                'text': 'Please follow /unsubscribe with a topic ID like `xkcd` or `launches`.',
+                'parse_mode': 'Markdown'}
+    else:
+        topic = unsub_search.group(1)
+        try:
+            subscriptions.unsubscribe(topic, current_chat)
+        except helpers.SubscriptionNotFoundError:
+            data = {'chat_id': current_chat,
+                    'text': 'Please follow /unsubscribe with a valid topic ID like `xkcd` or `launches`.',
+                    'parse_mode': 'Markdown'}
+        else:
+            data = {'chat_id': current_chat,
+                    'text': 'This chat will not recieve messages related `{}`.'.format(topic),
+                    'parse_mode': 'Markdown'}
+    tg.send_message(data)
+
+
+bot_commands['/unsubscribe'] = unsubscribe
+
+
 def handle(response):
     for item in response['result']:
         if 'message' in item.keys():
