@@ -23,7 +23,8 @@ class Subscriptions:
             # No file or invalid JSON. Start from scratch
             pass
         else:
-            self.subs = saved_subs  # preserves previously saved keys/lists even if not names in init params
+            for key in saved_subs.keys():  # preserves previously saved keys/lists even if not names in init params
+                self.subs[key] = set(saved_subs[key])
 
         for key in keys:
             if key not in self.subs.keys():
