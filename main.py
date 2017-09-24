@@ -145,7 +145,9 @@ def settings(message):
     current_chat = message['from']['id']  # respond always in PM
     data = {'chat_id': current_chat,
             'text': 'Current settings:\n/redditlimit followed by a number to set limit of reddit posts displayed by'
-                    '/redditposts (example usage: /redditlimit 5)'}
+                    '/redditposts (example usage: /redditlimit 5)\n/subscribe or /unsubscribe followed by a topic ('
+                    '`xkcd`, `launches`, etc.) to subscribe or unsubscribe the current chat from notifications about '
+                    'that topic'}
     tg.send_message(data)
 
 
