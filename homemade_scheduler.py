@@ -28,7 +28,6 @@ class Scheduler:
         return False  # failed because an event already exists at that time
 
     def check_events(self):
-        print('checking')
         current_time = time.time()
         executed = []
         for event_time in sorted(self.events.keys()):
