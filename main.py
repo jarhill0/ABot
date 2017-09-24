@@ -622,7 +622,9 @@ def test():
 
 def send_launch_message(launch, chat_id):
     if launch is None:
-        return
+        data = {'chat_id': chat_id,
+                'text': 'Could not find any upcoming launches.', }
+        tg.send_message(data)
     window_open = launch['wsstamp']
     human_local_window_open = datetime.datetime.fromtimestamp(window_open).strftime('%B %d, %Y %H:%M:%S')
     human_gmt_window_open = launch['windowstart']
