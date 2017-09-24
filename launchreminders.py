@@ -1,40 +1,27 @@
-import sched
-import threading
-import time
-
 from config import a_group_id
 from launchlibrary import load_launch_info_from_disk
-from main import send_launch_message, restart
+from main import send_launch_message, schedule_launches
+
+
+class NoLaunchFoundError(IndexError):
+    pass
 
 
 def get_next_launch():
     json_data = load_launch_info_from_disk()
-    return json_data['launches'][0]
+    try:
+        return json_data['launches'][0]
+    except IndexError:
+        raise NoLaunchFoundError
 
 
-def send_automated_message(launch, triggertime):
-    # ensure we are within a minute of the intended trigger time so as not to re-trigger messages upon script restart
-    if abs(time.time() - triggertime) < 60:
-        send_launch_message(launch, a_group_id)
-        time.sleep(70)
-        if time.time() + 120 > launch['wsstamp']:
-            restart()
+def send_automated_message(launch):
+    send_launch_message(launch, a_group_id)
 
 
-def set_launch_triggers(launch):
+def set_launch_triggers(launch, schedule):
     start_time = launch['wsstamp']
-    alert_times = {
-        0: start_time,
-        1: start_time - (60 * 60),
-        4: start_time - (60 * 60 * 4),
-        24: start_time - (60 * 60 * 24)
-    }
-
-    scheduler = sched.scheduler(time.time, time.sleep)
-    t = threading.Thread(target=scheduler.run)
-    t.daemon = True
-
-    for key in alert_times.keys():
-        scheduler.enterabs(alert_times[key], 1, send_automated_message, (launch, alert_times[key]))
-
-    t.start()
+    alert_times = [start_time, start_time - (60 * 60), start_time - (60 * 60 * 4), start_time - (60 * 60 * 24)]
+    for alert_time in alert_times:
+        schedule.add_event(alert_time, send_automated_message, args=[launch], execute_past=False)
+    schedule.add_event(start_time + 60 * 60, schedule_launches, args=[schedule])  # refresh after a launch has started

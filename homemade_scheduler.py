@@ -2,7 +2,7 @@ import time
 
 
 class Scheduler:
-    """Schedules events to happen at a specific time. Events scheduled in the past will happen immediately"""
+    """Schedules events to happen at a specific time. Events scheduled in the past will happen immediately by default"""
 
     def __init__(self):
         self.events = dict()
@@ -13,12 +13,15 @@ class Scheduler:
             text.append('{}: {}'.format(key, event))
         return '\n'.join(text)
 
-    def add_event(self, event_time, func, args=None, kwargs=None, force=False):
+    def add_event(self, event_time, func, args=None, kwargs=None, force=False, execute_past=True):
         event = Event(func, args if args else [], kwargs if kwargs else {})
         if event_time < time.time():
             # Event is scheduled in the class
-            event.execute()
-            return True
+            if execute_past:
+                event.execute()
+                return True
+            else:
+                return False
         if event_time not in self.events.keys() or force:
             self.events[event_time] = event
             return True
@@ -28,10 +31,12 @@ class Scheduler:
         print('checking')
         current_time = time.time()
         executed = []
-        for event_time in self.events.keys():
+        for event_time in sorted(self.events.keys()):
             if event_time < current_time:
                 self.events[event_time].execute()
                 executed.append(event_time)
+            else:
+                break
         for time_ in executed:
             del self.events[time_]
 

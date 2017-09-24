@@ -15,6 +15,7 @@ import new_xkcd
 import rand_frog
 import reddit
 import replace_vowels
+import homemade_scheduler
 import scores
 import text_gen
 from telegram import Telegram, user_name
@@ -22,46 +23,53 @@ from wolfram_alpha import query_wa
 
 tg = Telegram(config.token)
 next_launch = None
-
-
-def restart():
-    time.sleep(10)
-    global next_launch
-    launchlibrary.update_json_on_disk()
-    try:
-        next_launch = launchreminders.get_next_launch()
-    except IndexError:
-        # there is no next launch
-        pass
-    else:
-        launchreminders.set_launch_triggers(next_launch)
+bot_scheduler = homemade_scheduler.Scheduler()
 
 
 def main():
-    launchlibrary.update_json_on_disk()
-
-    global tg, next_launch
-    tg = Telegram(config.token)
-    try:
-        next_launch = launchreminders.get_next_launch()
-    except IndexError:
-        # there is no next launch
-        pass
-    else:
-        launchreminders.set_launch_triggers(next_launch)
-    last_time = time.time() - (60 * 61)
-
+    schedule_events(bot_scheduler)
+    counter = 0
     while True:
         response = tg.get_updates()
+        counter += 1
         # noinspection PySimplifyBooleanCheck
         if response['result'] != []:
             handle(response)
-        if time.time() - 60 * 60 > last_time:
-            last_time = time.time()
-            new_comic = new_xkcd.check_update()
-            if new_comic is not None:
-                tg.send_photo(new_comic[0])
-                tg.send_message(new_comic[1])
+        if counter == 50:
+            bot_scheduler.check_events()
+            counter = 0
+
+
+def schedule_launches(calendar):
+    launchlibrary.update_json_on_disk()
+
+    global next_launch
+    try:
+        next_launch = launchreminders.get_next_launch()
+    except launchreminders.NoLaunchFoundError:
+        # there is no next launch
+        next_launch = None
+    else:
+        launchreminders.set_launch_triggers(next_launch, calendar)
+
+
+def schedule_xkcd(calendar):
+    now = time.time()
+
+    def check_xkcd():
+        new_comic = new_xkcd.check_update()
+        if new_comic is not None:
+            tg.send_photo(new_comic[0])
+            tg.send_message(new_comic[1])
+
+    for hour in range(24):
+        calendar.add_event(now + 60 * 60 * hour, check_xkcd)
+    calendar.add_event(now + 60 * 60 * 24, schedule_xkcd, args=[calendar])
+
+
+def schedule_events(calendar):
+    schedule_launches(calendar)
+    schedule_xkcd(calendar)
 
 
 # Dict to store the commands of the bot
@@ -338,6 +346,7 @@ bot_commands["/redditposts"] = redditposts
 def launch_(message):
     """View information about the next SpaceX launch."""
     current_chat = message['chat']['id']
+    schedule_launches(bot_scheduler)
     send_launch_message(next_launch, current_chat)
 
 
@@ -613,6 +622,8 @@ def test():
 
 
 def send_launch_message(launch, chat_id):
+    if isinstance(launch, None):
+        return
     window_open = launch['wsstamp']
     human_local_window_open = datetime.datetime.fromtimestamp(window_open).strftime('%B %d, %Y %H:%M:%S')
     human_gmt_window_open = launch['windowstart']
