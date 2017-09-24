@@ -20,7 +20,7 @@ def check_update():
     new_comic = get_newest_comic()
     submitted = get_submitted()
     if new_comic['id'] not in submitted:
-        data_1 = {'chat_id': config.a_group_id,
+        data_1 = {'chat_id': None,
                   'photo': new_comic['img_url'],
                   }
         text = new_comic['title']
@@ -28,7 +28,7 @@ def check_update():
             text = text[:199] + '…'
         data_1['caption'] = text
 
-        data_2 = {'chat_id': config.a_group_id,
+        data_2 = {'chat_id': None,
                   'text': new_comic['alt_text'], }
 
         submitted.append(new_comic['id'])
@@ -36,7 +36,7 @@ def check_update():
         with open(xkcd_data_filepath, 'w') as f:
             json.dump(submitted, f)
 
-        return (data_1, data_2)
+        return data_1, data_2
 
     else:
         return None
@@ -58,5 +58,3 @@ def get_newest_comic():
     return output
 
 
-if __name__ == '__main__':
-    check_update()

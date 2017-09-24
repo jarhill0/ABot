@@ -9,13 +9,14 @@ import archive_is
 import brainfuck_interpreter
 import choice
 import config
+import helpers
+import homemade_scheduler
 import launchlibrary
 import launchreminders
 import new_xkcd
 import rand_frog
 import reddit
 import replace_vowels
-import homemade_scheduler
 import scores
 import text_gen
 from telegram import Telegram, user_name
@@ -24,6 +25,7 @@ from wolfram_alpha import query_wa
 tg = Telegram(config.token)
 next_launch = None
 bot_scheduler = homemade_scheduler.Scheduler()
+subscriptions = helpers.Subscriptions(['xkcd', 'launches'])
 
 
 def main():
@@ -50,7 +52,7 @@ def schedule_launches(calendar):
         # there is no next launch
         pass
     else:
-        launchreminders.set_launch_triggers(next_launch, calendar)
+        launchreminders.set_launch_triggers(next_launch, calendar, subscriptions)
     finally:
         # let's schedule another check in 24h
         calendar.add_event(time.time() + 24 * 60 * 60 + 30, schedule_launches, args=[calendar])
@@ -62,8 +64,11 @@ def schedule_xkcd(calendar):
     def check_xkcd():
         new_comic = new_xkcd.check_update()
         if new_comic is not None:
-            tg.send_photo(new_comic[0])
-            tg.send_message(new_comic[1])
+            for chat_id in subscriptions.get_subscribers('xkcd'):
+                new_comic[0]['chat_id'] = chat_id
+                new_comic[1]['chat_id'] = chat_id
+                tg.send_photo(new_comic[0])
+                tg.send_message(new_comic[1])
 
     for hour in range(24):
         calendar.add_event(now + 60 * 60 * hour, check_xkcd)
