@@ -18,9 +18,11 @@ class Subscriptions:
 
         try:
             with open(Subscriptions.saved_subs_path) as f:
-                saved_subs = json.load(f)
+                saved_subs = json.loads(f.read().lower())
         except (FileNotFoundError, ValueError):
-            saved_subs = dict()
+            # No file or invalid JSON. Start from scratch
+            pass
+        else:
             self.subs = saved_subs  # preserves previously saved keys/lists even if not names in init params
 
         for key in keys:
