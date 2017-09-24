@@ -1,5 +1,5 @@
-import os
 import json
+import os
 
 
 def folder_path():
@@ -19,7 +19,7 @@ class Subscriptions:
         try:
             with open(Subscriptions.saved_subs_path) as f:
                 saved_subs = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
+        except (FileNotFoundError, ValueError):
             saved_subs = dict()
             self.subs = saved_subs  # preserves previously saved keys/lists even if not names in init params
 
