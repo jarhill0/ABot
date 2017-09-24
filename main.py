@@ -92,7 +92,7 @@ def helloworld(message):
     tg.send_message(data)
 
 
-bot_commands["/helloworld"] = helloworld
+bot_commands['/helloworld'] = helloworld
 
 
 def source(message):
@@ -103,7 +103,7 @@ def source(message):
     tg.send_message(data)
 
 
-bot_commands["/source"] = source
+bot_commands['/source'] = source
 
 
 def start(message):
@@ -116,7 +116,7 @@ def start(message):
     tg.send_message(data)
 
 
-bot_commands["/start"] = start
+bot_commands['/start'] = start
 
 
 def help_(message):
@@ -127,19 +127,19 @@ def help_(message):
     tg.send_message(data)
 
 
-bot_commands["/help"] = help_
+bot_commands['/help'] = help_
 
 
 def settings(message):
     """View available settings."""
     current_chat = message['from']['id']  # respond always in PM
     data = {'chat_id': current_chat,
-            'text': "Current settings:\n/redditlimit followed by a number to set limit of reddit posts displayed by"
-                    "/redditposts (example usage: /redditlimit 5)"}
+            'text': 'Current settings:\n/redditlimit followed by a number to set limit of reddit posts displayed by'
+                    '/redditposts (example usage: /redditlimit 5)'}
     tg.send_message(data)
 
 
-bot_commands["/settings"] = settings
+bot_commands['/settings'] = settings
 
 
 def parable(message):
@@ -212,7 +212,7 @@ def shrug(message):
     tg.send_message(data)
 
 
-bot_commands["/shrug"] = shrug
+bot_commands['/shrug'] = shrug
 
 
 def lenny(message):
@@ -348,7 +348,7 @@ def redditposts(message):
         pass
 
 
-bot_commands["/redditposts"] = redditposts
+bot_commands['/redditposts'] = redditposts
 
 
 def launch_(message):
@@ -357,7 +357,7 @@ def launch_(message):
     send_launch_message(next_launch, current_chat)
 
 
-bot_commands["/nextlaunch"] = launch_
+bot_commands['/nextlaunch'] = launch_
 
 
 def secretcommand(message):
@@ -369,7 +369,7 @@ def secretcommand(message):
     tg.send_message(data)
 
 
-bot_commands["/secretcommand"] = secretcommand
+bot_commands['/secretcommand'] = secretcommand
 
 
 def wa(message):
@@ -393,7 +393,7 @@ def wa(message):
     tg.send_message(data)
 
 
-bot_commands["/wa"] = wa
+bot_commands['/wa'] = wa
 
 
 def reddits(message):
@@ -439,7 +439,7 @@ def reddits(message):
             reddit.post_proxy(url, chat_type, current_chat, tg)
 
 
-bot_commands["/reddit"] = reddits
+bot_commands['/reddit'] = reddits
 
 
 def frog(message):
@@ -451,7 +451,7 @@ def frog(message):
     tg.send_photo(data)
 
 
-bot_commands["/frog"] = frog
+bot_commands['/frog'] = frog
 
 
 def choices(message):
@@ -472,7 +472,7 @@ def choices(message):
     tg.send_message(data)
 
 
-bot_commands["/choice"] = choices
+bot_commands['/choice'] = choices
 
 
 def bf(message):
@@ -497,7 +497,7 @@ def bf(message):
     tg.send_message(data)
 
 
-bot_commands["/bf"] = bf
+bot_commands['/bf'] = bf
 
 
 def myscore(message):
