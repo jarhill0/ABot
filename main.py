@@ -47,8 +47,8 @@ def schedule_launches(calendar):
     try:
         next_launch = launchreminders.get_next_launch()
     except launchreminders.NoLaunchFoundError:
-        # there is no next launch
-        next_launch = None
+        # there is no next launch, so let's schedule another check in 24h
+        calendar.add_event(time.time() + 24 * 60 * 60, schedule_launches, args=[calendar])
     else:
         launchreminders.set_launch_triggers(next_launch, calendar)
 
@@ -346,7 +346,6 @@ bot_commands["/redditposts"] = redditposts
 def launch_(message):
     """View information about the next SpaceX launch."""
     current_chat = message['chat']['id']
-    schedule_launches(bot_scheduler)
     send_launch_message(next_launch, current_chat)
 
 
