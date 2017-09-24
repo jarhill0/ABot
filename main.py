@@ -622,7 +622,7 @@ def test():
 
 
 def send_launch_message(launch, chat_id):
-    if isinstance(launch, None):
+    if launch is None:
         return
     window_open = launch['wsstamp']
     human_local_window_open = datetime.datetime.fromtimestamp(window_open).strftime('%B %d, %Y %H:%M:%S')
