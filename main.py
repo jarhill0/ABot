@@ -47,10 +47,13 @@ def schedule_launches(calendar):
     try:
         next_launch = launchreminders.get_next_launch()
     except launchreminders.NoLaunchFoundError:
-        # there is no next launch, so let's schedule another check in 24h
-        calendar.add_event(time.time() + 24 * 60 * 60, schedule_launches, args=[calendar])
+        # there is no next launch
+        pass
     else:
         launchreminders.set_launch_triggers(next_launch, calendar)
+    finally:
+        # let's schedule another check in 24h
+        calendar.add_event(time.time() + 24 * 60 * 60 + 30, schedule_launches, args=[calendar])
 
 
 def schedule_xkcd(calendar):
