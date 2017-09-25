@@ -665,7 +665,7 @@ def lmgtfy(message):
                     'text': 'You need to let me google something at least.'}
     else:
         data = {'chat_id': current_chat,
-                'text': "http://lmgtfy.com/?q=" + urllib.parse.parse_plus(search_query)}
+                'text': "http://lmgtfy.com/?q=" + urllib.parse.quote_plus(search_query)}
     tg.send_message(data)
 
 
@@ -684,7 +684,7 @@ def lmgtfy(message):
                     'text': 'You need to let me duckduckgo something at least.'}
     else:
         data = {'chat_id': current_chat,
-                'text': "http://lmddgtfy.net/?q=" + urllib.parse.parse_plus(search_query)}
+                'text': "http://lmddgtfy.net/?q=" + urllib.parse.quote_plus(search_query)}
     tg.send_message(data)
 
 
