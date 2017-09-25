@@ -659,7 +659,7 @@ def let_me_for_you_helper(domain, command, engine_name, message):
     search_query = re.compile(r'/{}(?:@a_group_bot)? ([^/]+)'.format(command), re.I)
     url_search = search_query.search(message_text)
 
-    if message_text is None:
+    if url_search is None:
         data = {'chat_id': current_chat,
                 'text': 'You need to let me {} something at least.'.format(engine_name)}
     else:
