@@ -672,8 +672,8 @@ def lmgtfy(message):
 bot_commands['/lmgtfy'] = lmgtfy
 
 
-def lmgtfy(message):
-    """Let me duckduckgo that for you please..."""
+def lmddgtfy(message):
+    """Let me DuckDuckGo that for you please..."""
     current_chat = message['chat']['id']
     message_text = message.get('text', None)
     search_query = re.compile(r'/lmgtfy(?:@a_group_bot)? (\S+) ?', re.I)
