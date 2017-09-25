@@ -657,15 +657,16 @@ def lmgtfy(message):
     """Let me google that for you please..."""
     current_chat = message['chat']['id']
     message_text = message.get('text', None)
-    search_query = re.compile(r'/lmgtfy(?:@a_group_bot)? (\S+) ?', re.I)
+    search_query = re.compile(r'/lmgtfy(?:@a_group_bot)? ([^/]+)', re.I)
     url_search = search_query.search(message_text)
 
     if message_text is None:
         data = {'chat_id': current_chat,
-                    'text': 'You need to let me google something at least.'}
+                'text': 'You need to let me google something at least.'}
     else:
+        url = url_search.group(1)
         data = {'chat_id': current_chat,
-                'text': "http://lmgtfy.com/?q=" + urllib.parse.quote_plus(url_search)}
+                'text': "http://lmgtfy.com/?q=" + urllib.parse.quote_plus(url)}
     tg.send_message(data)
 
 
@@ -676,15 +677,16 @@ def lmddgtfy(message):
     """Let me DuckDuckGo that for you please..."""
     current_chat = message['chat']['id']
     message_text = message.get('text', None)
-    search_query = re.compile(r'/lmddgtfy(?:@a_group_bot)? (\S+) ?', re.I)
+    search_query = re.compile(r'/lmddgtfy(?:@a_group_bot)? ([^/]+)', re.I)
     url_search = search_query.search(message_text)
 
     if message_text is None:
         data = {'chat_id': current_chat,
-                    'text': 'You need to let me duckduckgo something at least.'}
+                'text': 'You need to let me duckduckgo something at least.'}
     else:
+        url = url_search.group(1)
         data = {'chat_id': current_chat,
-                'text': "http://lmddgtfy.net/?q=" + urllib.parse.quote_plus(url_search)}
+                'text': "http://lmddgtfy.net/?q=" + urllib.parse.quote_plus(url)}
     tg.send_message(data)
 
 
