@@ -653,21 +653,25 @@ def unsubscribe(message):
 bot_commands['/unsubscribe'] = unsubscribe
 
 
-def lmgtfy(message):
-    """Let me google that for you please..."""
+def let_me_for_you_helper(domain, command, engine_name, message):
     current_chat = message['chat']['id']
     message_text = message.get('text', None)
-    search_query = re.compile(r'/lmgtfy(?:@a_group_bot)? ([^/]+)', re.I)
+    search_query = re.compile(r'/{}(?:@a_group_bot)? ([^/]+)'.format(command), re.I)
     url_search = search_query.search(message_text)
 
     if message_text is None:
         data = {'chat_id': current_chat,
-                'text': 'You need to let me google something at least.'}
+                'text': 'You need to let me {} something at least.'.format(engine_name)}
     else:
         url = url_search.group(1)
         data = {'chat_id': current_chat,
-                'text': "http://lmgtfy.com/?q=" + urllib.parse.quote_plus(url)}
+                'text': domain + urllib.parse.quote_plus(url)}
     tg.send_message(data)
+
+
+def lmgtfy(message):
+    """Let me Google that for you please..."""
+    let_me_for_you_helper('http://lmgtfy.com/?q=', 'lmgtfy', 'Google', message)
 
 
 bot_commands['/lmgtfy'] = lmgtfy
@@ -675,19 +679,7 @@ bot_commands['/lmgtfy'] = lmgtfy
 
 def lmddgtfy(message):
     """Let me DuckDuckGo that for you please..."""
-    current_chat = message['chat']['id']
-    message_text = message.get('text', None)
-    search_query = re.compile(r'/lmddgtfy(?:@a_group_bot)? ([^/]+)', re.I)
-    url_search = search_query.search(message_text)
-
-    if message_text is None:
-        data = {'chat_id': current_chat,
-                'text': 'You need to let me duckduckgo something at least.'}
-    else:
-        url = url_search.group(1)
-        data = {'chat_id': current_chat,
-                'text': "http://lmddgtfy.net/?q=" + urllib.parse.quote_plus(url)}
-    tg.send_message(data)
+    let_me_for_you_helper('http://lmddgtfy.net/?q=', 'lmddgtfy', 'DuckDuckGo', message)
 
 
 bot_commands['/lmddgtfy'] = lmddgtfy
