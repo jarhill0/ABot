@@ -18,7 +18,7 @@ import rand_frog
 import reddit
 import replace_vowels
 import scores
-import text_gen
+from parable import text_gen
 from telegram import Telegram, user_name
 from wolfram_alpha import query_wa
 

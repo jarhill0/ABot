@@ -52,7 +52,7 @@ def gen_phrase(phrases):
 
 
 def text_gen(number, filename='reassuring.cfg'):
-    loaded_config = load_config(os.path.join(helpers.folder_path(), filename))
+    loaded_config = load_config(os.path.join(helpers.folder_path(), 'parable', filename))
     out = []
     for i in range(number):
         out.append(gen_phrase(loaded_config))
