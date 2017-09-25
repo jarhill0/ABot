@@ -2,6 +2,7 @@ import datetime
 import re
 import time
 import traceback
+import urllib.parse
 
 import xkcd
 
@@ -650,6 +651,44 @@ def unsubscribe(message):
 
 
 bot_commands['/unsubscribe'] = unsubscribe
+
+
+def lmgtfy(message):
+    """Let me google that for you please..."""
+    current_chat = message['chat']['id']
+    message_text = message.get('text', None)
+    search_query = re.compile(r'/lmgtfy(?:@a_group_bot)? (\S+) ?', re.I)
+    url_search = search_query.search(message_text)
+
+    if message_text is None:
+        data = {'chat_id': current_chat,
+                    'text': 'You need to let me google something at least.'}
+    else:
+        data = {'chat_id': current_chat,
+                'text': "http://lmgtfy.com/?q=" + urllib.parse.quote_plus(search_query)}
+    tg.send_message(data)
+
+
+bot_commands['/lmgtfy'] = lmgtfy
+
+
+def lmgtfy(message):
+    """Let me duckduckgo that for you please..."""
+    current_chat = message['chat']['id']
+    message_text = message.get('text', None)
+    search_query = re.compile(r'/lmgtfy(?:@a_group_bot)? (\S+) ?', re.I)
+    url_search = search_query.search(message_text)
+
+    if message_text is None:
+        data = {'chat_id': current_chat,
+                    'text': 'You need to let me duckduckgo something at least.'}
+    else:
+        data = {'chat_id': current_chat,
+                'text': "http://lmddgtfy.net/?q=" + urllib.parse.quote_plus(search_query)}
+    tg.send_message(data)
+
+
+bot_commands['/lmddgtfy'] = lmddgtfy
 
 
 def handle(response):
