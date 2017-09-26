@@ -17,7 +17,7 @@ def parse_reminder(time_str, message, user_id, calendar, tg, current_chat):
 
 def set_reminder(timestamp, message, user_id, calendar, tg):
     reminder = Reminder(message, user_id)
-    calendar.add_event(timestamp, remind, args=[Reminder, tg])
+    calendar.add_event(timestamp, remind, args=[reminder, tg])
 
 
 def remind(reminder, tg):
