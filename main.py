@@ -687,6 +687,7 @@ bot_commands['/lmddgtfy'] = lmddgtfy
 
 
 def remindme(message):
+    """Get a reminder about a topic."""
     message_text = message.get('text', None)
     user_id = message['from']['id']
     current_chat = message['chat']['id']
