@@ -703,6 +703,9 @@ def remindme(message):
     tg.send_message(data)
 
 
+bot_commands['/remindme'] = remindme
+
+
 def handle(response):
     for item in response['result']:
         if 'message' in item.keys():
