@@ -698,7 +698,7 @@ def remindme(message):
                 'text': 'Please provide a date for the reminder.'}
     else:
         time_str = remind_search.group(1)
-        message_text = remind_search.group(2) if remind_search.group(2) else 'Do the thing!'
+        message_text = remind_search.group(2)[1:-1] if remind_search.group(2) else 'Do the thing!'
         data = parse_reminder(time_str, message_text, user_id, bot_scheduler, tg, current_chat)
     tg.send_message(data)
 
