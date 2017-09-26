@@ -20,6 +20,7 @@ import reddit
 import replace_vowels
 import scores
 from parable import text_gen
+from reminders import parse_reminder
 from telegram import Telegram, user_name
 from wolfram_alpha import query_wa
 
@@ -683,6 +684,23 @@ def lmddgtfy(message):
 
 
 bot_commands['/lmddgtfy'] = lmddgtfy
+
+
+def remindme(message):
+    message_text = message.get('text', None)
+    user_id = message['from']['id']
+    current_chat = message['chat']['id']
+    remind_reg = re.compile(r'/remindme(?:@a_group_bot)? ([^"^/]+) ?("[^"]+")?', re.IGNORECASE)
+    remind_search = remind_reg.search(message_text)
+
+    if remind_search is None:
+        data = {'chat_id': current_chat,
+                'text': 'Please provide a date for the reminder.'}
+    else:
+        time_str = remind_search.group(1)
+        message_text = remind_search.group(2) if remind_search.group(2) else 'Do the thing!'
+        data = parse_reminder(time_str, message_text, user_id, bot_scheduler, tg, current_chat)
+    tg.send_message(data)
 
 
 def handle(response):
