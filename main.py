@@ -20,7 +20,7 @@ import reddit
 import replace_vowels
 import scores
 from parable import text_gen
-from reminders import parse_reminder
+from reminders import parse_reminder, initialize_from_disk
 from telegram import Telegram, user_name
 from wolfram_alpha import query_wa
 
@@ -80,6 +80,7 @@ def schedule_xkcd(calendar):
 def schedule_events(calendar):
     schedule_launches(calendar)
     schedule_xkcd(calendar)
+    initialize_from_disk(calendar, tg)
 
 
 # Dict to store the commands of the bot
