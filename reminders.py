@@ -35,7 +35,7 @@ def initialize_from_disk(calendar, tg):
     for event_time in events.keys():
         message = events[event_time]['message']
         user_id = events[event_time]['user_id']
-        set_reminder(event_time, message, user_id, calendar, tg, save_to_disk=False)  # don't re-save to disk
+        set_reminder(int(event_time), message, int(user_id), calendar, tg, save_to_disk=False)  # don't re-save to disk
 
 
 def remind(reminder, tg):
@@ -50,7 +50,7 @@ def _history_trim_helper(events):
     future_events = dict()
     now = time.time()
     for event_time in events.keys():
-        if event_time > now:
+        if float(event_time) > now:
             future_events[event_time] = events[event_time]
     return future_events
 
