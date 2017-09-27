@@ -35,7 +35,7 @@ def initialize_from_disk(calendar, tg):
     for event_time in events.keys():
         message = events[event_time]['message']
         user_id = events[event_time]['user_id']
-        set_reminder(int(event_time), message, int(user_id), calendar, tg, save_to_disk=False)  # don't re-save to disk
+        set_reminder(int(float(event_time)), message, int(user_id), calendar, tg, save_to_disk=False)
 
 
 def remind(reminder, tg):
