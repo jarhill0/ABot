@@ -70,7 +70,7 @@ def _file_read_helper():
     try:
         with open(os.path.join(helpers.folder_path(), 'data', 'reminders.json')) as f:
             return json.load(f)
-    except (FileNotFoundError, json.decoder.JSONDecodeError):
+    except (FileNotFoundError, ValueError):
         return dict()
 
 
