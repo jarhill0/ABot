@@ -325,7 +325,7 @@ def whyme(message):
     whyme_regex = re.compile(r'/whyme(?:@a_group_bot)?(?:\s(.+))?', re.IGNORECASE)
     raw_text = whyme_regex.search(message_text).group(1)
     if raw_text is None:
-        bot_message = 'Say something after /whyme (e.g. /wa What the hell?!)'
+        bot_message = 'Say something after /whyme (e.g. /whyme What the hell?!)'
     else:
         bot_message = replace_vowels.replace(raw_text)
     data = {'chat_id': current_chat,
