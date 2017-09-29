@@ -19,6 +19,7 @@ import rand_frog
 import reddit
 import replace_vowels
 import scores
+import urban_dict
 from parable import text_gen
 from reminders import parse_reminder, initialize_from_disk
 from telegram import Telegram, user_name
@@ -600,7 +601,7 @@ bot_commands['/archive'] = archive
 
 
 def subscribe(message):
-    """Subscribe to announcements about a topic (launches, xkcd, etc.)"""
+    """Subscribe to announcements about a topic (launches, xkcd, etc.)."""
     current_chat = message['chat']['id']
     message_text = message.get('text', None).lower()
     sub_re = re.compile(r'/subscribe(?:@a_group_bot)? (\w+) ?')
@@ -628,7 +629,7 @@ bot_commands['/subscribe'] = subscribe
 
 
 def unsubscribe(message):
-    """Unsubscribe from announcements about a topic (launches, xkcd, etc.)"""
+    """Unsubscribe from announcements about a topic (launches, xkcd, etc.)."""
     current_chat = message['chat']['id']
     message_text = message.get('text', None).lower()
     unsub_re = re.compile(r'/unsubscribe(?:@a_group_bot)? (\w+) ?')
@@ -706,6 +707,27 @@ def remindme(message):
 
 
 bot_commands['/remindme'] = remindme
+
+
+def ud(message):
+    """Define a word using Urban Dictionary."""
+    message_text = message.get('text', None)
+    current_chat = message['chat']['id']
+    search_query = re.compile(r'/ud(?:@a_group_bot)? ([^/]+)', re.I)
+    term_search = search_query.search(message_text)
+
+    if term_search is None:
+        data = {'chat_id': current_chat,
+                'text': 'Please follow the command with a search term.'}
+    else:
+        data = {'chat_id': current_chat,
+                'text': urban_dict.build_message(term_search.group(1)),
+                'parse_mode': 'Markdown'}
+
+    tg.send_message(data)
+
+
+bot_commands['/ud'] = ud
 
 
 def handle(response):
