@@ -14,4 +14,4 @@ def build_message(term):
     definition = entry['definition']
     example = entry['example']
 
-    return '**{}**:\n{}\n*{}*'.format(word, definition, example)  # Naively assume no asterisks in strings
+    return '*{}*:\n{}\n_{}_'.format(word, definition, example)  # Naively assume no special characters in strings
