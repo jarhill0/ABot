@@ -559,12 +559,18 @@ def redditguessing(message, nsfw=False):
     data = {'chat_id': current_chat,
             'text': bot_message,
             'disable_web_page_preview': True}
-    tg.send_message(data)
+    response = tg.send_message(data)
     try:
         if posts_dict is not None:
             reddit.add_posts_to_dict(current_chat, posts_dict)
     except NameError:
         pass
+
+    if nsfw:
+        # delete it in 10 seconds (roughly; affected by schedule polling)
+        message_id = response['result']['message_id']
+        data = {'chat_id': current_chat, 'message_id': message_id}
+        bot_scheduler.add_event(time.time() + 10, tg.delete_message, args=[data], force=True)
 
 
 bot_commands['/redditguess'] = redditguessing

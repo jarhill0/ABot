@@ -35,14 +35,12 @@ class Telegram:
             for i in range(2):
                 response = json.loads(requests.post(self.url + 'sendMessage', data=data_).content.decode('utf-8'))
                 try:
-                    _check_and_return(response)
+                    return _check_and_return(response)
                 except ConnectionRefusedError:
                     print(data)
                     if response['error_code'] == 403:
                         break
                     time.sleep(2)
-                else:
-                    break
 
     def send_photo(self, data):
 
@@ -57,6 +55,15 @@ class Telegram:
     def send_video(self, data):
         for i in range(2):
             response = json.loads(requests.post(self.url + 'sendVideo', data=data).content.decode('utf-8'))
+            try:
+                return _check_and_return(response)
+            except ConnectionRefusedError:
+                print(data)
+                time.sleep(2)
+
+    def delete_message(self, data):
+        for i in range(2):
+            response = json.loads(requests.post(self.url + 'deleteMessage', data=data).content.decode('utf-8'))
             try:
                 return _check_and_return(response)
             except ConnectionRefusedError:
