@@ -20,6 +20,7 @@ import reddit
 import replace_vowels
 import scores
 import urban_dict
+import web_archive
 from parable import text_gen
 from reminders import parse_reminder, initialize_from_disk
 from telegram import Telegram, user_name
@@ -583,27 +584,41 @@ def redditguessing_nsfw(message):
 bot_commands['/redditguessnsfw'] = redditguessing_nsfw
 
 
-def archive(message):
+def archive_helper(message, command, archiver):
     """View an archived version of a webpage."""
     current_chat = message['chat']['id']
     orig_message_id = message['message_id']
     message_text = message.get('text', None)
 
-    proxy_re = re.compile(r'/archive(?:@a_group_bot)? (\S+) ?', re.I)
+    proxy_re = re.compile(r'/{}(?:@a_group_bot)? (\S+) ?'.format(command), re.I)
     url_search = proxy_re.search(message_text)
     if url_search is not None:
         url = url_search.group(1)
+        text = archiver(url)
     else:
         # will be handled in the uploading function.
-        url = None
+        text = 'Please provide a URL to archive.'
 
     data = {'chat_id': current_chat,
-            'text': archive_is.archive_message(url),
+            'text': text,
             'reply_to_message_id': orig_message_id}
     tg.send_message(data)
 
 
+def archive(message):
+    """Archive a page with the archive.is service."""
+    archive_helper(message, 'archive', archive_is.archive_message)
+
+
 bot_commands['/archive'] = archive
+
+
+def archive2(message):
+    """Archive a page with the web.archive.org service."""
+    archive_helper(message, 'archive2', web_archive.archive)
+
+
+bot_commands['/archive2'] = archive2
 
 
 def subscribe(message):

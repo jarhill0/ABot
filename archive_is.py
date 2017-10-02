@@ -11,12 +11,10 @@ def upload(url):
 
 # noinspection PyBroadException
 def archive_message(url):
-    if url is not None and type(url) is str:
-        try:
-            arc_url = upload(url)
-        except BaseException:
-            return 'Archiving error or invalid URL.'
-        else:
-            if arc_url is not None:
-                return arc_url
-    return 'Command must be followed with a space and then a valid URL.'
+    try:
+        arc_url = upload(url)
+    except BaseException:
+        return 'Archiving error or invalid URL.'
+    else:
+        if arc_url is not None:
+            return arc_url
