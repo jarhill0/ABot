@@ -714,7 +714,7 @@ def remindme(message):
     message_text = message.get('text', None)
     user_id = message['from']['id']
     current_chat = message['chat']['id']
-    remind_reg = re.compile(r'/remindme(?:@a_group_bot)? ([^"^/]+) ?("[^"]+")?', re.IGNORECASE)
+    remind_reg = re.compile(r'/remindme(?:@a_group_bot)? ([^"“”/]+) ?(["“][^"“”]+["”])?', re.IGNORECASE)
     remind_search = remind_reg.search(message_text)
 
     if remind_search is None:
