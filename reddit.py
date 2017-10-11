@@ -7,7 +7,6 @@ import prawcore
 import config
 import helpers
 
-
 reddit = praw.Reddit(config.reddit_username, user_agent='%s Telegram bot' % config.reddit_username)
 reddit_posts_dict = dict()
 redditposts_path = os.path.join(helpers.folder_path(), 'data', 'redditlimit.json')
@@ -23,17 +22,22 @@ def hot_posts(subreddit, number, *, guessing_game=False):
         raise ValueError('More than 0 posts must be requested.')
 
     sub = reddit.subreddit(subreddit)
+    magic = False
 
     try:
         sub.fullname
     except (prawcore.Forbidden, prawcore.NotFound, prawcore.Redirect, prawcore.BadRequest, AttributeError, TypeError,
             AssertionError):
-        return 'Error. Could not access r/%s.' % subreddit, None
+        if subreddit in ('all', 'popular'):  # special subreddits
+            magic = True
+        else:
+            return 'Error. Could not access r/%s.' % subreddit, None
 
     if guessing_game:
         body = 'Hot posts from a random subreddit. Take a guess!\n\n'
     else:
-        body = 'Hot posts from %s:\n\n' % sub.display_name_prefixed
+        name = 'r/' + sub.display_name if magic else sub.display_name_prefixed
+        body = 'Hot posts from {}:\n\n'.format(name)
 
     posts_dict = dict()
     n = 1
