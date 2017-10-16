@@ -16,6 +16,8 @@ try:
 except FileNotFoundError:
     reddit_limits_dict = dict()
 
+redditguess_answers = dict()
+
 
 def hot_posts(subreddit, number, *, guessing_game=False):
     if number < 1:
@@ -128,6 +130,10 @@ def post_proxy(link, chat_type, chat_id, tg):
         tg.send_photo(data_)
     elif response_type_ == VIDEO:
         tg.send_video(data_)
+
+
+def get_subreddit_from_post(link):
+    return reddit.submission(url=link).subreddit_name_prefixed
 
 
 def add_posts_to_dict(chat_id, posts):

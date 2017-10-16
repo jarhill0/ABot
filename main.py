@@ -564,6 +564,7 @@ def redditguessing(message, nsfw=False):
     try:
         if posts_dict is not None:
             reddit.add_posts_to_dict(current_chat, posts_dict)
+            reddit.redditguess_answers[current_chat] = reddit.get_subreddit_from_post(posts_dict[0])
     except NameError:
         pass
 
@@ -582,6 +583,19 @@ def redditguessing_nsfw(message):
 
 
 bot_commands['/redditguessnsfw'] = redditguessing_nsfw
+
+
+def reddit_answer(message):
+    """Get the answer to the previous /redditguess."""
+    current_chat = message['chat']['id']
+    answer = reddit.redditguess_answers.get(current_chat, 'nonexistent')
+    bot_message = 'The answer for the last /redditguess is {}.'.format(answer)
+    data = {'chat_id': current_chat,
+            'text': bot_message}
+    tg.send_message(data)
+
+
+bot_commands['/redditguessanswer'] = reddit_answer
 
 
 def archive_helper(message, command, archiver):
