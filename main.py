@@ -564,7 +564,7 @@ def redditguessing(message, nsfw=False):
     try:
         if posts_dict is not None:
             reddit.add_posts_to_dict(current_chat, posts_dict)
-            reddit.redditguess_answers[current_chat] = reddit.get_subreddit_from_post(posts_dict[0])
+            reddit.redditguess_answers[current_chat] = reddit.get_subreddit_from_post(posts_dict[1])
     except NameError:
         pass
 
