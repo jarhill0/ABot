@@ -1,3 +1,4 @@
+import copy
 import json
 import time
 
@@ -6,9 +7,45 @@ import requests
 
 class Telegram:
     def __init__(self, token):
-        self.url = 'https://api.telegram.org/bot' + token + '/'
+        self.token = token
+        self.url = 'https://api.telegram.org/bot' + self.token + '/'
         self.max_id = 0
         self.rates = dict()
+
+    def __repr__(self):
+        return 'Telegram({})'.format(self.token)
+
+    @staticmethod
+    def make_submessages(base_message):
+        """Take a message object and return multiple with commands split"""
+        orig_text = base_message['text']
+        del base_message['text']
+        orig_entities = base_message['entities']
+        bot_commands = [e for e in orig_entities if e['type'] == 'bot_command']
+        del base_message['entities']
+
+        splits = [e['offset'] for e in bot_commands] + [len(orig_text)]
+        submessages = []
+
+        end = splits.pop(0)
+        while len(splits) > 0:
+            mess = copy.deepcopy(base_message)
+
+            start = end
+            end = splits.pop(0)
+            mess['text'] = orig_text[start:end]
+
+            mess_ents = []
+            for ent in orig_entities:
+                if start <= ent['offset'] and ent['offset'] + ent['length'] < end:
+                    mess_ents.append(copy.copy(ent))
+                    mess_ents[-1]['offset'] -= start  # offset shifts when we modify text
+            mess['entities'] = mess_ents
+
+            submessages.append(mess)
+
+        return submessages
+
 
     def get_updates(self):
         # call getUpdates method and parse as JSON

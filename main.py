@@ -772,16 +772,25 @@ def handle(response):
                         else:
                             bot_commands_in_message.append(command)
 
-                for command in bot_commands_in_message:
-                    if not tg.is_limited(current_chat):
-                        # noinspection PyBroadException
-                        try:
-                            if command.lower() in bot_commands:
-                                # call the function stored in bot_commands with message
-                                bot_commands[command.lower()](message)
-                        except BaseException:
-                            traceback.print_exc()
-                            pass
+                if len(bot_commands_in_message) == 1:
+                    handle_helper(bot_commands_in_message[0], message, current_chat)
+
+                else:
+                    submessages = Telegram.make_submessages(message)
+                    for sub, command in zip(submessages, bot_commands_in_message):
+                        handle_helper(command, sub, current_chat)
+
+
+def handle_helper(command, message, current_chat):
+    if not tg.is_limited(current_chat):
+        # noinspection PyBroadException
+        try:
+            if command.lower() in bot_commands:
+                # call the function stored in bot_commands with message
+                bot_commands[command.lower()](message)
+        except BaseException:
+            traceback.print_exc()
+            pass
 
 
 def build_command_list(commands, for_botfather=False):
