@@ -789,6 +789,7 @@ def lelxD(message):
 
 bot_commands['/lelxd'] = lelxD
 
+
 def handle(response):
     for item in response['result']:
         if 'message' in item.keys():
