@@ -1,5 +1,6 @@
 import datetime
 import re
+import sys
 import time
 import traceback
 import urllib.parse
@@ -890,7 +891,7 @@ if __name__ == '__main__':
             main()
         except Exception as e:
             if e is KeyboardInterrupt:
-                raise e
+                sys.exit(0)
             else:
                 traceback.print_exc()
                 time.sleep(60)
