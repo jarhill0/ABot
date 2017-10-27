@@ -46,7 +46,6 @@ class Telegram:
 
         return submessages
 
-
     def get_updates(self):
         # call getUpdates method and parse as JSON
         response = json.loads(
@@ -68,16 +67,20 @@ class Telegram:
             datae.append(temp)
         datae.append(data)
 
+        responses = []
+
         for data_ in datae:
             for i in range(2):
                 response = json.loads(requests.post(self.url + 'sendMessage', data=data_).content.decode('utf-8'))
                 try:
-                    return _check_and_return(response)
+                    responses.append(_check_and_return(response))
                 except ConnectionRefusedError:
-                    print(data)
+                    print(data_)
                     if response['error_code'] == 403:
                         break
                     time.sleep(2)
+
+        return responses
 
     def send_photo(self, data):
 

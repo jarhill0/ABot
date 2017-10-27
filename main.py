@@ -561,7 +561,7 @@ def redditguessing(message, nsfw=False):
     data = {'chat_id': current_chat,
             'text': bot_message,
             'disable_web_page_preview': True}
-    response = tg.send_message(data)
+    response = tg.send_message(data)[0]
     try:
         if posts_dict is not None:
             reddit.add_posts_to_dict(current_chat, posts_dict)
