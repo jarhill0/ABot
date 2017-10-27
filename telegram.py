@@ -79,6 +79,8 @@ class Telegram:
                     if response['error_code'] == 403:
                         break
                     time.sleep(2)
+                else:
+                    break
 
         return responses
 
