@@ -46,7 +46,7 @@ def hot_posts(subreddit, number, *, guessing_game=False):
 
     for submission in sub.hot(limit=number + 5):
         if len(posts_dict) < number:
-            if not submission.stickied:
+            if not submission.stickied or magic:  # don't exclude stickies from r/all and r/popular
                 body += '#%d: %s - %s\n' % (n, submission.title, submission.shortlink)
                 posts_dict[n] = submission.shortlink
                 n += 1
