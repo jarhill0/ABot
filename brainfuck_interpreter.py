@@ -77,7 +77,7 @@ def execute(code, input_):
         else:
             break
         if time.time() > start + 10:
-            return "Timed out.\nOutput: " + output_text
+            return "Timed out.\nOutput:\n" + output_text
 
         if char in valid_chars:
 
