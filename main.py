@@ -501,7 +501,7 @@ def bf(message):
     current_chat = message['chat']['id']
     orig_message_id = message['message_id']
 
-    message_text = message.get('text', None)
+    message_text = message.get('text', None).replace('\n', '')
     # noinspection Annotator
     bf_regex = re.compile(r'/bf(?:@a_group_bot)?(?:\s([\w+-\.,<>\[\]]+))?;?(.+)?(?:\s|$)?', re.I)
     results = bf_regex.search(message_text)
