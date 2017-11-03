@@ -116,7 +116,7 @@ def execute(code, input_):
 
         code_index += 1
 
-    return "Output: " + output_text
+    return "Output:\n" + output_text
 
 
 def main(my_code, input_=''):
