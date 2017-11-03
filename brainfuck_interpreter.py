@@ -102,8 +102,8 @@ def execute(code, input_):
                 try:
                     pointer.value = ord(input_[0]) % 256
                 except IndexError:
-                    return 'Error. Expected input.'
-                finally:
+                    pointer.value = 0
+                else:
                     input_ = input_[1:]
 
             elif char == '[':
