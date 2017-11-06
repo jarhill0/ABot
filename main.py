@@ -1,4 +1,5 @@
 import datetime
+import multiprocessing
 import re
 import sys
 import time
@@ -512,11 +513,15 @@ def bf(message):
         input_ = ''
     else:
         input_ = user_input
-    response = brainfuck_interpreter.main(code, input_=input_)
-    data = {'chat_id': current_chat,
-            'text': response,
-            'reply_to_message_id': orig_message_id}
-    tg.send_message(data)
+
+    def bf_helper():
+        response = brainfuck_interpreter.main(code, input_=input_)
+        data = {'chat_id': current_chat,
+                'text': response,
+                'reply_to_message_id': orig_message_id}
+        tg.send_message(data)
+
+    multiprocessing.Process(target=bf_helper).start()
 
 
 bot_commands['/bf'] = bf
