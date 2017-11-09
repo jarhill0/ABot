@@ -1,5 +1,6 @@
 import datetime
 import multiprocessing
+import random
 import re
 import sys
 import time
@@ -794,6 +795,17 @@ def lelxD(message):
 
 
 bot_commands['/lelxd'] = lelxD
+
+
+def randocommando(message):
+    current_chat = message['chat']['id']
+    data = {'chat_id': current_chat,
+            'text': "Let's go for a ride!"}
+    tg.send_message(data)
+    random.choice(bot_commands)(message)
+
+
+bot_commands['randocommando'] = randocommando
 
 
 def handle(response):
