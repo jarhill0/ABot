@@ -8,16 +8,17 @@ import helpers
 
 
 def parse_reminder(time_str, message, user_id, calendar, tg, current_chat):
-    event_time = dateparser.parse(date_string=time_str.strip())
-    if event_time is None:
+    ev_time = dateparser.parse(date_string=time_str.strip())
+    if ev_time is None:
         invalid_time_message = {'chat_id': current_chat,
                                 'text': "Sorry, I couldn't understand that time."}
         return invalid_time_message
     else:
-        timestamp = event_time.timestamp()
+        timestamp = ev_time.timestamp()
         set_reminder(timestamp, message, user_id, calendar, tg)
+        time_str = '{}-{}-{} {:02}:{:02}'.format(ev_time.year, ev_time.month, ev_time.day, ev_time.hour, ev_time.minute)
         success_message = {'chat_id': current_chat,
-                           'text': 'I will remind you about "{}"'.format(message)}
+                           'text': 'I will remind you about "{}" at {}.'.format(message, time_str)}
         return success_message
 
 
