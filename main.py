@@ -802,10 +802,10 @@ def randocommando(message):
     data = {'chat_id': current_chat,
             'text': "Let's go for a ride!"}
     tg.send_message(data)
-    random.choice(bot_commands.values())(message)
+    random.choice(list(bot_commands.values()))(message)
 
 
-bot_commands['randocommando'] = randocommando
+bot_commands['/randocommando'] = randocommando
 
 
 def handle(response):
