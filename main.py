@@ -22,12 +22,12 @@ import launchreminders
 import new_xkcd
 import rand_frog
 import reddit
+import reminders
 import replace_vowels
 import scores
 import urban_dict
 import web_archive
 from parable import text_gen
-from reminders import parse_reminder, initialize_from_disk
 from telegram import Telegram, user_name
 from wolfram_alpha import query_wa
 
@@ -87,7 +87,7 @@ def schedule_xkcd(calendar):
 def schedule_events(calendar):
     schedule_launches(calendar)
     schedule_xkcd(calendar)
-    initialize_from_disk(calendar, tg)
+    reminders.initialize_from_disk(calendar, tg)
 
 
 # Dict to store the commands of the bot
@@ -746,11 +746,34 @@ def remindme(message):
     else:
         time_str = remind_search.group(1)
         message_text = remind_search.group(2)[1:-1] if remind_search.group(2) else 'Do the thing!'
-        data = parse_reminder(time_str, message_text, user_id, bot_scheduler, tg, current_chat)
+        data = reminders.parse_reminder(time_str, message_text, user_id, bot_scheduler, tg, current_chat)
     tg.send_message(data)
 
 
 bot_commands['/remindme'] = remindme
+
+
+def myreminders(message):
+    """View your reminders."""
+    current_chat = message['chat']['id']
+    user_id = message['from']['id']
+
+    my_reminders = []
+
+    for ev_time, ev in bot_scheduler.events.items():
+        if ev.func == reminders.remind:
+            reminder = ev.args[0]
+            if reminder.user_id == user_id:
+                my_reminders.append((ev_time, reminder.message))
+
+    my_reminders.sort()
+    # build response with time and message of each event.
+    response = 'Your reminders:\n' + '\n'.join('{}: {}'.format(reminders.format_time(r[0]), r[1]) for r in my_reminders)
+    data = {'chat_id': current_chat, 'text': response}
+    tg.send_message(data)
+
+
+bot_commands['/myreminders'] = myreminders
 
 
 def ud(message):

@@ -15,6 +15,7 @@ class Scheduler:
 
     def add_event(self, event_time, func, args=None, kwargs=None, force=False, execute_past=True):
         event = Event(func, args if args else [], kwargs if kwargs else {})
+        event_time = int(event_time)
         if event_time < time.time():
             # Event is scheduled in the class
             if execute_past:
