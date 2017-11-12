@@ -22,3 +22,9 @@ def reliquish_status(tg):
     """Removes claim that bot is running"""
     data = {'chat_id': config.status_channel_id, 'title': OFFLINE_TEXT}
     tg.set_chat_title(data)
+
+
+if __name__ == '__main__':
+    import telegram
+
+    reliquish_status(telegram.Telegram(config.token))
