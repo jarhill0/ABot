@@ -876,7 +876,7 @@ def handle_helper(command, message, current_chat):
             if command.lower() in bot_commands:
                 # call the function stored in bot_commands with message
                 bot_commands[command.lower()](message)
-        except BaseException as e:
+        except Exception as e:
             if isinstance(e, KeyboardInterrupt):
                 raise e
             traceback.print_exc()
