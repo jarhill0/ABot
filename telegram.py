@@ -140,6 +140,24 @@ class Telegram:
             requests.get(self.url + 'getMe').content.decode('utf-8'))
         return response
 
+    def set_chat_title(self, data):
+        for i in range(2):
+            response = json.loads(requests.post(self.url + 'setChatTitle', data=data).content.decode('utf-8'))
+            try:
+                return _check_and_return(response)
+            except ConnectionRefusedError:
+                print(data)
+                time.sleep(2)
+
+    def get_chat(self, data):
+        for i in range(2):
+            response = json.loads(requests.post(self.url + 'getChat', data=data).content.decode('utf-8'))
+            try:
+                return _check_and_return(response)
+            except ConnectionRefusedError:
+                print(data)
+                time.sleep(2)
+
 
 def _check_and_return(data):
     if not data['ok']:

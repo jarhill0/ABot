@@ -25,6 +25,7 @@ import reddit
 import reminders
 import replace_vowels
 import scores
+import statuscheck
 import urban_dict
 import web_archive
 from parable import text_gen
@@ -38,6 +39,11 @@ subscriptions = helpers.Subscriptions(['xkcd', 'launches'])
 
 
 def main():
+    if config.check_online_status:
+        if statuscheck.already_running(tg):
+            print('Bot already running.')
+            sys.exit(1)
+        statuscheck.claim_status(tg)
     schedule_events(bot_scheduler)
     counter = 0
     while True:
@@ -933,6 +939,8 @@ if __name__ == '__main__':
             main()
         except Exception as e:
             if e is KeyboardInterrupt:
+                if config.check_online_status:
+                    statuscheck.reliquish_status(tg)
                 sys.exit(0)
             else:
                 traceback.print_exc()
