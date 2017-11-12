@@ -941,9 +941,10 @@ if __name__ == '__main__':
             main()
         except Exception as e:
             if isinstance(e, KeyboardInterrupt):
-                if config.check_online_status:
-                    statuscheck.reliquish_status(tg)
                 sys.exit(0)
             else:
                 traceback.print_exc()
                 time.sleep(60)
+        finally:
+            if config.check_online_status:
+                statuscheck.reliquish_status(tg)
