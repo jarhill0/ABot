@@ -940,7 +940,7 @@ if __name__ == '__main__':
         try:
             main()
         except Exception as e:
-            if e is KeyboardInterrupt:
+            if isinstance(e, KeyboardInterrupt):
                 if config.check_online_status:
                     statuscheck.reliquish_status(tg)
                 sys.exit(0)
