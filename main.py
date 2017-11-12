@@ -37,11 +37,15 @@ next_launch = None
 bot_scheduler = homemade_scheduler.Scheduler()
 subscriptions = helpers.Subscriptions(['xkcd', 'launches'])
 
+already_running = False
+
 
 def main():
+    global already_running
     if config.check_online_status:
         if statuscheck.already_running(tg):
             print('Bot already running.')
+            already_running = True
             sys.exit(1)
         statuscheck.claim_status(tg)
     schedule_events(bot_scheduler)
@@ -944,5 +948,5 @@ if __name__ == '__main__':
                 traceback.print_exc()
                 time.sleep(60)
         finally:
-            if config.check_online_status:
+            if config.check_online_status and not already_running:
                 statuscheck.reliquish_status(tg)
