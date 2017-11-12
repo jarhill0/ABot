@@ -6,7 +6,10 @@ wolframalphaClient = wolframalpha.Client(config.wa_token)
 
 
 def query_wa(args):
-    a = wolframalphaClient.query(args)
+    try:
+        a = wolframalphaClient.query(args)
+    except Exception:
+        raise WolframAlphaException
     array = []
     for pod in a.pods:
         if pod.text is not None:
@@ -18,3 +21,7 @@ def query_wa(args):
     if not m:
         return "Error processing input"
     return m
+
+
+class WolframAlphaException(Exception):
+    pass

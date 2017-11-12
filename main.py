@@ -28,9 +28,9 @@ import scores
 import statuscheck
 import urban_dict
 import web_archive
+import wolfram_alpha
 from parable import text_gen
 from telegram import Telegram, user_name
-from wolfram_alpha import query_wa
 
 tg = Telegram(config.token)
 next_launch = None
@@ -413,8 +413,8 @@ def wa(message):
     else:
         # noinspection PyBroadException
         try:
-            bot_message = query_wa(command_opt)
-        except:
+            bot_message = wolfram_alpha.query_wa(command_opt)
+        except wolfram_alpha.WolframAlphaException:
             bot_message = 'Error processing query.'
 
     data = {'chat_id': current_chat,
@@ -876,7 +876,9 @@ def handle_helper(command, message, current_chat):
             if command.lower() in bot_commands:
                 # call the function stored in bot_commands with message
                 bot_commands[command.lower()](message)
-        except BaseException:
+        except BaseException as e:
+            if isinstance(e, KeyboardInterrupt):
+                raise e
             traceback.print_exc()
             pass
 
