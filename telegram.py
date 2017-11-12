@@ -135,6 +135,11 @@ class Telegram:
                     # not update the times list
                     return True
 
+    def get_me(self):
+        response = json.loads(
+            requests.get(self.url + 'getMe').content.decode('utf-8'))
+        return response
+
 
 def _check_and_return(data):
     if not data['ok']:
