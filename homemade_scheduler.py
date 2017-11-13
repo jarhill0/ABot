@@ -23,11 +23,10 @@ class Scheduler:
                 return True
             else:
                 return False
-        if event_time not in self.events.keys() or force:
-            self.events[event_time] = event
-            return True
-        return False  # failed because an event already exists at that time
-
+        while event_time in self.events.keys():
+            event_time += 1
+        self.events[event_time] = event
+            
     def check_events(self):
         current_time = time.time()
         executed = []

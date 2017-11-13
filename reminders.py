@@ -59,8 +59,6 @@ def _history_trim_helper(events):
 
 def _save_event_to_disk(time, event):
     events = _history_trim_helper(_file_read_helper())
-    while time in events.keys():
-        time += 1  # adjusts times so they don't overlap
     events[time] = event
     _filesave_helper(events)
 
