@@ -25,6 +25,7 @@ import reddit
 import reminders
 import replace_vowels
 import scores
+import startup
 import statuscheck
 import urban_dict
 import web_archive
@@ -841,6 +842,16 @@ def randocommando(message):
 
 
 bot_commands['/randocommando'] = randocommando
+
+
+def startup_(message):
+    """Get a disruptive tech startup idea."""
+    current_chat = message['chat']['id']
+    data = {'chat_id': current_chat, 'text': startup.generate()}
+    tg.send_message(data)
+
+
+bot_commands['/startup'] = startup_
 
 
 def handle(response):
