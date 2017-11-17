@@ -854,6 +854,20 @@ def startup_(message):
 bot_commands['/startup'] = startup_
 
 
+def delete(message):
+    """Delete this bot message."""
+    current_chat = message['chat']['id']
+    if 'reply_to_message' not in message.keys() or message['reply_to_message']['from'] != tg.get_me()['result']:
+        tg.send_message({'chat_id': current_chat, 'text': 'That command must be used as a reply to a message of mine.'})
+        return
+    delete_id = message['reply_to_message']['message_id']
+    data = {'chat_id': current_chat, 'message_id': delete_id}
+    tg.delete_message(data)
+
+
+bot_commands['/delete'] = delete
+
+
 def handle(response):
     for item in response['result']:
         if 'message' in item.keys():
