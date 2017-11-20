@@ -27,8 +27,9 @@ def set_reminder(timestamp, message, user_id, calendar, tg, db=None, save_to_db=
 
 def load_from_db(db, calendar, tg):
     table = db['reminders']
-    for row in table:
-        set_reminder(row['time'], row['message'], row['user_id'], calendar, tg, save_to_db=False)
+    if table.count() != 0:
+        for row in table:
+            set_reminder(row['time'], row['message'], row['user_id'], calendar, tg, save_to_db=False)
 
 
 def remind(reminder, tg, db):
