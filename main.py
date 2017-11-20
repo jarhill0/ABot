@@ -1,7 +1,6 @@
 import datetime
 import multiprocessing
 import os.path
-import random
 import re
 import sys
 import time
@@ -679,17 +678,6 @@ def ud(message):
 
 
 bot_commands['/ud'] = ud
-
-
-def randocommando(message):
-    current_chat = message['chat']['id']
-    data = {'chat_id': current_chat,
-            'text': "Let's go for a ride!"}
-    tg.send_message(data)
-    random.choice(list(bot_commands.values()))(message)
-
-
-bot_commands['/randocommando'] = randocommando
 
 
 def startup_(message):
