@@ -13,7 +13,7 @@ class Scheduler:
             text.append('{}: {}'.format(key, event))
         return '\n'.join(text)
 
-    def add_event(self, event_time, func, args=None, kwargs=None, force=False, execute_past=True):
+    def add_event(self, event_time, func, args=None, kwargs=None, execute_past=True):
         event = Event(func, args if args else [], kwargs if kwargs else {})
         event_time = int(event_time)
         if event_time < time.time():
@@ -26,7 +26,7 @@ class Scheduler:
         while event_time in self.events.keys():
             event_time += 1
         self.events[event_time] = event
-            
+
     def check_events(self):
         current_time = time.time()
         executed = []

@@ -99,7 +99,7 @@ def schedule_xkcd(calendar):
 def schedule_events(calendar):
     schedule_launches(calendar)
     schedule_xkcd(calendar)
-    reminders.initialize_from_disk(calendar, tg)
+    reminders.load_from_db(db, calendar, tg)
 
 
 # Dict to store the commands of the bot
@@ -614,7 +614,6 @@ bot_commands['/lmddgtfy'] = lmddgtfy
 
 
 def remindme(message):
-    # todo refactor to use the db.
     """Get a reminder about a topic."""
     message_text = message.get('text', None)
     user_id = message['from']['id']
@@ -628,7 +627,7 @@ def remindme(message):
     else:
         time_str = remind_search.group(1)
         message_text = remind_search.group(2)[1:-1] if remind_search.group(2) else 'Do the thing!'
-        data = reminders.parse_reminder(time_str, message_text, user_id, bot_scheduler, tg, current_chat)
+        data = reminders.parse_reminder(time_str, message_text, user_id, bot_scheduler, tg, current_chat, db)
     tg.send_message(data)
 
 
