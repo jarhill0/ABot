@@ -712,6 +712,7 @@ bot_commands['/unsubscribe'] = unsubscribe
 
 
 def mysubs(message):
+    """Get your subscriptions."""
     current_chat = message['chat']['id']
     topics = subscriptions.my_subscriptions(current_chat)
     message = 'Your subscriptions: ' + ' '.join('`{}`'.format(t) for t in topics)
