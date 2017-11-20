@@ -83,7 +83,7 @@ def schedule_xkcd(calendar):
     now = time.time()
 
     def check_xkcd():
-        new_comic = new_xkcd.check_update()
+        new_comic = new_xkcd.check_update(db)
         if new_comic is not None:
             for chat_id in subscriptions.get_subscribers('xkcd'):
                 new_comic[0]['chat_id'] = chat_id

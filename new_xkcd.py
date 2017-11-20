@@ -1,27 +1,19 @@
 import html
-import json
-import os
 
 import feedparser
 
-import helpers
 
-xkcd_data_filepath = os.path.join(helpers.folder_path(), 'data', 'xkcd.json')
-
-
-def get_submitted():
-    with open(xkcd_data_filepath, 'r') as f:
-        submitted = json.load(f)
-    return submitted
+def get_submitted(db):
+    table = db['xkcd']
+    return [c['comic_id'] for c in table]
 
 
-def check_update():
+def check_update(db):
     new_comic = get_newest_comic()
-    submitted = get_submitted()
+    submitted = get_submitted(db)
     if new_comic['id'] not in submitted:
         data_1 = {'chat_id': None,
-                  'photo': new_comic['img_url'],
-                  }
+                  'photo': new_comic['img_url']}
         text = new_comic['title']
         if len(text) >= 200:
             text = text[:199] + '…'
@@ -30,10 +22,8 @@ def check_update():
         data_2 = {'chat_id': None,
                   'text': new_comic['alt_text'], }
 
-        submitted.append(new_comic['id'])
-
-        with open(xkcd_data_filepath, 'w') as f:
-            json.dump(submitted, f)
+        table = db['xkcd']
+        table.insert(dict(comic_id=new_comic['id']))
 
         return data_1, data_2
 
