@@ -18,7 +18,7 @@ def parse_reminder(time_str, message, user_id, calendar, tg, current_chat, db):
         return success_message
 
 
-def set_reminder(timestamp, message, user_id, calendar, tg, db=None, save_to_db=True):
+def set_reminder(timestamp, message, user_id, calendar, tg, db, save_to_db=True):
     reminder = Reminder(message, user_id, timestamp)
     calendar.add_event(timestamp, remind, args=[reminder, tg, db])
     if save_to_db:
@@ -29,7 +29,7 @@ def load_from_db(db, calendar, tg):
     table = db['reminders']
     if table.count() != 0:
         for row in table:
-            set_reminder(row['time'], row['message'], row['user_id'], calendar, tg, save_to_db=False)
+            set_reminder(row['time'], row['message'], row['user_id'], calendar, tg, db, save_to_db=False)
 
 
 def remind(reminder, tg, db):
