@@ -42,7 +42,7 @@ def remind(reminder, tg, db):
 
 
 def format_time(ev_time):
-    if isinstance(ev_time, int):
+    if isinstance(ev_time, (int, float)):
         ev_time = datetime.datetime.fromtimestamp(ev_time)
     if not isinstance(ev_time, datetime.datetime):
         raise TypeError('ev_time should be int or datetime.')
