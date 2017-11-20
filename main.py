@@ -635,18 +635,14 @@ bot_commands['/remindme'] = remindme
 
 
 def myreminders(message):
-    # todo refactor to use the db.
     """View your reminders."""
     current_chat = message['chat']['id']
     user_id = message['from']['id']
 
     my_reminders = []
 
-    for ev_time, ev in bot_scheduler.events.items():
-        if ev.func == reminders.remind:
-            reminder = ev.args[0]
-            if reminder.user_id == user_id:
-                my_reminders.append((ev_time, reminder.message))
+    for reminder in db['reminders'].find(user_id=user_id):
+        my_reminders.append((reminder['time'], reminder['message']))
 
     my_reminders.sort()
     # build response with time and message of each event.
