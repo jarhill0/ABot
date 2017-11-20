@@ -1,25 +1,12 @@
-import json
-import os
-
 import praw
 import prawcore
 
 import config
-import helpers
 
 reddit = praw.Reddit(config.reddit_username, user_agent='%s Telegram bot' % config.reddit_username)
-reddit_posts_dict = dict()
-redditposts_path = os.path.join(helpers.folder_path(), 'data', 'redditlimit.json')
-try:
-    with open(redditposts_path, 'r') as f:
-        reddit_limits_dict = json.load(f)
-except FileNotFoundError:
-    reddit_limits_dict = dict()
-
-redditguess_answers = dict()
 
 
-def hot_posts(subreddit, number, *, guessing_game=False):
+def hot_posts(subreddit, number, chat_id, db, *, guessing_game=False):
     if number < 1:
         raise ValueError('More than 0 posts must be requested.')
 
@@ -47,14 +34,17 @@ def hot_posts(subreddit, number, *, guessing_game=False):
     for submission in sub.hot(limit=number + 5):
         if len(posts_dict) < number:
             if not submission.stickied or magic:  # don't exclude stickies from r/all and r/popular
-                body += '#%d: %s - %s\n' % (n, submission.title, submission.shortlink)
-                posts_dict[n] = submission.shortlink
+                body += '#{}: {} - {}\n'.format(n, submission.title, submission.shortlink)
+                posts_dict[str(n)] = submission.shortlink
                 n += 1
 
-    return body, posts_dict
+    add_posts_to_dict(chat_id, posts_dict, db)
+    if guessing_game:
+        db['redditguessanswer'].upsert(dict(chat=str(chat_id), sub=sub.display_name_prefixed), ['chat'])
+
+    return body
 
 
-# noinspection PyPep8Naming
 def post_proxy(link, chat_type, chat_id, tg):
     TEXT = 10
     PICTURE = 20
@@ -136,29 +126,25 @@ def get_subreddit_from_post(link):
     return reddit.submission(url=link).subreddit_name_prefixed
 
 
-def add_posts_to_dict(chat_id, posts):
-    global reddit_posts_dict
-    reddit_posts_dict[chat_id] = posts
+def add_posts_to_dict(chat_id, posts, db):
+    posts_table = db['redditposts']
+    posts['chat'] = str(chat_id)
+
+    for n in range(1, 21):  # 20 is the maximum redditlimit
+        if str(n) not in posts.keys():
+            posts[str(n)] = None  # make all invalid numbers None when we update the db
+
+    posts_table.upsert(posts, ['chat'])
 
 
-def get_post_from_dict(chat_id, post_id):
-    section = reddit_posts_dict.get(chat_id, None)
-    if section is None:
-        return False, None
-    else:
-        post_url = section.get(post_id, None)
-        if post_url is None:
-            return True, None
-        else:
-            return True, post_url
+def set_redditposts_limit(user_id, limit, db):
+    limits = db['redditlimit']
+    limits.upsert(dict(user=str(user_id), limit=limit), ['user'])
 
 
-def set_redditposts_limit(user_id, limit):
-    global reddit_limits_dict
-    reddit_limits_dict[str(user_id)] = limit
-    with open(redditposts_path, 'w') as fi:
-        json.dump(reddit_limits_dict, fi)
-
-
-def get_redditposts_limit(user_id):
-    return reddit_limits_dict.setdefault(str(user_id), 5)
+def get_redditposts_limit(user_id, db):
+    limits = db['redditlimit']
+    user = limits.find_one(user=str(user_id))
+    if user is None:
+        return 5
+    return user['limit']

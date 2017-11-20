@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
-
 import datetime
 import multiprocessing
+import os.path
 import random
 import re
 import sys
@@ -9,6 +8,7 @@ import time
 import traceback
 import urllib.parse
 
+import dataset
 import xkcd
 
 import archive_is
@@ -24,7 +24,6 @@ import rand_frog
 import reddit
 import reminders
 import replace_vowels
-import scores
 import startup
 import statuscheck
 import urban_dict
@@ -36,7 +35,8 @@ from telegram import Telegram, user_name
 tg = Telegram(config.token)
 next_launch = None
 bot_scheduler = homemade_scheduler.Scheduler()
-subscriptions = helpers.Subscriptions(['xkcd', 'launches'])
+db = dataset.connect('sqlite:///{}'.format(os.path.join(helpers.folder_path(), 'data', 'mydatabase.db')))
+subscriptions = helpers.Subscriptions(['xkcd', 'launches'], db)
 
 already_running = False
 
@@ -225,10 +225,11 @@ def redditlimit(message):
     command_opt = limit_regex.search(message_text).group(1)
 
     if command_opt is None:
-        bot_message = 'Specify a number after /redditlimit (e.g. /redditlimit 5)'
+        bot_message = 'Your current limit is {}. To change, specify a number after /redditlimit (e.g. /redditlimit ' \
+                      '5).'.format(reddit.get_redditposts_limit(from_id, db))
     else:
         limit = min(max(int(command_opt), 1), 20)
-        reddit.set_redditposts_limit(from_id, limit)
+        reddit.set_redditposts_limit(from_id, limit, db)
         bot_message = 'Limit set to %d.' % limit
     data = {'chat_id': from_id,
             'text': bot_message}
@@ -362,24 +363,17 @@ def redditposts(message):
     command_opt = posts_regex.search(message_text).group(1)
 
     from_id = message['from']['id']
-    num_posts = reddit.get_redditposts_limit(from_id)
+    num_posts = reddit.get_redditposts_limit(from_id, db)
     if command_opt is None:
         bot_message = 'Specify a subreddit after /redditposts (e.g. /redditposts funny)'
     else:
         subreddit = command_opt
-        bot_message, posts_dict = reddit.hot_posts(subreddit, num_posts)
+        bot_message = reddit.hot_posts(subreddit, num_posts, current_chat, db)
     # noinspection PyUnboundLocalVariable
     data = {'chat_id': current_chat,
             'text': bot_message,
             'disable_web_page_preview': True}
     tg.send_message(data)
-    try:
-        # noinspection PyUnboundLocalVariable
-        if posts_dict is not None:
-            # noinspection PyUnboundLocalVariable
-            reddit.add_posts_to_dict(current_chat, posts_dict)
-    except NameError:
-        pass
 
 
 bot_commands['/redditposts'] = redditposts
@@ -443,36 +437,40 @@ def reddits(message):
         bot_message = 'Specify a url after /reddit (e.g. /reddit https://redd.it/robin)'
         data = {'chat_id': current_chat,
                 'text': bot_message,
-                'disable_web_page_preview': True,
-                }
+                'disable_web_page_preview': True}
         tg.send_message(data)
-    else:
-        if command_opt.isdigit():
-            valid_id, tentative_url = reddit.get_post_from_dict(current_chat, int(command_opt))
-            if valid_id and tentative_url is not None:
-                url = tentative_url
-                reddit.post_proxy(url, chat_type, current_chat, tg)
-            else:
-                if not valid_id:
-                    bot_message = 'Use /redditposts followed by a subreddit name to use /reddit [number] syntax',
-                elif tentative_url is None:
-                    bot_message = 'Invalid number.'
-                # noinspection PyUnboundLocalVariable
-                data = {'chat_id': current_chat,
-                        'text': bot_message,
-                        'disable_web_page_preview': True
-                        }
-                tg.send_message(data)
-        elif command_opt == 'all' and chat_type == 'private':
-            for i in range(1, len(reddit.reddit_posts_dict[current_chat]) + 1):
-                valid_id, tentative_url = reddit.get_post_from_dict(current_chat, i)
-                if valid_id and tentative_url is not None:
-                    url = tentative_url
-                    reddit.post_proxy(url, chat_type, current_chat, tg)
+    elif command_opt.isdigit() or command_opt == 'all':
+        posts = db['redditposts']
+        chat_row = posts.find_one(chat=str(current_chat))
+        if chat_row is None:
+            bot_message = 'Use /redditposts followed by a subreddit name to use /reddit [number] syntax'
+            data = {'chat_id': current_chat,
+                    'text': bot_message}
+            tg.send_message(data)
+            return
 
-        else:
-            url = command_opt
-            reddit.post_proxy(url, chat_type, current_chat, tg)
+        if command_opt.isdigit():
+            post = chat_row[command_opt]
+            if post is None:
+                bot_message = 'Invalid number.'
+                data = {'chat_id': current_chat,
+                        'text': bot_message}
+                tg.send_message(data)
+                return
+
+            reddit.post_proxy(post, chat_type, current_chat, tg)
+
+        elif command_opt == 'all' and chat_type == 'private':
+            for i in range(1, 21):  # max /redditlimit
+                post = chat_row[str(i)]
+                if post is None:
+                    break
+                reddit.post_proxy(post, chat_type, current_chat, tg)
+
+
+    else:
+        url = command_opt
+        reddit.post_proxy(url, chat_type, current_chat, tg)
 
 
 bot_commands['/reddit'] = reddits
@@ -550,16 +548,21 @@ def myscore(message):
     myscore_regex = re.compile(r'/myscore(?:@a_group_bot)?(?:\s([+-]\d+))?(?:\s|$)?')
     score_change = myscore_regex.search(message_text).group(1)
 
+    score_table = db['scores']
+    user_score_row = score_table.find_one(user=str(from_id))
+    score = user_score_row['score'] if user_score_row else 0
+
     if score_change is None:
-        bot_message = 'Your score is %d. To change it, follow /myscore with a number that starts ' \
-                      'with "+" or "-".' % scores.get_score(from_id)
+        bot_message = 'Your score is {}. To change it, follow /myscore with a number that starts ' \
+                      'with "+" or "-".'.format(score)
     else:
         change = int(score_change)
         if abs(change) > 1000:
             bot_message = 'Absolute change value should be no greater than 1000.'
         else:
-            scores.change_score(from_id, change)
-            bot_message = 'Your score has been updated to %d.' % scores.get_score(from_id)
+            new_score = score + change
+            score_table.upsert(dict(user=str(from_id), score=new_score), ['user'])
+            bot_message = 'Your score has been updated to %d.' % new_score
 
     data = {'chat_id': current_chat,
             'text': bot_message,
@@ -576,17 +579,13 @@ def redditguessing(message, nsfw=False):
     num_posts = 6
 
     subreddit = 'random' if not nsfw else 'randnsfw'
-    bot_message, posts_dict = reddit.hot_posts(subreddit, num_posts, guessing_game=True)
+
+    # side effect of setting the answer in the db
+    bot_message = reddit.hot_posts(subreddit, num_posts, current_chat, db, guessing_game=True)
     data = {'chat_id': current_chat,
             'text': bot_message,
             'disable_web_page_preview': True}
     response = tg.send_message(data)[0]
-    try:
-        if posts_dict is not None:
-            reddit.add_posts_to_dict(current_chat, posts_dict)
-            reddit.redditguess_answers[current_chat] = reddit.get_subreddit_from_post(posts_dict[1])
-    except NameError:
-        pass
 
     if nsfw:
         # delete it in 10 seconds (roughly; affected by schedule polling)
@@ -608,7 +607,8 @@ bot_commands['/redditguessnsfw'] = redditguessing_nsfw
 def reddit_answer(message):
     """Get the answer to the previous /redditguess."""
     current_chat = message['chat']['id']
-    answer = reddit.redditguess_answers.get(current_chat, 'nonexistent')
+    answer_row = db['redditguessanswer'].find_one(chat=str(current_chat))
+    answer = answer_row['sub'] if answer_row else 'nonexistent'
     bot_message = 'The answer for the last /redditguess is {}.'.format(answer)
     data = {'chat_id': current_chat,
             'text': bot_message}
@@ -711,6 +711,19 @@ def unsubscribe(message):
 bot_commands['/unsubscribe'] = unsubscribe
 
 
+def mysubs(message):
+    current_chat = message['chat']['id']
+    topics = subscriptions.my_subscriptions(current_chat)
+    message = 'Your subscriptions: ' + ' '.join('`{}`'.format(t) for t in topics)
+    data = {'chat_id': current_chat,
+            'text': message,
+            'parse_mode': 'Markdown'}
+    tg.send_message(data)
+
+
+bot_commands['/mysubs'] = mysubs
+
+
 def let_me_for_you_helper(domain, command, engine_name, message):
     current_chat = message['chat']['id']
     message_text = message.get('text', None)
@@ -744,6 +757,7 @@ bot_commands['/lmddgtfy'] = lmddgtfy
 
 
 def remindme(message):
+    # todo refactor to use the db.
     """Get a reminder about a topic."""
     message_text = message.get('text', None)
     user_id = message['from']['id']
@@ -765,6 +779,7 @@ bot_commands['/remindme'] = remindme
 
 
 def myreminders(message):
+    # todo refactor to use the db.
     """View your reminders."""
     current_chat = message['chat']['id']
     user_id = message['from']['id']
