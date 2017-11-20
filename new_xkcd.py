@@ -5,6 +5,8 @@ import feedparser
 
 def get_submitted(db):
     table = db['xkcd']
+    if table.count() == 0:
+        table.insert(dict(comic_id=0))
     return [c['comic_id'] for c in table]
 
 
