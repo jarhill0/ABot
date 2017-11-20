@@ -9,7 +9,7 @@ import helpers
 
 
 def parse_reminder(time_str, message, user_id, calendar, tg, current_chat):
-    ev_time = dateparser.parse(date_string=time_str.strip())
+    ev_time = dateparser.parse(date_string=time_str.strip(), settings={'PREFER_DATES_FROM': 'future'})
     if ev_time is None:
         invalid_time_message = {'chat_id': current_chat,
                                 'text': "Sorry, I couldn't understand that time."}
