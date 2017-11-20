@@ -1,0 +1,5 @@
+praw.ini
+.idea/*
+data/launches.json
+data/mydatabase.db
+config.py
