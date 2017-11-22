@@ -447,7 +447,7 @@ def redditguessing(message, nsfw=False):
         # delete it in 10 seconds (roughly; affected by schedule polling)
         message_id = response['result']['message_id']
         data = {'chat_id': current_chat, 'message_id': message_id}
-        bot_scheduler.add_event(time.time() + 10, tg.delete_message, args=[data], force=True)
+        bot_scheduler.add_event(time.time() + 10, tg.delete_message, args=[data])
 
 
 bot_commands['/redditguess'] = redditguessing
