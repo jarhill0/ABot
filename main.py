@@ -97,6 +97,7 @@ def schedule_xkcd(calendar):
 
 
 def schedule_events(calendar):
+    calendar.clear()
     schedule_launches(calendar)
     schedule_xkcd(calendar)
     reminders.load_from_db(db, calendar, tg)

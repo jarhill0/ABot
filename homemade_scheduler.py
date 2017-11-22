@@ -39,6 +39,10 @@ class Scheduler:
         for time_ in executed:
             del self.events[time_]
 
+    def clear(self):
+        """Remove all events."""
+        self.__init__()
+
 
 class Event:
     """A representation of a function to execute and its argument."""
