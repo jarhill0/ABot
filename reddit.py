@@ -23,10 +23,11 @@ def hot_posts(subreddit, number, chat_id, db, *, guessing_game=False):
             return 'Error. Could not access r/%s.' % subreddit, None
 
     if guessing_game:
-        body = 'Hot posts from a random subreddit. Take a guess!\n\n'
+        body = ['Hot posts from a random subreddit. Take a guess!']
     else:
         name = 'r/' + sub.display_name if magic else sub.display_name_prefixed
-        body = 'Hot posts from {}:\n\n'.format(name)
+        body = ['Hot posts from {}:'.format(name)]
+    body.append('')  # add extra newline after header.
 
     posts_dict = dict()
     n = 1
@@ -34,7 +35,7 @@ def hot_posts(subreddit, number, chat_id, db, *, guessing_game=False):
     for submission in sub.hot(limit=number + 5):
         if len(posts_dict) < number:
             if not submission.stickied or magic:  # don't exclude stickies from r/all and r/popular
-                body += '#{}: {} - {}\n'.format(n, submission.title, submission.shortlink)
+                body.append('#{}: {} - {}'.format(n, submission.title, submission.shortlink))
                 posts_dict[str(n)] = submission.shortlink
                 n += 1
 
@@ -42,7 +43,7 @@ def hot_posts(subreddit, number, chat_id, db, *, guessing_game=False):
     if guessing_game:
         db['redditguessanswer'].upsert(dict(chat=str(chat_id), sub=sub.display_name_prefixed), ['chat'])
 
-    return body
+    return '\n'.join(body)
 
 
 def post_proxy(link, chat_type, chat_id, tg):

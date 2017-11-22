@@ -13,13 +13,11 @@ def query_wa(args):
     array = []
     for pod in a.pods:
         if pod.text is not None:
-            string = ""
-            string += "*" + pod.title + "*\n"
-            string += '`' + pod.text + '`'
+            string = '*{}*\n`{}`'.format(pod.title, pod.text)
             array.append(string)
     m = "\n\n".join(array)
     if not m:
-        return "Error processing input"
+        return "Error processing input."
     return m
 
 
