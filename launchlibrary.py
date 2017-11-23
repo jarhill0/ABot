@@ -52,7 +52,7 @@ def build_launch_message(launch):
     missions_formatted = '\n'.join('*{}* ({}): _{}_'.format(m['name'], m['type'], m['description']) for m in missions)
     videos_formatted = '\n'.join(videos)
 
-    message = f"""
+    message = """
 {name} at {launch_time}
 
 Launching [{rocket_name}]({rocket_wiki}) from {pads_formatted}.
@@ -62,7 +62,8 @@ Missions:
 
 Video:
 {videos_formatted}
-"""
+""".format(name=name, launch_time=launch_time, rocket_name=rocket_name, rocket_wiki=rocket_wiki,
+           pads_formatted=pads_formatted, missions_formatted=missions_formatted, videos_formatted=videos_formatted)
     picture_message = {'photo': rocket_image, 'caption': rocket_name}
     text_message = {'text': message,
                     'parse_mode': 'Markdown',
@@ -111,3 +112,7 @@ def _format_time_range(start, end):
     part2 = datetime.datetime.fromtimestamp(end).strftime('%I:%M %p')
 
     return part1 + part2
+
+
+if __name__ == '__main__':
+    print('k')
