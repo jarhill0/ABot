@@ -13,17 +13,17 @@ class Scheduler:
             text.append('{}: {}'.format(key, event))
         return '\n'.join(text)
 
-    def add_event(self, event_time, func, args=None, kwargs=None, execute_past=True):
+    def add_event(self, event_time, func, args=None, kwargs=None, *, execute_past=True, prevent_shadowing=True):
         event = Event(func, args if args else [], kwargs if kwargs else {})
         event_time = int(event_time)
         if event_time < time.time():
             # Event is scheduled in the class
             if execute_past:
                 event.execute()
-                return True
-            else:
-                return False
+            return
         while event_time in self.events.keys():
+            if not prevent_shadowing:
+                return  # don't put it in there
             event_time += 1
         self.events[event_time] = event
 

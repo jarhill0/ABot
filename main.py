@@ -1,4 +1,3 @@
-import datetime
 import multiprocessing
 import os.path
 import re
@@ -17,7 +16,6 @@ import config
 import helpers
 import homemade_scheduler
 import launchlibrary
-import launchreminders
 import memesseges
 import new_xkcd
 import rand_frog
@@ -33,7 +31,6 @@ from parable import text_gen
 from telegram import Telegram, user_name
 
 tg = Telegram(config.token)
-next_launch = None
 bot_scheduler = homemade_scheduler.Scheduler()
 db = dataset.connect('sqlite:///{}'.format(os.path.join(helpers.folder_path(), 'data', 'mydatabase.db')))
 subscriptions = helpers.Subscriptions(['xkcd', 'launches'], db)
@@ -64,19 +61,18 @@ def main():
 
 
 def schedule_launches(calendar):
-    launchlibrary.update_json_on_disk()
+    launchlibrary.refresh(db)
 
-    global next_launch
-    try:
-        next_launch = launchreminders.get_next_launch()
-    except launchreminders.NoLaunchFoundError:
-        # there is no next launch
-        pass
-    else:
-        launchreminders.set_launch_triggers(next_launch, calendar, subscriptions)
-    finally:
-        # let's schedule another check in 24h
-        calendar.add_event(time.time() + 24 * 60 * 60 + 30, schedule_launches, args=[calendar])
+    next_launch = launchlibrary.get_next_launch(db)
+    if next_launch is not None:
+        t = next_launch['start']  # time of launch
+        times = [t - 24 * 60 * 60, t - 5 * 60 * 60, t - 2 * 60 * 60, t - 30 * 60, t]
+        for time_ in times:
+            calendar.add_event(time_, alert_launch_channels)
+
+    # check again in a day. reminders won't be duplicated for the *same* launch, but if there is a new next launch, 
+    # they will be silently shadowed instead of duplicated.
+    calendar.add_event(time.time() + 24 * 60 * 60, schedule_launches, args=[calendar], prevent_shadowing=False)
 
 
 def schedule_xkcd(calendar):
@@ -248,11 +244,34 @@ def redditposts(message):
 bot_commands['/redditposts'] = redditposts
 
 
+def send_launch_message(chat_id, messages=None):
+    if messages is None:
+        messages = launchlibrary.build_launch_message(launchlibrary.get_next_launch(db))
+
+    pic, text = messages
+
+    if pic is not None:  # pic will be None if there is no next message
+        pic['chat_id'] = chat_id
+        tg.send_photo(pic)
+        del pic['chat_id']
+
+    text['chat_id'] = chat_id
+    tg.send_message(text)
+    del text['chat_id']
+
+
+def alert_launch_channels():
+    subscribers = subscriptions.get_subscribers('launches')
+    next_launch = launchlibrary.get_next_launch(db)
+
+    for chat in subscribers:
+        send_launch_message(chat, next_launch)
+
+
 def launch_(message):
     """View information about the next SpaceX launch."""
     current_chat = message['chat']['id']
-    # noinspection PyTypeChecker
-    send_launch_message(next_launch, current_chat)
+    send_launch_message(current_chat)
 
 
 bot_commands['/nextlaunch'] = launch_
@@ -323,7 +342,6 @@ def reddits(message):
                 if post is None:
                     break
                 reddit.post_proxy(post, chat_type, current_chat, tg)
-
 
     else:
         url = command_opt
@@ -749,7 +767,7 @@ def handle_helper(command, message, current_chat):
             if command.lower() in bot_commands:
                 # call the function stored in bot_commands with message
                 bot_commands[command.lower()](message)
-        except Exception as e:
+        except Exception:
             traceback.print_exc()
             pass
 
@@ -764,46 +782,6 @@ def build_command_list(commands, for_botfather=False):
     if not for_botfather:
         return '\n'.join(['%s - %s' % (name, job) for name, job in commands_list])
     return '\n'.join(['%s - %s' % (name[1:], job) for name, job in commands_list])  # remove leading slash
-
-
-def send_launch_message(launch, chat_id):
-    if launch is None:
-        data = {'chat_id': chat_id,
-                'text': 'Could not find any upcoming launches.', }
-        tg.send_message(data)
-    window_open = launch['wsstamp']
-    human_local_window_open = datetime.datetime.fromtimestamp(window_open).strftime('%B %d, %Y %H:%M:%S')
-    human_gmt_window_open = launch['windowstart']
-
-    window_close = launch['westamp']
-    human_local_window_close = datetime.datetime.fromtimestamp(window_close).strftime('%B %d, %Y %H:%M:%S')
-    human_gmt_window_close = launch['windowend']
-
-    location_name = launch['location']['name']
-    vid_urls = launch['vidURLs']
-    launch_name = launch['name']
-    missions = []
-    for mis in launch['missions']:
-        missions.append((mis['name'], mis['typeName'], mis['description']))
-    agency = launch['rocket']['agencies'][0]['name']
-    for agen in launch['rocket']['agencies'][1:]:
-        agency += ', %s' % agen['name']
-
-    message = 'Upcoming %s launch at %s – %s (CA time %s - %s):\n\n' % (
-        agency, human_gmt_window_open, human_gmt_window_close, human_local_window_open, human_local_window_close)
-
-    message += '*%s*\n%s\n\nMissions:\n' % (launch_name, location_name)
-    for mission in missions:
-        message += '*%s* (%s): _%s_\n' % (mission[0], mission[1], mission[2])
-    message += '\nVideo:'
-    for vid_url in vid_urls:
-        message += ' ' + vid_url
-
-    data = {'chat_id': chat_id,
-            'text': message,
-            'parse_mode': 'Markdown',
-            'disable_web_page_preview': True, }
-    tg.send_message(data)
 
 
 if __name__ == '__main__':
