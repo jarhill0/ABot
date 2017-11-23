@@ -1,5 +1,6 @@
-import requests
 import time
+
+import requests
 
 
 # noinspection PyBroadException
@@ -10,7 +11,7 @@ def archive(url):
     """
     try:
         requests.get('https://web.archive.org/save/' + url)
-    except BaseException as e:
+    except Exception:
         return 'Archiving error or invalid URL.'
     date = time.strftime('%Y%m%d%H%M%S', time.gmtime())
 

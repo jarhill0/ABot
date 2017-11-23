@@ -13,7 +13,7 @@ def upload(url):
 def archive_message(url):
     try:
         arc_url = upload(url)
-    except BaseException:
+    except Exception:
         return 'Archiving error or invalid URL.'
     else:
         if arc_url is not None:

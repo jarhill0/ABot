@@ -46,6 +46,7 @@ def hot_posts(subreddit, number, chat_id, db, *, guessing_game=False):
     return '\n'.join(body)
 
 
+# noinspection PyPep8Naming
 def post_proxy(link, chat_type, chat_id, tg):
     TEXT = 10
     PICTURE = 20

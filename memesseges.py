@@ -82,6 +82,7 @@ def secretcommand(message):
     tg.send_message(data)
 
 
+# noinspection PyPep8Naming
 def lelxD(message):
     """lel xD."""
     current_chat = message['chat']['id']

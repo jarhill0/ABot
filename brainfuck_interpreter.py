@@ -120,10 +120,11 @@ def execute(code, input_):
 
 
 def main(my_code, input_=''):
+    # noinspection PyBroadException
     try:
         return execute(my_code, input_)[:1000]
-    except BaseException as e:
-        return str(e)
+    except Exception:
+        return 'Error.'
 
 
 if __name__ == '__main__':
