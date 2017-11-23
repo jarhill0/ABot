@@ -36,7 +36,7 @@ def get_next_launch(db):
 
 
 def build_launch_message(launch):
-    if launch in None:
+    if launch is None:
         return None, {'text': 'No upcoming launch found.'}
     name = launch['name']
     launch_time = _format_time_range(launch['start'], launch['end'])
