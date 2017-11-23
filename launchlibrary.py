@@ -42,7 +42,7 @@ def build_launch_message(launch):
     launch_time = _format_time_range(launch['start'], launch['end'])
     rocket_name = launch['rocket_name']
     rocket_wiki = launch['rocket_wiki']
-    rocket_image = launch['rocket_name']
+    rocket_image = launch['rocket_image']
 
     videos = json.loads(launch['videos'])
     pads = json.loads(launch['pads'])
@@ -112,7 +112,3 @@ def _format_time_range(start, end):
     part2 = datetime.datetime.fromtimestamp(end).strftime('%I:%M %p')
 
     return part1 + part2
-
-
-if __name__ == '__main__':
-    print('k')
