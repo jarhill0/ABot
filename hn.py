@@ -23,9 +23,13 @@ def top(limit):
     return _listing_helper(hn.top, limit)
 
 
-def view(item_id):
+def view(item_id=None, item_obj=None):
     """Returns an HTML string of the item"""
-    item = hn.item(item_id)
+    if item_id is not None:
+        item = hn.item(item_id)
+    else:
+        item = item_obj
+
     if isinstance(item, hacker_news.Poll):
         options = '\n'.join('(+{}) {}'.format(o.score, o.text.replace('<p>', '\n')) for o in item.parts())
         return '<a href="{}">{}</a> (+{})\n' \
@@ -47,6 +51,18 @@ def view(item_id):
                                                       item.content.replace('<p>', '\n'))
 
     return item.link
+
+
+def replies(item_id, limit):
+    """View replied to an item"""
+    limit = _constrain(limit)
+    item = hn.item(item_id)
+    children = []
+    for i, kid in enumerate(item.kids()):
+        if i >= limit:
+            break
+        children.append(view(item_obj=kid))
+    return '\n\n'.join(children)
 
 
 def _constrain(limit):

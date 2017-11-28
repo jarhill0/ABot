@@ -798,6 +798,30 @@ def hn_item(message):
 
 bot_commands['/hn_item'] = hn_item
 
+
+def hn_replies(message):
+    """View replies to HN item with specified ID."""
+    current_chat = message['chat']['id']
+    message_text = message['text'].lower()
+
+    id_regex = re.compile(r'/hn_replies(?:@a_group_bot)?\s(\d+)?(?:\s|$)(\d+)?(?:\s|$)')
+    item_id = id_regex.search(message_text).group(1)
+
+    if item_id is None:
+        data = {'chat_id': current_chat, 'text': 'Enter a HN item ID.'}
+    else:
+        limit = id_regex.search(message_text).group(2)
+        if limit is None:
+            lim = 5
+        else:
+            lim = int(limit)
+        data = {'chat_id': current_chat, 'text': hn.replies(item_id, lim), 'parse_mode': 'HTML'}
+
+    tg.send_message(data)
+
+
+bot_commands['/hn_replies'] = hn_replies
+
 # static responses
 bot_commands['/helloworld'] = memesseges.helloworld
 bot_commands['/lelxd'] = memesseges.lelxD
