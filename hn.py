@@ -1,32 +1,39 @@
 import hacker_news
 
 hn = hacker_news.HackerNews()
+table = None
+ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
 
 
-def ask(limit):
-    return _listing_helper(hn.ask, limit)
+def ask(limit, db, chat_id):
+    return _listing_helper(hn.ask, limit, db, chat_id)
 
 
-def best(limit):
-    return _listing_helper(hn.best, limit)
+def best(limit, db, chat_id):
+    return _listing_helper(hn.best, limit, db, chat_id)
 
 
-def new(limit):
-    return _listing_helper(hn.new, limit)
+def new(limit, db, chat_id):
+    return _listing_helper(hn.new, limit, db, chat_id)
 
 
-def show(limit):
-    return _listing_helper(hn.show, limit)
+def show(limit, db, chat_id):
+    return _listing_helper(hn.show, limit, db, chat_id)
 
 
-def top(limit):
-    return _listing_helper(hn.top, limit)
+def top(limit, db, chat_id):
+    return _listing_helper(hn.top, limit, db, chat_id)
 
 
-def view(item_id=None, item_obj=None, *args, comm_link_parent=True):
+def view(item_id=None, item_obj=None, item_letter=None, *args, chat_id=None, db=None, comm_link_parent=True):
     """Returns an HTML string of the item"""
     if item_id is not None:
         item = hn.item(item_id)
+    elif item_letter is not None:
+        ensure_table(db)
+        item = get_posts(chat_id)[item_letter]
+        if item is None:
+            return 'Invalid reference.'
     else:
         item = item_obj
 
@@ -57,9 +64,16 @@ def view(item_id=None, item_obj=None, *args, comm_link_parent=True):
     return item.link
 
 
-def replies(item_id, limit):
+def replies(limit, item_id=None, item_letter=None, chat_id=None, db=None):
     """View replied to an item"""
     limit = _constrain(limit)
+
+    if item_id is None:
+        ensure_table(db)
+        item_id = get_posts(chat_id)[item_letter]
+        if item_id is None:
+            return 'Invalid reference.'
+
     item = hn.item(item_id)
     children = []
     for i, kid in enumerate(item.kids()):
@@ -69,14 +83,36 @@ def replies(item_id, limit):
     return '\n\n'.join(children)
 
 
+def ensure_table(db):
+    if table is None and db is not None:
+        global table
+        table = db['hn']
+
+
+def store_posts(posts, chat_id):
+    posts['chat'] = str(chat_id)
+    table.upsert(posts, ['chat'])
+
+
+def get_posts(chat_id):
+    return table.find_one(chat=chat_id)
+
+
 def _constrain(limit):
     """Force a limit to be within a certain range."""
     return max(1, min(25, limit))
 
 
-def _listing_helper(listing, limit):
+def _listing_helper(listing, limit, db, chat_id):
     limit = _constrain(limit)
     text = []
+
+    posts = {ALPHABET[n].upper(): None for n in range(1, 26)}
+    ensure_table(db)
+
     for n, post in enumerate(listing(limit)):
-        text.append('[{}]({}) (+{})'.format(post.title, post.link, post.score))
+        text.append('#{} [{}]({}) (+{})'.format(n + 1, post.title, post.link, post.score))
+        posts[ALPHABET[n]] = post.id
+    store_posts(posts, chat_id)
+
     return '\n'.join(text)

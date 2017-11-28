@@ -786,12 +786,16 @@ def hn_item(message):
     current_chat = message['chat']['id']
     message_text = message['text'].lower()
 
-    limit_regex = re.compile(r'/hn_item(?:@a_group_bot)?(?:\s(\d+))?(?:\s|$)')
+    limit_regex = re.compile(r'/hn_item(?:@a_group_bot)?\s?(\d+|[a-zA-Z])?(?:\s|$)')
     command_opt = limit_regex.search(message_text).group(1)
     if command_opt is None:
         data = {'chat_id': current_chat, 'text': 'Enter a HN item ID.'}
     else:
-        data = {'chat_id': current_chat, 'text': hn.view(command_opt), 'parse_mode': 'HTML'}
+        if command_opt.isdigit():
+            body = hn.view(command_opt)
+        else:
+            body = hn.view(item_letter=command_opt, chat_id=current_chat, db=db)
+        data = {'chat_id': current_chat, 'text': body, 'parse_mode': 'HTML'}
 
     tg.send_message(data)
 
@@ -804,7 +808,7 @@ def hn_replies(message):
     current_chat = message['chat']['id']
     message_text = message['text'].lower()
 
-    id_regex = re.compile(r'/hn_replies(?:@a_group_bot)?\s?(\d+)?(?:\s|$)(\d+)?(?:\s|$)?')
+    id_regex = re.compile(r'/hn_replies(?:@a_group_bot)?\s?(\d+|[a-zA-Z])?(?:\s|$)(\d+)?(?:\s|$)?')
     item_id = id_regex.search(message_text).group(1)
 
     if item_id is None:
@@ -815,7 +819,11 @@ def hn_replies(message):
             lim = 5
         else:
             lim = int(limit)
-        data = {'chat_id': current_chat, 'text': hn.replies(item_id, lim), 'parse_mode': 'HTML'}
+        if item_id.isdigit():
+            body = hn.replies(lim, item_id)
+        else:
+            body = hn.replies(lim, item_letter=item_id, chat_id=current_chat, db=db)
+        data = {'chat_id': current_chat, 'text': body, 'parse_mode': 'HTML'}
 
     tg.send_message(data)
 
