@@ -4,6 +4,7 @@ import re
 import sys
 import time
 import traceback
+import hn
 import urllib.parse
 
 import dataset
@@ -716,6 +717,66 @@ def delete(message):
 
 
 bot_commands['/delete'] = delete
+
+
+def _hn_helper(message, command, func):
+    current_chat = message['chat']['id']
+    message_text = message['text'].lower()
+    words = message_text.split()
+
+    limit_regex = re.compile(r'/{}(?:@a_group_bot)?(?:\s(\d+))?(?:\s|$)'.format(command))
+    command_opt = limit_regex.search(message_text).group(1)
+    opt = int(command_opt) if command_opt.isdigit() else 5
+
+    data = {'chat_id': current_chat, 'text': func(opt), 'parse_mode': 'Markdown', 'disable_web_page_preview': True}
+    tg.send_message(data)
+
+
+def hn_ask(message):
+    """View Ask HN posts."""
+    _hn_helper(message, 'hn_ask', hn.ask)
+
+
+bot_commands['/hn_ask'] = hn_ask
+
+
+def hn_best(message):
+    """View best HN posts."""
+    _hn_helper(message, 'hn_best', hn.best)
+
+
+bot_commands['/hn_best'] = hn_best
+
+
+def hn_new(message):
+    """View new HN posts."""
+    _hn_helper(message, 'hn_new', hn.new)
+
+
+bot_commands['/hn_new'] = hn_new
+
+
+def hn_show(message):
+    """View Show HN posts."""
+    _hn_helper(message, 'hn_show', hn.show)
+
+
+bot_commands['/hn_show'] = hn_show
+
+
+def hn_top(message):
+    """View top HN posts."""
+    _hn_helper(message, 'hn_top', hn.top)
+
+
+bot_commands['/hn'] = hn_top
+
+
+def hn_top_without_docstring(message):
+    hn_top(message)
+
+
+bot_commands['/hn_top'] = hn_top_without_docstring
 
 # static responses
 bot_commands['/helloworld'] = memesseges.helloworld
