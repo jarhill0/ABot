@@ -730,7 +730,8 @@ def _hn_helper(message, command, func):
     else:
         opt = int(command_opt)
 
-    data = {'chat_id': current_chat, 'text': func(opt), 'parse_mode': 'Markdown', 'disable_web_page_preview': True}
+    data = {'chat_id': current_chat, 'text': func(opt, db, current_chat), 'parse_mode': 'Markdown',
+            'disable_web_page_preview': True}
     tg.send_message(data)
 
 
