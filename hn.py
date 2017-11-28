@@ -43,7 +43,8 @@ def view(item_id):
         return '^ {} [-]\n{}\nReply to: {}'.format(item.by, item.text, item.parent.link)
 
     if isinstance(item, (hacker_news.Story, hacker_news.Job)):
-        return '(+{}) <a href="{}">{}</a>\n{}'.format(item.score, item.link, item.title, item.content)
+        return '(+{}) <a href="{}">{}</a>\n{}'.format(item.score, item.link, item.title,
+                                                      item.content.replace('<p>', '\n'))
 
     return item.link
 
