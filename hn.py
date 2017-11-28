@@ -84,8 +84,8 @@ def replies(limit, item_id=None, item_letter=None, chat_id=None, db=None):
 
 
 def ensure_table(db):
+    global table
     if table is None and db is not None:
-        global table
         table = db['hn']
 
 
