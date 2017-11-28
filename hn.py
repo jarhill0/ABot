@@ -23,7 +23,7 @@ def top(limit):
     return _listing_helper(hn.top, limit)
 
 
-def view(item_id=None, item_obj=None):
+def view(item_id=None, item_obj=None, *args, comm_link_parent=True):
     """Returns an HTML string of the item"""
     if item_id is not None:
         item = hn.item(item_id)
@@ -45,7 +45,10 @@ def view(item_id=None, item_obj=None):
                                                                  poll.title, poll.link)
 
     if isinstance(item, hacker_news.Comment):
-        return '^ {} [-]\n{}\nReply to: {}'.format(item.by, item.text.replace('<p>', '\n'), item.parent.link)
+        main = '^ <a href="{}">{}</a> [-]\n{}'.format(item.link, item.by, item.text.replace('<p>', '\n'))
+        if comm_link_parent:
+            main += '\nReply to: {}'.format(item.parent.link)
+        return main
 
     if isinstance(item, (hacker_news.Story, hacker_news.Job)):
         return '(+{}) <a href="{}">{}</a>\n{}'.format(item.score, item.link, item.title,
@@ -62,7 +65,7 @@ def replies(item_id, limit):
     for i, kid in enumerate(item.kids()):
         if i >= limit:
             break
-        children.append(view(item_obj=kid))
+        children.append(view(item_obj=kid, comm_link_parent=False))
     return '\n\n'.join(children)
 
 
