@@ -804,7 +804,7 @@ def hn_replies(message):
     current_chat = message['chat']['id']
     message_text = message['text'].lower()
 
-    id_regex = re.compile(r'/hn_replies(?:@a_group_bot)?\s(\d+)?(?:\s|$)(\d+)?(?:\s|$)')
+    id_regex = re.compile(r'/hn_replies(?:@a_group_bot)?\s?(\d+)?(?:\s|$)(\d+)?(?:\s|$)?')
     item_id = id_regex.search(message_text).group(1)
 
     if item_id is None:
