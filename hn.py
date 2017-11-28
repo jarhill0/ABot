@@ -59,19 +59,3 @@ def _listing_helper(listing, limit):
     for n, post in enumerate(listing(limit)):
         text.append('[{}]({}) (+{})'.format(post.title, post.link, post.score))
     return '\n'.join(text)
-
-
-if __name__ == '__main__':
-    # print(view(6527104))
-    print('\n')
-    print(view(6527106))
-    print('\n')
-    print(view(6527333))
-    print('\n')
-    print(view(15790672))
-    print('\n')
-    print(view(15795423))
-    print('\n')
-    print(view(15792986))
-    print('\n')
-    print(view(15794340))

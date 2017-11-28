@@ -780,6 +780,24 @@ def hn_top_without_docstring(message):
 
 bot_commands['/hn_top'] = hn_top_without_docstring
 
+
+def hn_item(message):
+    """View HN item with specified ID."""
+    current_chat = message['chat']['id']
+    message_text = message['text'].lower()
+
+    limit_regex = re.compile(r'/hn_item(?:@a_group_bot)?(?:\s(\d+))?(?:\s|$)')
+    command_opt = limit_regex.search(message_text).group(1)
+    if command_opt is None:
+        data = {'chat_id': current_chat, 'text': 'Enter a HN item ID.'}
+    else:
+        data = {'chat_id': current_chat, 'text': hn.view(command_opt), 'parse_mode': 'HTML'}
+
+    tg.send_message(data)
+
+
+bot_commands['/hn_item'] = hn_item
+
 # static responses
 bot_commands['/helloworld'] = memesseges.helloworld
 bot_commands['/lelxd'] = memesseges.lelxD
