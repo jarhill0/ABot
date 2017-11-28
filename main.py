@@ -725,8 +725,11 @@ def _hn_helper(message, command, func):
     words = message_text.split()
 
     limit_regex = re.compile(r'/{}(?:@a_group_bot)?(?:\s(\d+))?(?:\s|$)'.format(command))
-    command_opt = limit_regex.search(message_text).group(1)
-    opt = int(command_opt) if command_opt.isdigit() else 5
+    command_search = limit_regex.search(message_text)
+    if command_search is None:
+        opt = 5
+    else:
+        opt = int(command_search.group(1))
 
     data = {'chat_id': current_chat, 'text': func(opt), 'parse_mode': 'Markdown', 'disable_web_page_preview': True}
     tg.send_message(data)
