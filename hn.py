@@ -41,10 +41,11 @@ def view(item_id=None, item_obj=None):
 
     if isinstance(item, hacker_news.PollOpt):
         poll = item.poll
-        return 'Option (+{}) {} from <a href="{}">{}</a>'.format(item.score, item.text, poll.title, poll.link)
+        return 'Option (+{}) {} from <a href="{}">{}</a>'.format(item.score, item.text.replace('<p>', '\n'),
+                                                                 poll.title, poll.link)
 
     if isinstance(item, hacker_news.Comment):
-        return '^ {} [-]\n{}\nReply to: {}'.format(item.by, item.text, item.parent.link)
+        return '^ {} [-]\n{}\nReply to: {}'.format(item.by, item.text.replace('<p>', '\n'), item.parent.link)
 
     if isinstance(item, (hacker_news.Story, hacker_news.Job)):
         return '(+{}) <a href="{}">{}</a>\n{}'.format(item.score, item.link, item.title,
