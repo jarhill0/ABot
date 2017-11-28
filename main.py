@@ -769,14 +769,14 @@ bot_commands['/hn_show'] = hn_show
 
 def hn_top(message):
     """View top HN posts."""
-    _hn_helper(message, 'hn_top', hn.top)
+    _hn_helper(message, 'hn', hn.top)
 
 
 bot_commands['/hn'] = hn_top
 
 
 def hn_top_without_docstring(message):
-    hn_top(message)
+    _hn_helper(message, 'hn_top', hn.top)
 
 
 bot_commands['/hn_top'] = hn_top_without_docstring
