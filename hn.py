@@ -2,7 +2,7 @@ import hacker_news
 
 hn = hacker_news.HackerNews()
 table = None
-ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
+ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 
 def ask(limit, db, chat_id):
@@ -71,7 +71,7 @@ def replies(limit, item_id=None, item_letter=None, chat_id=None, db=None):
     if item_id is None:
         ensure_table(db)
         item_id = get_posts(chat_id)[item_letter]
-        if item_id is None:
+        if item_id == -1:
             return 'Invalid reference.'
 
     item = hn.item(item_id)
@@ -107,7 +107,7 @@ def _listing_helper(listing, limit, db, chat_id):
     limit = _constrain(limit)
     text = []
 
-    posts = {ALPHABET[n].upper(): None for n in range(1, 26)}
+    posts = {l: -1 for l in ALPHABET}
     ensure_table(db)
 
     for n, post in enumerate(listing(limit)):
