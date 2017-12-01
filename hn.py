@@ -31,7 +31,7 @@ def view(item_id=None, item_obj=None, item_letter=None, *args, chat_id=None, db=
         item = hn.item(item_id)
     elif item_letter is not None:
         ensure_table(db)
-        item = get_posts(chat_id)[item_letter]
+        item = get_posts(chat_id)[item_letter.upper()]
         if item is None:
             return 'Invalid reference.'
     else:
@@ -111,7 +111,7 @@ def _listing_helper(listing, limit, db, chat_id):
     ensure_table(db)
 
     for n, post in enumerate(listing(limit)):
-        text.append('#{} [{}]({}) (+{})'.format(ALPHABET[n], post.title, post.link, post.score))
+        text.append('**{}**: [{}]({}) (+{})'.format(ALPHABET[n], post.title, post.link, post.score))
         posts[ALPHABET[n]] = post.id
     store_posts(posts, chat_id)
 
