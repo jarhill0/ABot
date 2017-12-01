@@ -70,7 +70,7 @@ def replies(limit, item_id=None, item_letter=None, chat_id=None, db=None):
 
     if item_id is None:
         ensure_table(db)
-        item_id = get_posts(chat_id)[item_letter]
+        item_id = get_posts(chat_id)[item_letter.upper()]
         if item_id == -1:
             return 'Invalid reference.'
 
@@ -111,7 +111,7 @@ def _listing_helper(listing, limit, db, chat_id):
     ensure_table(db)
 
     for n, post in enumerate(listing(limit)):
-        text.append('#{} [{}]({}) (+{})'.format(n + 1, post.title, post.link, post.score))
+        text.append('#{} [{}]({}) (+{})'.format(ALPHABET[n], post.title, post.link, post.score))
         posts[ALPHABET[n]] = post.id
     store_posts(posts, chat_id)
 
