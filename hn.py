@@ -26,14 +26,14 @@ def top(limit, db, chat_id):
 
 
 def view(item_id=None, item_obj=None, item_letter=None, *args, chat_id=None, db=None, comm_link_parent=True):
-    """Returns an HTML string of the item"""
+    """Returns an HTML string of the item. item_obj overrides item_id, which in turn overrides item_letter"""
+    if item_letter is not None:
+        ensure_table(db)
+        item_id = get_posts(chat_id)[item_letter.upper()]
+        if item_id is -1:
+            return 'Invalid reference.'
     if item_id is not None:
         item = hn.item(item_id)
-    elif item_letter is not None:
-        ensure_table(db)
-        item = get_posts(chat_id)[item_letter.upper()]
-        if item is None:
-            return 'Invalid reference.'
     else:
         item = item_obj
 
