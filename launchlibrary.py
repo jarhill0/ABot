@@ -94,7 +94,7 @@ def _process(launches, table):
 
 
 def _get_new_agency_launches(agency_id):
-    url = 'https://launchlibrary.net/1.2/launch/next/'
+    url = 'https://launchlibrary.net/1.3/launch/next/'
     num_total = 30
     output = []
 
