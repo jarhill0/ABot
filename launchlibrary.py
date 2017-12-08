@@ -98,7 +98,11 @@ def _get_new_agency_launches(agency_id):
     num_total = 30
     output = []
 
-    new_launches = json.loads(requests.get(url + str(num_total)).content.decode('utf-8'))['launches']
+    try:
+        new_launches = json.loads(requests.get(url + str(num_total)).content.decode('utf-8'))['launches']
+    except ValueError:
+        # Some API error; let's not bring down the whole bot.
+        return []
     for launch in new_launches:
         if any(ag['id'] == agency_id for ag in launch['rocket']['agencies']):
             output.append(launch)
