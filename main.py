@@ -4,7 +4,6 @@ import re
 import sys
 import time
 import traceback
-import hn
 import urllib.parse
 
 import dataset
@@ -15,6 +14,7 @@ import brainfuck_interpreter
 import choice
 import config
 import helpers
+import hn
 import homemade_scheduler
 import launchlibrary
 import memesseges
@@ -245,9 +245,12 @@ def redditposts(message):
 bot_commands['/redditposts'] = redditposts
 
 
-def send_launch_message(chat_id, messages=None):
+def send_launch_message(chat_id, messages=None, launch=None):
     if messages is None:
-        messages = launchlibrary.build_launch_message(launchlibrary.get_next_launch(db))
+        if launch is not None:
+            messages = launchlibrary.build_launch_message(launch)
+        else:
+            messages = launchlibrary.build_launch_message(launchlibrary.get_next_launch(db))
 
     pic, text = messages
 
@@ -266,7 +269,7 @@ def alert_launch_channels():
     next_launch = launchlibrary.get_next_launch(db)
 
     for chat in subscribers:
-        send_launch_message(chat, next_launch)
+        send_launch_message(chat, launch=next_launch)
 
 
 def launch_(message):
