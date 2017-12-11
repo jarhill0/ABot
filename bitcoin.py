@@ -4,6 +4,7 @@ import time
 import requests
 
 STATS_URL = 'https://api.blockchain.info/stats'
+SATOSHI = 100000000
 
 
 class Update:
@@ -38,14 +39,11 @@ def btc_message():
     if data is None:
         return 'Could not get Bitcoin data.'
     price = data.get('market_price_usd', -1)
-    fees = data.get('total_fees_btc', 0)  # in satoshi (1/100000000 of a coin)
+    fees = data.get('total_fees_btc', 0) / SATOSHI
+    fees_usd = fees * price
     transactions = data.get('n_tx', 0)
     if transactions == 0:
         transactions = 1  # avoid zero division
-    avg_fee = fees / transactions
+    avg_fee = fees_usd / transactions
 
-    return 'BTC at ${:,.2f} with avg. fees per transaction at {:,.0f} sat.'.format(price, avg_fee)
-
-
-if __name__ == '__main__':
-    print(btc_message())
+    return 'BTC at ${:,.2f} with avg. fees per transaction at ${:,.2f}.'.format(price, avg_fee)
