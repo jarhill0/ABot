@@ -10,6 +10,7 @@ import dataset
 import xkcd
 
 import archive_is
+import bitcoin
 import brainfuck_interpreter
 import choice
 import config
@@ -833,6 +834,14 @@ def hn_replies(message):
 
 
 bot_commands['/hn_replies'] = hn_replies
+
+
+def btc(message):
+    """Bitcoin exchange rate and transaction fees."""
+    tg.send_message({'chat_id': message['chat']['id'], 'text': bitcoin.btc_message()})
+
+
+bot_commands['/bitcoin'] = btc
 
 # static responses
 bot_commands['/helloworld'] = memesseges.helloworld
