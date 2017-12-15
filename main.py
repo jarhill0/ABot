@@ -70,7 +70,9 @@ def schedule_launches(calendar):
         t = next_launch['start']  # time of launch
         times = [t - 24 * 60 * 60, t - 5 * 60 * 60, t - 2 * 60 * 60, t - 30 * 60, t]
         for time_ in times:
-            calendar.add_event(time_, alert_launch_channels)
+            calendar.add_event(time_, alert_launch_channels, prevent_shadowing=False)
+        # update right after the launch (20 minutes) instead of waiting for like a day.
+        calendar.add_event(t + 20 * 60, schedule_launches, args=[calendar])
 
     # check again in a day. reminders won't be duplicated for the *same* launch, but if there is a new next launch, 
     # they will be silently shadowed instead of duplicated.
