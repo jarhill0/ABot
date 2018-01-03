@@ -39,12 +39,15 @@ subscriptions = helpers.Subscriptions(['xkcd', 'launches'], db)
 memesseges.globalize_tg(tg)
 
 already_running = False
+could_not_relinquish = False
 
 
 def main():
-    global already_running
+    global already_running, could_not_relinquish
     if config.check_online_status:
-        if statuscheck.already_running(tg):
+        if could_not_relinquish:
+            could_not_relinquish = False
+        elif statuscheck.already_running(tg):
             print('Bot already running.')
             already_running = True
             sys.exit(1)
@@ -924,4 +927,7 @@ if __name__ == '__main__':
                 time.sleep(60)
         finally:
             if config.check_online_status and not already_running:
-                statuscheck.reliquish_status(tg)
+                try:
+                    statuscheck.reliquish_status(tg)
+                except Exception:
+                    could_not_relinquish = True
