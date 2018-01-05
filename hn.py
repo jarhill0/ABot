@@ -43,7 +43,7 @@ def view(item_id=None, item_obj=None, item_letter=None, *args, chat_id=None, db=
                '{}\nOptions:\n{}'.format(item.title,
                                          item.link,
                                          item.score,
-                                         item.text or '',
+                                         item.text if hasattr(item, 'text') else '',
                                          options)
 
     if item.type == 'pollopt':
