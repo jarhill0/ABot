@@ -1,6 +1,6 @@
-import hacker_news
+import hnpy
 
-hn = hacker_news.HackerNews()
+hn = hnpy.HackerNews()
 table = None
 ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -37,7 +37,7 @@ def view(item_id=None, item_obj=None, item_letter=None, *args, chat_id=None, db=
     else:
         item = item_obj
 
-    if isinstance(item, hacker_news.Poll):
+    if item.type == 'poll':
         options = '\n'.join('(+{}) {}'.format(o.score, o.text.replace('<p>', '\n')) for o in item.parts())
         return '<a href="{}">{}</a> (+{})\n' \
                '{}\nOptions:\n{}'.format(item.title,
@@ -46,18 +46,18 @@ def view(item_id=None, item_obj=None, item_letter=None, *args, chat_id=None, db=
                                          item.text,
                                          options)
 
-    if isinstance(item, hacker_news.PollOpt):
+    if item.type == 'pollopt':
         poll = item.poll
         return 'Option (+{}) {} from <a href="{}">{}</a>'.format(item.score, item.text.replace('<p>', '\n'),
                                                                  poll.title, poll.link)
 
-    if isinstance(item, hacker_news.Comment):
-        main = '^ <a href="{}">{}</a> [-]\n{}'.format(item.link, item.by, item.text.replace('<p>', '\n'))
+    if item.type == 'comment':
+        main = '^ <a href="{}">{}</a> [-]\n{}'.format(item.link, item.by.name, item.text.replace('<p>', '\n'))
         if comm_link_parent:
             main += '\nReply to: {}'.format(item.parent.link)
         return main
 
-    if isinstance(item, (hacker_news.Story, hacker_news.Job)):
+    if item.type in ('story', 'job'):
         return '(+{}) <a href="{}">{}</a>\n{}'.format(item.score, item.link, item.title,
                                                       item.content.replace('<p>', '\n'))
 
@@ -76,9 +76,7 @@ def replies(limit, item_id=None, item_letter=None, chat_id=None, db=None):
 
     item = hn.item(item_id)
     children = []
-    for i, kid in enumerate(item.kids()):
-        if i >= limit:
-            break
+    for kid in item.kids(limit=limit):
         children.append(view(item_obj=kid, comm_link_parent=False))
     return '\n\n'.join(children)
 
