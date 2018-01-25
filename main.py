@@ -344,18 +344,18 @@ def reddits(message):
                 tg.send_message(data)
                 return
 
-            reddit.post_proxy(post, chat_type, current_chat, tg)
+            reddit.post_proxy(post, chat_type, current_chat, tg, db)
 
         elif command_opt == 'all' and chat_type == 'private':
             for i in range(1, 21):  # max /redditlimit
                 post = chat_row[str(i)]
                 if post is None:
                     break
-                reddit.post_proxy(post, chat_type, current_chat, tg)
+                reddit.post_proxy(post, chat_type, current_chat, tg, db)
 
     else:
         url = command_opt
-        reddit.post_proxy(url, chat_type, current_chat, tg)
+        reddit.post_proxy(url, chat_type, current_chat, tg, db)
 
 
 bot_commands['/reddit'] = reddits
@@ -847,6 +847,25 @@ def btc(message):
 
 
 bot_commands['/bitcoin'] = btc
+
+
+def reddnsfwhelper(message, on):
+    current_chat = message['chat']['id']
+    table = db['nsfw']
+    row = dict(chat=current_chat, setting=on)
+    table.upsert(row, ['chat'])
+
+
+def nsfwon(message):
+    reddnsfwhelper(message, True)
+
+
+def nsfwoff(message):
+    reddnsfwhelper(message, False)
+
+
+bot_commands['/nsfwon'] = nsfwon
+bot_commands['/nsfwoff'] = nsfwoff
 
 # static responses
 bot_commands['/helloworld'] = memesseges.helloworld

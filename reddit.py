@@ -47,7 +47,7 @@ def hot_posts(subreddit, number, chat_id, db, *, guessing_game=False):
 
 
 # noinspection PyPep8Naming
-def post_proxy(link, chat_type, chat_id, tg):
+def post_proxy(link, chat_type, chat_id, tg, db):
     TEXT = 10
     PICTURE = 20
     VIDEO = 30
@@ -73,7 +73,13 @@ def post_proxy(link, chat_type, chat_id, tg):
 
             return data, response_type
 
-        if post.over_18 and chat_type_ != 'private':
+        nsfw_setting = db['nsfw'].find_one(chat=chat_id)
+        if nsfw_setting:
+            nsfw_setting = nsfw_setting['setting']
+        else:
+            nsfw_setting = False
+
+        if post.over_18 and chat_type_ != 'private' and nsfw_setting:
             data = {'text': 'NSFW. Click it yourself.',
                     'chat_id': chat_id_}
             response_type = TEXT
