@@ -79,7 +79,7 @@ def post_proxy(link, chat_type, chat_id, tg, db):
         else:
             nsfw_setting = False
 
-        if post.over_18 and chat_type_ != 'private' and nsfw_setting:
+        if post.over_18 and chat_type_ != 'private' and not nsfw_setting:
             data = {'text': 'NSFW. Click it yourself.',
                     'chat_id': chat_id_}
             response_type = TEXT
