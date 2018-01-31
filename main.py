@@ -53,16 +53,12 @@ def main():
             sys.exit(1)
         statuscheck.claim_status(tg)
     schedule_events(bot_scheduler)
-    counter = 0
     while True:
+        bot_scheduler.check_events()
         response = tg.get_updates()
-        counter += 1
         # noinspection PySimplifyBooleanCheck
         if response['result'] != []:
             handle(response)
-        if counter == 50:
-            bot_scheduler.check_events()
-            counter = 0
 
 
 def schedule_launches(calendar):

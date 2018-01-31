@@ -1,5 +1,4 @@
 import copy
-import json
 import time
 
 import requests
@@ -48,8 +47,7 @@ class Telegram:
 
     def get_updates(self):
         # call getUpdates method and parse as JSON
-        response = json.loads(
-            requests.get(self.url + 'getUpdates', params={'offset': self.max_id}).content.decode('utf-8'))
+        response = requests.get(self.url + 'getUpdates', params={'offset': self.max_id, 'timeout': 30}).json()
 
         # update the maximum update ID
         for item in response['result']:
@@ -71,7 +69,7 @@ class Telegram:
 
         for data_ in datae:
             for i in range(2):
-                response = json.loads(requests.post(self.url + 'sendMessage', data=data_).content.decode('utf-8'))
+                response = requests.post(self.url + 'sendMessage', data=data_).json()
                 try:
                     responses.append(_check_and_return(response))
                 except ConnectionRefusedError:
@@ -87,7 +85,7 @@ class Telegram:
     def send_photo(self, data):
 
         for i in range(2):
-            response = json.loads(requests.post(self.url + 'sendPhoto', data=data).content.decode('utf-8'))
+            response = requests.post(self.url + 'sendPhoto', data=data).json()
             try:
                 return _check_and_return(response)
             except ConnectionRefusedError:
@@ -96,7 +94,7 @@ class Telegram:
 
     def send_video(self, data):
         for i in range(2):
-            response = json.loads(requests.post(self.url + 'sendVideo', data=data).content.decode('utf-8'))
+            response = requests.post(self.url + 'sendVideo', data=data).json()
             try:
                 return _check_and_return(response)
             except ConnectionRefusedError:
@@ -105,7 +103,7 @@ class Telegram:
 
     def delete_message(self, data):
         for i in range(2):
-            response = json.loads(requests.post(self.url + 'deleteMessage', data=data).content.decode('utf-8'))
+            response = requests.post(self.url + 'deleteMessage', data=data).json()
             try:
                 return _check_and_return(response)
             except ConnectionRefusedError:
@@ -136,13 +134,12 @@ class Telegram:
                     return True
 
     def get_me(self):
-        response = json.loads(
-            requests.get(self.url + 'getMe').content.decode('utf-8'))
+        response = requests.get(self.url + 'getMe').json()
         return response
 
     def set_chat_title(self, data):
         for i in range(2):
-            response = json.loads(requests.post(self.url + 'setChatTitle', data=data).content.decode('utf-8'))
+            response = requests.post(self.url + 'setChatTitle', data=data).json()
             try:
                 return _check_and_return(response)
             except ConnectionRefusedError:
@@ -151,7 +148,7 @@ class Telegram:
 
     def get_chat(self, data):
         for i in range(2):
-            response = json.loads(requests.post(self.url + 'getChat', data=data).content.decode('utf-8'))
+            response = requests.post(self.url + 'getChat', data=data).json()
             try:
                 return _check_and_return(response)
             except ConnectionRefusedError:
