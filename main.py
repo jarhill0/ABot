@@ -886,7 +886,7 @@ def handle(response):
 
             message = item['message']
 
-            message_text = message.get('text', None)
+            message_text = message.get('text') or message.get('caption')
             current_chat = message['chat']['id']
 
             if 'entities' in message.keys() or 'caption_entities' in message.keys():
