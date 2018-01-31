@@ -889,8 +889,12 @@ def handle(response):
             message_text = message.get('text', None)
             current_chat = message['chat']['id']
 
-            if 'entities' in message.keys():
-                entities = message['entities']
+            if 'entities' in message.keys() or 'caption_entities' in message.keys():
+                entities = []
+                if 'entities' in message.keys():
+                    entities += message['entities']
+                if 'caption_entities' in message.keys():
+                    entities += message['caption_entities']
                 bot_commands_in_message = []
                 for entity in entities:
                     if entity['type'] == 'bot_command':
