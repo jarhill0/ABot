@@ -80,9 +80,25 @@ class ABot(MappedCommandBot):
 
         self.db = db
         self.reddit = RedditHandler(self.tg)
+        self.rates = dict()
 
     def validate(self, message):
-        return super().validate(message)  # todo rate-limiting
+        message_time = message.date
+        id_pair = (str(message.chat.id), str(message.user.id))
+        if id_pair not in self.rates.keys():
+            # never even gotten a message from this user in this chat. Add them.
+            self.rates[id_pair] = [message_time]
+            return True
+        times = self.rates[id_pair]  # direct reference to a mutable list
+        if len(times) < 10:
+            # fewer than 10 messages with this ID pair ever. Start tracking and validate
+            times.append(message_time)
+            return True
+        if message_time - times[0] >= 60:  # if it's been at least a minute since 10 messages ago
+            del times[0]
+            times.append(message_time)  # length of list should always be 10
+            return True
+        return False  # we had 10 messages within a minute. Don't update the list.
 
     @staticmethod
     def _plaintext_helper(message, text, *args, **kwargs):
