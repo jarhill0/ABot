@@ -4,8 +4,10 @@ import time
 
 import requests
 
+from db_handler import db
 
-def refresh(db):
+
+def refresh():
     table = db['launches']
 
     new_launches = _get_new_agency_launches(121)  # SpaceX's ID
@@ -18,7 +20,7 @@ def refresh(db):
             table.delete(launch_id=row['launch_id'])
 
 
-def get_next_launch(db):
+def get_next_launch():
     table = db['launches']
     if table.count() == 0:
         return None
@@ -64,10 +66,10 @@ Video:
 {videos_formatted}
 """.format(name=name, launch_time=launch_time, rocket_name=rocket_name, rocket_wiki=rocket_wiki,
            pads_formatted=pads_formatted, missions_formatted=missions_formatted, videos_formatted=videos_formatted)
-    picture_message = {'photo': rocket_image, 'caption': rocket_name}
-    text_message = {'text': message,
-                    'parse_mode': 'Markdown',
-                    'disable_web_page_preview': True}
+    picture_message = (rocket_image, rocket_name)
+    text_message = dict(text=message,
+                        parse_mode='Markdown',
+                        disable_web_page_preview=True)
 
     return picture_message, text_message
 

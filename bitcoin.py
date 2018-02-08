@@ -1,4 +1,3 @@
-import json
 import time
 
 import requests
@@ -8,19 +7,16 @@ SATOSHI = 100000000
 
 
 class Update:
-    def __init__(self, url):
+    def __init__(self, url, session=None):
         self.url = url
         self.updated = 0
         self.data = None
+        self.session = session or requests.Session()
 
     def update(self):
         try:
-            response = requests.get(self.url).content.decode()
+            self.data = self.session.get(self.url).json()
         except requests.RequestException:
-            return
-        try:
-            self.data = json.loads(response)
-        except ValueError:
             return
         self.updated = time.time()
 
