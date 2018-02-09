@@ -193,13 +193,15 @@ class ABot(MappedCommandBot):
         message.chat.send_message(text, *args, **kwargs)
 
     def start(self, message, unused):
-        resp = "Hello {}! I am A Bot.\nHere's a list of my commands:\n\n{}".format(message.user.first_name,
-                                                                                   self.text_commands)
-        self._plaintext_helper(message, resp)
+        if message.chat.type.value == 'private':
+            resp = "Hello {}! I am A Bot.\nHere's a list of my commands:\n\n{}".format(message.user.first_name,
+                                                                                       self.text_commands)
+            self._plaintext_helper(message, resp)
 
     def help(self, message, unused):
         """View list of commands."""
-        self._plaintext_helper(message, 'Commands:\n\n' + self.text_commands)
+        if message.chat.type.value == 'private':
+            self._plaintext_helper(message, 'Commands:\n\n' + self.text_commands)
 
     def botfather_commands(self, message, unused):
         self._plaintext_helper(message, self._bf_cmds)
