@@ -346,11 +346,13 @@ class ABot(MappedCommandBot):
     @staticmethod
     def delete(message, unused):
         """Delete this bot message."""
-        try:
-            message.reply_to_message.delete()
-        except APIException:
-            # can't delete — not mine, too old, whatever
-            pass
+        rep = message.reply_to_message
+        if rep:
+            try:
+                rep.delete()
+            except APIException:
+                # can't delete — not mine, too old, whatever
+                pass
 
     def btc(self, message, unused):
         """Bitcoin exchange rate and transaction fees."""
