@@ -39,7 +39,7 @@ from statuscheck import StatusChecker, StatusDummy
 class ABot(MappedCommandBot):
     def __init__(self, token, *, url=None, session=None):
         text_command_map = dict()
-        caption_command_map = text_command_map # IMPORTANT! IT'S THE SAME OBJECT, SO ALL COMMANDS MUST BE COMPATIBLE
+        caption_command_map = text_command_map  # IMPORTANT! IT'S THE SAME OBJECT, SO ALL COMMANDS MUST BE COMPATIBLE
         # WITH BOTH!
 
         text_command_map['/archive'] = self.archive
@@ -54,12 +54,15 @@ class ABot(MappedCommandBot):
         text_command_map['/help'] = self.help
         text_command_map['/hn_ask'] = self.hn_ask
         text_command_map['/hn_best'] = self.hn_best
+        text_command_map['/hn_item'] = self.hn_item
         text_command_map['/hn_new'] = self.hn_new
+        text_command_map['/hn_replies'] = self.hn_replies
         text_command_map['/hn_show'] = self.hn_show
         text_command_map['/lelxd'] = self.lelxD
         text_command_map['/lenny'] = self.lenny
         text_command_map['/lmddgtfy'] = self.lmddgtfy
         text_command_map['/lmgtfy'] = self.lmgtfy
+        text_command_map['/myreminders'] = self.myreminders
         text_command_map['/myscore'] = self.myscore
         text_command_map['/mysubs'] = self.mysubs
         text_command_map['/nextlaunch'] = self.launch
@@ -72,6 +75,7 @@ class ABot(MappedCommandBot):
         text_command_map['/redditguessnsfw'] = self.redditguessnsfw
         text_command_map['/redditlimit'] = self.redditlimit
         text_command_map['/redditposts'] = self.redditposts
+        text_command_map['/remindme'] = self.remindme
         text_command_map['/secretcommand'] = self.secretcommand
         text_command_map['/settings'] = self.settings
         text_command_map['/shrug'] = self.shrug
