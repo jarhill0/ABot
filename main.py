@@ -200,8 +200,11 @@ class ABot(MappedCommandBot):
 
     def help(self, message, unused):
         """View list of commands."""
-        if message.chat.type.value == 'private':
-            self._plaintext_helper(message, 'Commands:\n\n' + self.text_commands)
+        try:
+            message.user.chat.send_message('Commands:\n\n' + self.text_commands)
+        except APIException:
+            # can't message that user…
+            pass
 
     def botfather_commands(self, message, unused):
         self._plaintext_helper(message, self._bf_cmds)
