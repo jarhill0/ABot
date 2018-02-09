@@ -258,6 +258,7 @@ class ABot(MappedCommandBot):
             self._plaintext_helper(message, 'Say something after /whyme (e.g. /whyme What the hell?!)')
 
     def wa(self, message, command_text):
+        """Evaluate query with WolframAlpha."""
         query = command_text.partition(' ')[2]
         if not query:
             self._plaintext_helper(message, 'Specify a query after /wa (e.g. /wa calories in a bagel)')
@@ -310,7 +311,7 @@ class ABot(MappedCommandBot):
         message.reply.send_message(self.archive_helper(command_text, web_archive.archive))
 
     def lmgtfy(self, message, command_text):
-        """Let me Google that for you please..."""
+        """Let me Google that for you…"""
         search = command_text.partition(' ')[2].strip()
         if search:
             result = 'https://lmgtfy.com/?q=' + urllib.parse.quote_plus(search)
@@ -319,7 +320,7 @@ class ABot(MappedCommandBot):
             message.reply('You gotta gimme something to search!')
 
     def lmddgtfy(self, message, command_text):
-        """Let me Google that for you please..."""
+        """Let me DuckDuckGo that for you…"""
         search = command_text.partition(' ')[2].strip()
         if search:
             result = 'https://lmddgtfy.net/?q=' + urllib.parse.quote_plus(search)
@@ -328,6 +329,7 @@ class ABot(MappedCommandBot):
             message.reply('You gotta gimme something to search!')
 
     def ud(self, message, command_text):
+        """Define a word using Urban Dictionary."""
         term = command_text.partition(' ')[2].strip()
         if term:
             reply = urban_dict.build_message(term)
@@ -336,10 +338,12 @@ class ABot(MappedCommandBot):
             self._plaintext_helper(message, 'Please follow the command with a search term.')
 
     def startup(self, message, unused):
+        """Get a disruptive tech startup idea."""
         self._plaintext_helper(message, startup.generate())
 
     @staticmethod
     def delete(message, unused):
+        """Delete this bot message."""
         try:
             message.reply_to_message.delete()
         except APIException:
@@ -347,6 +351,7 @@ class ABot(MappedCommandBot):
             pass
 
     def btc(self, message, unused):
+        """Bitcoin exchange rate and transaction fees."""
         self._plaintext_helper(message, bitcoin.btc_message())
 
     @staticmethod
@@ -361,6 +366,7 @@ class ABot(MappedCommandBot):
         return sorted(cmd_list)
 
     def xkcd(self, message, command_text):
+        """View latest xkcd comic, or view comic specified by number."""
         words = command_text.partition(' ')[2].lower().strip().split()
         opt = words[0] if len(words) > 0 else None
         if not opt:
@@ -489,6 +495,7 @@ class ABot(MappedCommandBot):
         self._redditguess(message, nsfw=True)
 
     def redditguessanswer(self, message, unused):
+        """Get the answer to the previous /redditguess."""
         answer_row = self.db['redditguessanswer'].find_one(chat=str(message.chat.id))
         answer = answer_row['sub'] if answer_row else 'nonexistent'
         response = 'The answer for the last /redditguess is {}.'.format(answer)
