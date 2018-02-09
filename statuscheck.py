@@ -1,3 +1,8 @@
+import time
+
+from requests.exceptions import ConnectionError
+
+
 class StatusChecker:
     ONLINE_TEXT = 'A Bot is online.'
     OFFLINE_TEXT = 'A Bot is offline.'
@@ -17,7 +22,17 @@ class StatusChecker:
 
     def reliquish_status(self):
         """Removes claim that bot is running"""
-        self.channel.set_title(StatusChecker.OFFLINE_TEXT)
+        try:
+            self.channel.set_title(StatusChecker.OFFLINE_TEXT)
+        except ConnectionError:
+            delay = 5
+            print('Error relinquishing status. Trying again  in {} seconds'.format(delay))
+            time.sleep(delay)
+
+            try:
+                self.channel.set_title(StatusChecker.OFFLINE_TEXT)
+            except ConnectionError:
+                print('Error relinquishing status. Exiting.')
 
 
 class StatusDummy(StatusChecker):
