@@ -11,6 +11,8 @@ import bitcoin
 import brainfuck_interpreter
 import choice
 import config
+import helpers
+import hn
 import launchlibrary
 import memetext
 import parable
@@ -66,6 +68,18 @@ class ABot(MappedCommandBot):
         text_command_map['/redditguess'] = self.redditguess
         text_command_map['/redditguessnsfw'] = self.redditguessnsfw
         text_command_map['/redditguessanswer'] = self.redditguessanswer
+        text_command_map['/myscore'] = self.myscore
+        text_command_map['/subscribe'] = self.subscribe
+        text_command_map['/unsubscribe'] = self.unsubscribe
+        text_command_map['/mysubs'] = self.mysubs
+        text_command_map['/hn_ask'] = self.hn_ask
+        text_command_map['/hn_best'] = self.hn_best
+        text_command_map['/hn_new'] = self.hn_new
+        text_command_map['/hn_show'] = self.hn_show
+        text_command_map['/hn'] = self.hn_top
+        text_command_map['/hn_top'] = self.hn_top
+        text_command_map['/hn_item'] = self.hn_item
+        text_command_map['/hn_replies'] = self.hn_replies
 
         super().__init__(token, text_command_map, caption_command_map, url=url, session=session)
 
@@ -81,6 +95,8 @@ class ABot(MappedCommandBot):
         self.db = db
         self.reddit = RedditHandler(self.tg)
         self.rates = dict()
+        self.subscriptions = helpers.Subscriptions(['xkcd', 'launches'], self.db)
+        self.hn = hn.HN(self.db)
 
     def validate(self, message):
         message_time = message.date
@@ -390,7 +406,7 @@ class ABot(MappedCommandBot):
         if nsfw and message.chat.type.value != 'private' and not nsfw_setting:
             self._plaintext_helper(message, 'NSFW material is not allowed in this chat.')
             return
-        subreddit = 'random' if nsfw else 'randnsfw'
+        subreddit = 'randnsfw' if nsfw else 'random'
         self.reddit.hot_posts(subreddit, 6, message.chat, guessing_game=True)
 
     def redditguess(self, message, unused):
@@ -401,10 +417,132 @@ class ABot(MappedCommandBot):
         self._redditguess(message, nsfw=True)
 
     def redditguessanswer(self, message, unused):
-        answer_row = db['redditguessanswer'].find_one(chat=str(message.chat.id))
+        answer_row = self.db['redditguessanswer'].find_one(chat=str(message.chat.id))
         answer = answer_row['sub'] if answer_row else 'nonexistent'
         response = 'The answer for the last /redditguess is {}.'.format(answer)
         self._plaintext_helper(message, response)
+
+    def myscore(self, message, opts):
+        """View or change your score."""
+        words = opts.partition(' ')[2].split()
+        opt = words[0].lower() if words else None
+
+        score_table = self.db['scores']
+        user_score_row = score_table.find_one(user=str(message.user.id))
+        score = user_score_row['score'] if user_score_row else 0
+
+        num = None
+        if opt and opt[0] in ('-', '+') and opt[1:].isdigit():
+            num = int(opt)
+
+        if num is not None:
+            change = int(num)
+            if abs(change) > 1000:
+                message.reply.send_message('Absolute change value should be no greater than 1000.')
+                return
+            new_score = score + change
+            score_table.upsert(dict(user=str(message.user.id), score=new_score), ['user'])
+            message.reply.send_message('Your score has been updated to {}.'.format(new_score))
+        else:
+            resp = 'Your score is {}. To change it, follow /myscore with a number that starts with "+" or ' \
+                   '"-".'.format(score)
+            message.reply.send_message(resp)
+
+    def subscribe(self, message, opts):
+        """Subscribe to announcements about a topic (launches, xkcd, etc.)."""
+        words = opts.partition(' ')[2].split()
+        topic = words[0].lower() if words else None
+        if topic:
+            try:
+                self.subscriptions.subscribe(topic, str(message.chat.id))
+            except helpers.SubscriptionNotFoundError:
+                topics = ', '.join('`{}`'.format(t) for t in self.subscriptions.topics)
+                resp = 'Invalid subscription ID. Valid subscriptions: ' + topics
+            else:
+                resp = 'This chat will recieve messages related to `{}`.'.format(topic)
+        else:
+            resp = 'Please follow /subscribe with a topic ID like `xkcd` or `launches`.',
+        self._plaintext_helper(message, resp, parse_mode='Markdown')
+
+    def unsubscribe(self, message, opts):
+        """Unsubscribe from announcements about a topic (launches, xkcd, etc.)."""
+        words = opts.partition(' ')[2].split()
+        topic = words[0].lower() if words else None
+        if topic:
+            try:
+                self.subscriptions.unsubscribe(topic, str(message.chat.id))
+            except helpers.SubscriptionNotFoundError:
+                topics = ', '.join('`{}`'.format(t) for t in self.subscriptions.topics)
+                resp = 'Invalid subscription ID. Valid subscriptions: ' + topics
+            else:
+                resp = 'This chat will not recieve messages related to `{}`.'.format(topic)
+        else:
+            resp = 'Please follow /unsubscribe with a topic ID like `xkcd` or `launches`.',
+        self._plaintext_helper(message, resp, parse_mode='Markdown')
+
+    def mysubs(self, message, unused):
+        """Get your subscriptions."""
+        topics = self.subscriptions.my_subscriptions(str(message.chat.id))
+        response = 'Your subscriptions: ' + ', '.join('`{}`'.format(t) for t in topics)
+        self._plaintext_helper(message, response, parse_mode='Markdown')
+
+    def _hn_helper(self, message, opts, func):
+        words = opts.partition(' ')[2].split()
+        count = words[0].lower() if words else None
+        if not count and count.isdigit():
+            num = int(count)
+        else:
+            num = 5
+        response = func(num, str(message.chat.id))
+        self._plaintext_helper(message, response,
+                               disable_web_page_preview=True,
+                               parse_mode='Markdown')
+
+    def hn_ask(self, message, opts):
+        """View Ask HN posts."""
+        self._hn_helper(message, opts, self.hn.ask)
+
+    def hn_best(self, message, opts):
+        """View best HN posts."""
+        self._hn_helper(message, opts, self.hn.best)
+
+    def hn_new(self, message, opts):
+        """View new HN posts."""
+        self._hn_helper(message, opts, self.hn.new)
+
+    def hn_show(self, message, opts):
+        """View Show HN posts."""
+        self._hn_helper(message, opts, self.hn.show)
+
+    def hn_top(self, message, opts):
+        """View top HN posts."""
+        self._hn_helper(message, opts, self.hn.top)
+
+    def hn_item(self, message, opts):
+        """View HN item with specified ID."""
+        words = opts.partition(' ')[2].split()
+        opt = words[0].lower() if words else None
+        if opt and opt.isdigit():
+            response = self.hn.view(opt)
+        elif opt:
+            response = self.hn.view(item_letter=opt, chat_id=str(message.chat.id))
+        else:
+            response = 'Enter a HN item ID or a HN listing letter.'
+        self._plaintext_helper(message, response, parse_mode='HTML')
+
+    def hn_replies(self, message, opts):
+        """View replies to HN item with specified ID or letter code."""
+        words = opts.partition(' ')[2].split()
+        opt = words[0].lower() if words else None
+        lim_opt = words[1] if len(words) > 1 else ''
+        lim = int(lim_opt) if lim_opt.isdigit() else 5
+        if opt and opt.isdigit():
+            response = self.hn.replies(lim, opt)
+        elif opt:
+            response = self.hn.replies(lim, item_letter=opt, chat_id=str(message.chat.id))
+        else:
+            response = 'Enter a HN item ID or short name.'
+        self._plaintext_helper(message, response, parse_mode='HTML')
 
 
 def main():
