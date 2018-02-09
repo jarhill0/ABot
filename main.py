@@ -575,7 +575,7 @@ class ABot(MappedCommandBot):
     def _hn_helper(self, message, opts, func):
         words = opts.partition(' ')[2].split()
         count = words[0].lower() if words else None
-        if not count and count.isdigit():
+        if count and count.isdigit():
             num = int(count)
         else:
             num = 5
