@@ -1,8 +1,13 @@
 import multiprocessing
+import re
+import sys
+import time
 import traceback
 import urllib.parse
 
+import dateparser
 import xkcd
+from pawt import Telegram
 from pawt.bots import MappedCommandBot
 from pawt.exceptions import *
 
@@ -15,8 +20,10 @@ import helpers
 import hn
 import launchlibrary
 import memetext
+import new_xkcd
 import parable
 import rand_frog
+import reminders
 import replace_vowels
 import startup
 import urban_dict
@@ -24,62 +31,62 @@ import web_archive
 import wolfram_alpha
 from db_handler import db
 from reddit_handler import RedditHandler
+from reminders import Reminder
+from scheduler import SpecialSched
+from statuscheck import StatusChecker, StatusDummy
 
 
 class ABot(MappedCommandBot):
     def __init__(self, token, *, url=None, session=None):
         text_command_map = dict()
-        caption_command_map = dict()
+        caption_command_map = text_command_map # IMPORTANT! IT'S THE SAME OBJECT, SO ALL COMMANDS MUST BE COMPATIBLE
+        # WITH BOTH!
 
-        text_command_map['/helloworld'] = self.helloworld
-        text_command_map['/source'] = self.source
-        text_command_map['/settings'] = self.settings
-        text_command_map['/shrug'] = self.shrug
-        text_command_map['/lenny'] = self.lenny
-        text_command_map['/utensil'] = self.utensil
-        text_command_map['/wtf'] = self.wtf
-        text_command_map['/yyy'] = self.yyy
-        text_command_map['/secretcommand'] = self.secretcommand
-        text_command_map['/lelxd'] = self.lelxD
-        text_command_map['/parable'] = self.parable
-        text_command_map['/whyme'] = self.whyme
-        text_command_map['/wa'] = self.wa
-        text_command_map['/frog'] = self.frog
-        text_command_map['/choice'] = self.choice
-        text_command_map['/bf'] = self.bf
         text_command_map['/archive'] = self.archive
         text_command_map['/archive2'] = self.archive2
-        text_command_map['/lmgtfy'] = self.lmgtfy
-        text_command_map['/lmddgtfy'] = self.lmddgtfy
-        text_command_map['/ud'] = self.ud
-        text_command_map['/startup'] = self.startup
-        text_command_map['/delete'] = self.delete
+        text_command_map['/bf'] = self.bf
         text_command_map['/bitcoin'] = self.btc
-        text_command_map['/start'] = self.start
-        text_command_map['/help'] = self.help
         text_command_map['/botfather_commands'] = self.botfather_commands
-        text_command_map['/xkcd'] = self.xkcd
-        text_command_map['/nextlaunch'] = self.launch
-        text_command_map['/redditlimit'] = self.redditlimit
-        text_command_map['/nsfwon'] = self.nsfwon
-        text_command_map['/nsfwoff'] = self.nsfwoff
-        text_command_map['/redditposts'] = self.redditposts
-        text_command_map['/reddit'] = self.proxy_posts
-        text_command_map['/redditguess'] = self.redditguess
-        text_command_map['/redditguessnsfw'] = self.redditguessnsfw
-        text_command_map['/redditguessanswer'] = self.redditguessanswer
-        text_command_map['/myscore'] = self.myscore
-        text_command_map['/subscribe'] = self.subscribe
-        text_command_map['/unsubscribe'] = self.unsubscribe
-        text_command_map['/mysubs'] = self.mysubs
+        text_command_map['/choice'] = self.choice
+        text_command_map['/delete'] = self.delete
+        text_command_map['/frog'] = self.frog
+        text_command_map['/helloworld'] = self.helloworld
+        text_command_map['/help'] = self.help
         text_command_map['/hn_ask'] = self.hn_ask
         text_command_map['/hn_best'] = self.hn_best
         text_command_map['/hn_new'] = self.hn_new
         text_command_map['/hn_show'] = self.hn_show
-        text_command_map['/hn'] = self.hn_top
-        text_command_map['/hn_top'] = self.hn_top
-        text_command_map['/hn_item'] = self.hn_item
-        text_command_map['/hn_replies'] = self.hn_replies
+        text_command_map['/lelxd'] = self.lelxD
+        text_command_map['/lenny'] = self.lenny
+        text_command_map['/lmddgtfy'] = self.lmddgtfy
+        text_command_map['/lmgtfy'] = self.lmgtfy
+        text_command_map['/myscore'] = self.myscore
+        text_command_map['/mysubs'] = self.mysubs
+        text_command_map['/nextlaunch'] = self.launch
+        text_command_map['/nsfwoff'] = self.nsfwoff
+        text_command_map['/nsfwon'] = self.nsfwon
+        text_command_map['/parable'] = self.parable
+        text_command_map['/reddit'] = self.proxy_posts
+        text_command_map['/redditguess'] = self.redditguess
+        text_command_map['/redditguessanswer'] = self.redditguessanswer
+        text_command_map['/redditguessnsfw'] = self.redditguessnsfw
+        text_command_map['/redditlimit'] = self.redditlimit
+        text_command_map['/redditposts'] = self.redditposts
+        text_command_map['/secretcommand'] = self.secretcommand
+        text_command_map['/settings'] = self.settings
+        text_command_map['/shrug'] = self.shrug
+        text_command_map['/source'] = self.source
+        text_command_map['/start'] = self.start
+        text_command_map['/startup'] = self.startup
+        text_command_map['/subscribe'] = self.subscribe
+        text_command_map['/ud'] = self.ud
+        text_command_map['/unsubscribe'] = self.unsubscribe
+        text_command_map['/utensil'] = self.utensil
+        text_command_map['/wa'] = self.wa
+        text_command_map['/whyme'] = self.whyme
+        text_command_map['/wtf'] = self.wtf
+        text_command_map['/xkcd'] = self.xkcd
+        text_command_map['/yyy'] = self.yyy
 
         super().__init__(token, text_command_map, caption_command_map, url=url, session=session)
 
@@ -98,6 +105,62 @@ class ABot(MappedCommandBot):
         self.subscriptions = helpers.Subscriptions(['xkcd', 'launches'], self.db)
         self.hn = hn.HN(self.db)
 
+        self.reminder_sched = SpecialSched(self.tg, timefunc=time.time)
+        self.launch_sched = SpecialSched(self.tg, timefunc=time.time)
+        self.xkcd_sched = SpecialSched(self.tg)
+        self.schedule_xkcd()
+        self.schedule_launches()
+        self.schedule_reminders()
+
+        self._username = self.tg.get_me().username
+
+    def schedule_xkcd(self):
+        sched = self.xkcd_sched
+
+        for hour in range(24):
+            sched.enter(hour * 60 * 60, 20, self.check_xkcd)
+        sched.enter(24 * 60 * 60, 20, self.schedule_xkcd)
+
+    def check_xkcd(self, tg):
+        new_comic = new_xkcd.check_update()
+        if new_comic:
+            img, alt = new_comic
+            for chat_id in self.subscriptions.get_subscribers('xkcd'):
+                chat = tg.chat(chat_id)
+                chat.send_photo(img[0], caption=img[1])
+                chat.send_message(alt)
+
+    def alert_launch_channels(self, tg):
+        subscribers = self.subscriptions.get_subscribers('launches')
+        next_launch = launchlibrary.get_next_launch()
+        for chat_id in subscribers:
+            self.send_launch_message(tg.chat(chat_id), launch=next_launch)
+
+    def schedule_launches(self):
+        self.launch_sched = SpecialSched(self.tg, timefunc=time.time)  # wipe it out!
+
+        launchlibrary.refresh()
+        next_launch = launchlibrary.get_next_launch()
+        if next_launch:
+            launch_time = next_launch['start']
+            times = [launch_time - 24 * 60 * 60, launch_time - 5 * 60 * 60, launch_time - 30 * 60, launch_time]
+            for time_ in times:
+                self.launch_sched.enterabs(time_, 21, self.alert_launch_channels)
+        self.launch_sched.enter(24 * 60 * 60, 22, self.schedule_launches)
+
+    def schedule_reminders(self):
+        table = self.db['reminders']
+        if table.count() != 0:
+            for row in table:
+                self.set_reminder(row['time'], row['message'], row['user_id'], add_to_db=False)
+
+    def set_reminder(self, timestamp, message, user_id, add_to_db=True):
+        user_id = str(user_id)
+        reminder = Reminder(message, user_id, timestamp)
+        self.reminder_sched.enterabs(timestamp, 1, reminders.remind, (reminder,))
+        if add_to_db:
+            self.db['reminders'].insert(dict(time=timestamp, message=message, user_id=user_id))
+
     def validate(self, message):
         message_time = message.date
         id_pair = (str(message.chat.id), str(message.user.id))
@@ -115,6 +178,11 @@ class ABot(MappedCommandBot):
             times.append(message_time)  # length of list should always be 10
             return True
         return False  # we had 10 messages within a minute. Don't update the list.
+
+    def perform_extra_task(self):
+        self.reminder_sched.run(blocking=False)
+        self.xkcd_sched.run(blocking=False)
+        self.launch_sched.run(blocking=False)
 
     @staticmethod
     def _plaintext_helper(message, text, *args, **kwargs):
@@ -544,14 +612,64 @@ class ABot(MappedCommandBot):
             response = 'Enter a HN item ID or short name.'
         self._plaintext_helper(message, response, parse_mode='HTML')
 
+    def remindme(self, message, opts):
+        """Get a reminder about a topic."""
+        remind_reg = re.compile(r'/remindme(?:@{un})? ([^"“”/]+) ?(["“][^"“”]+["”])?'.format(un=self._username),
+                                re.IGNORECASE)
+        remind_search = remind_reg.search(opts)
+        if remind_search is None:
+            self._plaintext_helper(message, 'Please provide a date for the reminder.')
+            return
+        time_str = remind_search.group(1)
+        message_text = remind_search.group(2)[1:-1] if remind_search.group(2) else 'Do the thing!'
+        ev_time = dateparser.parse(date_string=time_str.strip(), settings={'PREFER_DATES_FROM': 'future'})
+        if ev_time is None:
+            self._plaintext_helper(message, "Sorry, I couldn't understand that time.")
+            return
+        timestamp = ev_time.timestamp()
+        self.set_reminder(timestamp, message_text, message.user.id)
+        fmtted_time = reminders.format_time(ev_time)
+        response = 'I will remind you about "{}" at {}.'.format(message_text, fmtted_time)
+        self._plaintext_helper(message, response)
+
+    def myreminders(self, message, unused):
+        """View your reminders."""
+        my_remrs = []
+
+        for reminder in db['reminders'].find(user_id=str(message.user.id)):
+            my_remrs.append((reminder['time'], reminder['message']))
+
+        my_remrs.sort()
+        # build response with time and message of each event.
+        response = 'Your reminders:\n' + '\n'.join('{}: {}'.format(reminders.format_time(r[0]), r[1]) for r in my_remrs)
+        self._plaintext_helper(message, response)
+
 
 def main():
     bot = ABot(config.token)
-    while True:
-        try:
-            bot.run()
-        except Exception:
-            traceback.print_exc()
+    if config.check_online_status:
+        status = StatusChecker(Telegram(config.token), config.status_channel_id)
+    else:
+        status = StatusDummy()
+
+    if status.already_running():
+        print('Bot already running.')
+        sys.exit(1)
+
+    status.claim_status()
+
+    try:
+        while True:
+            try:
+                bot.run(timeout=15)
+            except Exception:  # bot catches keyboardinterrups and exits gracefully
+                traceback.print_exc()
+                time.sleep(5)
+            else:
+                # the bot has decided to stop running
+                break
+    finally:
+        status.reliquish_status()
 
 
 if __name__ == '__main__':

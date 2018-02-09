@@ -1,30 +1,43 @@
-import config
+class StatusChecker:
+    ONLINE_TEXT = 'A Bot is online.'
+    OFFLINE_TEXT = 'A Bot is offline.'
 
-ONLINE_TEXT = 'A Bot is online.'
-OFFLINE_TEXT = 'A Bot is offline.'
+    def __init__(self, tg, channel_id):
+        self.channel = tg.chat(channel_id)
+
+    def already_running(self):
+        """Returns True is an instance of A Bot is running"""
+        self.channel.get_chat()
+        name = self.channel.title
+        return name == StatusChecker.ONLINE_TEXT
+
+    def claim_status(self):
+        """Claims that the bot is running."""
+        self.channel.set_title(StatusChecker.ONLINE_TEXT)
+
+    def reliquish_status(self):
+        """Removes claim that bot is running"""
+        self.channel.set_title(StatusChecker.OFFLINE_TEXT)
 
 
-def already_running(tg):
-    """Returns True is an instance of A Bot is running"""
-    data = {'chat_id': config.status_channel_id}
-    response = tg.get_chat(data)
-    name = response['result']['title']
-    return name == ONLINE_TEXT
+class StatusDummy(StatusChecker):
+    """To be used when status checking should not be performed."""
 
+    def __init__(self):
+        self.channel = None
 
-def claim_status(tg):
-    """Claims that the bot is running."""
-    data = {'chat_id': config.status_channel_id, 'title': ONLINE_TEXT}
-    tg.set_chat_title(data)
+    def already_running(self):
+        return False
 
+    def claim_status(self):
+        pass
 
-def reliquish_status(tg):
-    """Removes claim that bot is running"""
-    data = {'chat_id': config.status_channel_id, 'title': OFFLINE_TEXT}
-    tg.set_chat_title(data)
+    def reliquish_status(self):
+        pass
 
 
 if __name__ == '__main__':
-    import telegram
+    from pawt import Telegram
+    import config
 
-    reliquish_status(telegram.Telegram(config.token))
+    StatusChecker(Telegram(config.token), config.status_channel_id).reliquish_status()

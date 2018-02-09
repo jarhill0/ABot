@@ -2,32 +2,31 @@ import html
 
 import feedparser
 
+from db_handler import db
 
-def get_submitted(db):
+
+def get_submitted():
     table = db['xkcd']
     if table.count() == 0:
         table.insert(dict(comic_id=0))
     return [c['comic_id'] for c in table]
 
 
-def check_update(db):
+def check_update():
     new_comic = get_newest_comic()
-    submitted = get_submitted(db)
+    submitted = get_submitted()
     if new_comic['id'] not in submitted:
-        data_1 = {'chat_id': None,
-                  'photo': new_comic['img_url']}
         text = new_comic['title']
-        if len(text) >= 200:
+        if len(text) > 200:
             text = text[:199] + '…'
-        data_1['caption'] = text
 
-        data_2 = {'chat_id': None,
-                  'text': new_comic['alt_text'], }
+        pic = (new_comic['img_url'], text)
+        alt_text = new_comic['alt_text']
 
         table = db['xkcd']
         table.insert(dict(comic_id=new_comic['id']))
 
-        return data_1, data_2
+        return pic, alt_text
 
     else:
         return None

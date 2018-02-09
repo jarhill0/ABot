@@ -1,43 +1,14 @@
 import datetime
 
-import dateparser
+from db_handler import db
 
 
-def parse_reminder(time_str, message, user_id, calendar, tg, current_chat, db):
-    ev_time = dateparser.parse(date_string=time_str.strip(), settings={'PREFER_DATES_FROM': 'future'})
-    if ev_time is None:
-        invalid_time_message = {'chat_id': current_chat,
-                                'text': "Sorry, I couldn't understand that time."}
-        return invalid_time_message
-    else:
-        timestamp = ev_time.timestamp()
-        set_reminder(timestamp, message, user_id, calendar, tg, db)
-        time_str = format_time(ev_time)
-        success_message = {'chat_id': current_chat,
-                           'text': 'I will remind you about "{}" at {}.'.format(message, time_str)}
-        return success_message
-
-
-def set_reminder(timestamp, message, user_id, calendar, tg, db, save_to_db=True):
-    reminder = Reminder(message, user_id, timestamp)
-    calendar.add_event(timestamp, remind, args=[reminder, tg, db])
-    if save_to_db:
-        db['reminders'].insert(dict(time=timestamp, message=message, user_id=user_id))
-
-
-def load_from_db(db, calendar, tg):
-    table = db['reminders']
-    if table.count() != 0:
-        for row in table:
-            set_reminder(row['time'], row['message'], row['user_id'], calendar, tg, db, save_to_db=False)
-
-
-def remind(reminder, tg, db):
+def remind(reminder, tg):
     if not isinstance(reminder, Reminder):
         raise ValueError('reminder is not a Reminder.')
-    data = {'chat_id': reminder.user_id,
-            'text': 'Reminder: {}'.format(reminder.message)}
-    tg.send_message(data)
+
+    text = 'Reminder: {}'.format(reminder.message)
+    tg.user(reminder.user_id).chat.send_message(text)
     db['reminders'].delete(time=reminder.time, message=reminder.message, user_id=reminder.user_id)
 
 
@@ -50,10 +21,10 @@ def format_time(ev_time):
 
 
 class Reminder:
-    def __init__(self, message, user_id, time=None):
-        self.message = message
-        self.user_id = user_id
-        self.time = time
+    def __init__(self, message, user_id, timestamp):
+        self.message = str(message)
+        self.user_id = str(user_id)
+        self.time = timestamp
 
     def __repr__(self):
         return 'Reminder("{}", {})'.format(self.message, self.user_id)
