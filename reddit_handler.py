@@ -46,7 +46,7 @@ class RedditHandler:
                     posts_dict[str(n)] = submission.shortlink
                     n += 1
 
-        self.add_posts_to_dict(chat, posts_dict)
+        self.add_posts_to_dict(chat.id, posts_dict)
         if guessing_game:
             self.db['redditguessanswer'].upsert(dict(chat=str(chat.id), sub=sub.display_name_prefixed), ['chat'])
 
@@ -104,9 +104,9 @@ class RedditHandler:
     def get_subreddit_from_post(self, link):
         return self.reddit.submission(url=link).subreddit_name_prefixed
 
-    def add_posts_to_dict(self, chat, posts):
+    def add_posts_to_dict(self, chat_id, posts):
         posts_table = self.db['redditposts']
-        posts['chat'] = str(chat)
+        posts['chat'] = str(chat_id)
 
         for n in range(1, 21):  # 20 is the maximum redditlimit
             if str(n) not in posts.keys():
