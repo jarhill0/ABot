@@ -6,10 +6,10 @@ import traceback
 import urllib.parse
 
 import dateparser
-import xkcd
 from pawt import Telegram
 from pawt.bots import MappedCommandBot
 from pawt.exceptions import *
+from xxkcd import xkcd
 
 import archive_is
 import bitcoin
@@ -376,21 +376,28 @@ class ABot(MappedCommandBot):
         """View latest xkcd comic, or view comic specified by number."""
         words = command_text.partition(' ')[2].lower().strip().split()
         opt = words[0] if len(words) > 0 else None
+        valid = True
         if not opt:
-            comic = xkcd.getLatestComic()
+            comic = xkcd(xkcd.latest())
         elif opt.startswith('rand'):
-            comic = xkcd.getRandomComic()
+            comic = xkcd(xkcd.random())
         elif opt.isdigit():
-            comic = xkcd.getComic(int(opt))
+            comic = xkcd(int(opt))
+            if comic.num == xkcd.latest() and int(opt) != xkcd.latest():
+                # package defaults to the latest comic when given a bad number.
+                valid = False
         else:
-            comic = xkcd.getLatestComic()
+            comic = xkcd(xkcd.latest())
 
-        if comic.number != -1:
-            title = '{} (#{})'.format(comic.getTitle(), comic.number)[:200]
-            alt_text = comic.getAltText()
-            img_url = comic.getImageLink()
+        if valid:
+            title = '{} (#{})'.format(comic.title, comic.num)[:200]
+            alt_text = comic.alt
+            img_url = comic.img
 
-            message.chat.send_photo(img_url, caption=title)
+            if img_url:
+                message.chat.send_photo(img_url, caption=title)
+            else:
+                self._plaintext_helper(message, 'No image found for comic {}.'.format(title))
             self._plaintext_helper(message, alt_text)
         else:
             self._plaintext_helper(message, '{} is not a valid comic number.'.format(opt))

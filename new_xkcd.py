@@ -1,6 +1,4 @@
-import html
-
-import feedparser
+from xxkcd import xkcd
 
 from db_handler import db
 
@@ -13,34 +11,20 @@ def get_submitted():
 
 
 def check_update():
-    new_comic = get_newest_comic()
+    new_comic = xkcd(xkcd.latest())
     submitted = get_submitted()
-    if new_comic['id'] not in submitted:
-        text = new_comic['title']
+    if new_comic.num not in submitted:
+        text = new_comic.title
         if len(text) > 200:
             text = text[:199] + '…'
 
-        pic = (new_comic['img_url'], text)
-        alt_text = new_comic['alt_text']
+        pic = (new_comic.img, text)
+        alt_text = new_comic.alt
 
         table = db['xkcd']
-        table.insert(dict(comic_id=new_comic['id']))
+        table.insert(dict(comic_id=new_comic.num))
 
         return pic, alt_text
 
     else:
         return None
-
-
-def get_newest_comic():
-    feed = feedparser.parse('https://xkcd.com/rss.xml')
-    output = {'id': feed['entries'][0]['id'], 'title': feed['entries'][0]['title']}
-
-    summary = feed['entries'][0]['summary']
-    img_url = summary[summary.index('<img src="') + 10:]
-    output['img_url'] = img_url[:img_url.index('"')]
-
-    alt_text = summary[summary.index(' alt="') + 6:]
-    output['alt_text'] = html.unescape(alt_text[:alt_text.index('"')])
-
-    return output
