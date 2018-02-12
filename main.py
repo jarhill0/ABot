@@ -687,7 +687,7 @@ def main():
         while True:
             try:
                 bot.run(timeout=15)
-            except Exception:  # bot catches keyboardinterrups and exits gracefully
+            except Exception:  # bot catches keyboardinterrupts and exits gracefully
                 traceback.print_exc()
                 time.sleep(5)
             else:
