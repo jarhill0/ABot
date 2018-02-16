@@ -118,7 +118,8 @@ class ABot(MappedCommandBot):
 
         self._username = self.tg.get_me().username
 
-    def schedule_xkcd(self):
+    def schedule_xkcd(self, tg=None):
+        # tg is unused but must be accepted to be scheduled
         sched = self.xkcd_sched
 
         for hour in range(24):
@@ -140,7 +141,8 @@ class ABot(MappedCommandBot):
         for chat_id in subscribers:
             self.send_launch_message(tg.chat(chat_id), launch=next_launch)
 
-    def schedule_launches(self):
+    def schedule_launches(self, tg=None):
+        # tg is unused but must be accepted to be scheduled
         self.launch_sched = SpecialSched(self.tg, timefunc=time.time)  # wipe it out!
 
         launchlibrary.refresh()
