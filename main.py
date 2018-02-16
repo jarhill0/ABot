@@ -1,8 +1,8 @@
+import logging
 import multiprocessing
 import re
 import sys
 import time
-import traceback
 import urllib.parse
 
 import dateparser
@@ -685,12 +685,14 @@ def main():
 
     status.claim_status()
 
+    logging.basicConfig(filename='bot.log', level=logging.WARNING)
+
     try:
         while True:
             try:
                 bot.run(timeout=15)
             except Exception:  # bot catches keyboardinterrupts and exits gracefully
-                traceback.print_exc()
+                logging.error('Exception encountered.')
                 time.sleep(5)
             else:
                 # the bot has decided to stop running
