@@ -692,7 +692,7 @@ def main():
             try:
                 bot.run(timeout=15)
             except Exception:  # bot catches keyboardinterrupts and exits gracefully
-                logging.error('Exception encountered.')
+                logging.exception('Exception encountered.')
                 time.sleep(5)
             else:
                 # the bot has decided to stop running
