@@ -2,9 +2,11 @@ import re
 
 import requests
 
+HEADERS = {'User-Agent': 'Telegram Bot (https://github.com/jarhill0/abot)'}
+
 
 def upload(url):
-    response = requests.post("http://archive.is/submit/", {'url': url}, verify=False)
+    response = requests.post("http://archive.is/submit/", {'url': url}, headers=HEADERS)
     found = re.findall("http[s]?://archive.is/[0-z]{1,6}", response.text)[0]
     return found
 
