@@ -52,13 +52,14 @@ class ABot(MappedCommandBot):
         text_command_map['/frog'] = self.frog
         text_command_map['/helloworld'] = self.helloworld
         text_command_map['/help'] = self.help
-        text_command_map['/hn'] = self.hn_best
+        text_command_map['/hn'] = self.hn_top
         text_command_map['/hn_ask'] = self.hn_ask
         text_command_map['/hn_best'] = self.hn_best
         text_command_map['/hn_item'] = self.hn_item
         text_command_map['/hn_new'] = self.hn_new
         text_command_map['/hn_replies'] = self.hn_replies
         text_command_map['/hn_show'] = self.hn_show
+        text_command_map['/hn_top'] = self.hn_top
         text_command_map['/lelxd'] = self.lelxD
         text_command_map['/lenny'] = self.lenny
         text_command_map['/lmddgtfy'] = self.lmddgtfy
