@@ -149,7 +149,7 @@ class ABot(MappedCommandBot):
         next_launch = launchlibrary.get_next_launch()
         if next_launch:
             launch_time = next_launch['start']
-            times = [launch_time - 24 * 60 * 60, launch_time - 5 * 60 * 60, launch_time - 30 * 60, launch_time]
+            times = [launch_time - 5 * 60 * 60, launch_time - 30 * 60]
             for time_ in times:
                 self.launch_sched.enterabs(time_, 21, self.alert_launch_channels)
         self.launch_sched.enter(24 * 60 * 60, 22, self.schedule_launches)
