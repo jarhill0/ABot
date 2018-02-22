@@ -673,7 +673,6 @@ class ABot(MappedCommandBot):
 
 
 def main():
-    bot = ABot(config.token)
     if config.check_online_status:
         status = StatusChecker(Telegram(config.token), config.status_channel_id)
     else:
@@ -686,6 +685,8 @@ def main():
     status.claim_status()
 
     logging.basicConfig(filename='bot.log', level=logging.WARNING)
+
+    bot = ABot(config.token)
 
     try:
         while True:
