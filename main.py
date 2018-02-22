@@ -101,8 +101,6 @@ class ABot(MappedCommandBot):
         text_command_list = self.command_list(self.text_command_map, strip_slashes=True)
         self._bf_cmds = '\n'.join(' - '.join(cmd) for cmd in text_command_list)
 
-        launchlibrary.refresh()
-
         self.db = db
         self.reddit = RedditHandler(self.tg)
         self.rates = dict()
