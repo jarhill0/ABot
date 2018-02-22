@@ -52,6 +52,7 @@ class ABot(MappedCommandBot):
         text_command_map['/frog'] = self.frog
         text_command_map['/helloworld'] = self.helloworld
         text_command_map['/help'] = self.help
+        text_command_map['/hn'] = self.hn_best
         text_command_map['/hn_ask'] = self.hn_ask
         text_command_map['/hn_best'] = self.hn_best
         text_command_map['/hn_item'] = self.hn_item
