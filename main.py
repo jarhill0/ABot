@@ -141,7 +141,7 @@ class ABot(MappedCommandBot):
 
     def schedule_launches(self, tg=None):
         # tg is unused but must be accepted to be scheduled
-        self.launch_sched = SpecialSched(self.tg, timefunc=time.time)  # wipe it out!
+        launch_sched = SpecialSched(self.tg, timefunc=time.time)  # wipe it out!
 
         launchlibrary.refresh()
         next_launch = launchlibrary.get_next_launch()
@@ -149,8 +149,10 @@ class ABot(MappedCommandBot):
             launch_time = next_launch['start']
             times = [launch_time - 5 * 60 * 60, launch_time - 30 * 60]
             for time_ in times:
-                self.launch_sched.enterabs(time_, 21, self.alert_launch_channels)
-        self.launch_sched.enter(24 * 60 * 60, 22, self.schedule_launches)
+                if time_ > time.time():
+                    launch_sched.enterabs(time_, 21, self.alert_launch_channels)
+        launch_sched.enter(24 * 60 * 60, 22, self.schedule_launches)
+        self.launch_sched = launch_sched
 
     def schedule_reminders(self):
         table = self.db['reminders']
