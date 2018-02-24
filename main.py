@@ -32,6 +32,7 @@ import urban_dict
 import web_archive
 import wolfram_alpha
 from db_handler import db
+from music import add
 from reddit_handler import RedditHandler
 from reminders import Reminder
 from scheduler import SpecialSched
@@ -44,6 +45,7 @@ class ABot(MappedCommandBot):
         caption_command_map = text_command_map  # IMPORTANT! IT'S THE SAME OBJECT, SO ALL COMMANDS MUST BE COMPATIBLE
         # WITH BOTH!
 
+        text_command_map['/addmusic'] = add
         text_command_map['/archive'] = self.archive
         text_command_map['/archive2'] = self.archive2
         text_command_map['/bf'] = self.bf
