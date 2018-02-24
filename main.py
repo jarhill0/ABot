@@ -4,8 +4,10 @@ import re
 import sys
 import time
 import urllib.parse
+from random import randrange
 
 import dateparser
+import requests
 from pawt import Telegram
 from pawt.bots import MappedCommandBot
 from pawt.exceptions import *
@@ -64,6 +66,7 @@ class ABot(MappedCommandBot):
         text_command_map['/lenny'] = self.lenny
         text_command_map['/lmddgtfy'] = self.lmddgtfy
         text_command_map['/lmgtfy'] = self.lmgtfy
+        text_command_map['/music'] = self.music
         text_command_map['/myreminders'] = self.myreminders
         text_command_map['/myscore'] = self.myscore
         text_command_map['/mysubs'] = self.mysubs
@@ -672,6 +675,41 @@ class ABot(MappedCommandBot):
         # build response with time and message of each event.
         response = 'Your reminders:\n' + '\n'.join('{}: {}'.format(reminders.format_time(r[0]), r[1]) for r in my_remrs)
         self._plaintext_helper(message, response)
+
+    def music(self, message, text):
+        """See a video from http://telegramusic.ml ."""
+        words = text.partition(' ')[2].split()
+        if words:
+            word = words[0]
+
+            if word.lower().startswith('new'):
+                # get the newest number
+                word = requests.get('http://telegramusic.ml/api/').content.decode('utf-8')
+
+            try:
+                num = int(word)
+            except ValueError:
+                self._plaintext_helper(message, '{!r} is not a valid number.'.format(word))
+                return
+
+        else:
+            max_num = int(requests.get('http://telegramusic.ml/api/').content.decode('utf-8'))
+            num = randrange(1, max_num)
+
+        url = 'http://telegramusic.ml/api/{num}/'.format(num=num)
+
+        try:
+            response = requests.get(url)
+        except requests.exceptions.RequestException:
+            message.reply.send_message('Unable to get that item.')
+            return
+
+        content = response.json()
+        if content:
+            link = 'https://www.youtube.com/watch?v={id} (from {name})'.format(**content)
+            self._plaintext_helper(message, link)
+        else:
+            self._plaintext_helper(message, 'Cannot get number {!r}.'.format(num))
 
 
 def main():
