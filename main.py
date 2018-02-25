@@ -690,7 +690,8 @@ class ABot(MappedCommandBot):
 
             try:
                 num = int(word)
-            except ValueError:
+                assert num > 0
+            except (ValueError, AssertionError):
                 self._plaintext_helper(message, '{!r} is not a valid number.'.format(word))
                 return
 
