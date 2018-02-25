@@ -508,7 +508,7 @@ class ABot(MappedCommandBot):
                             break
                         self.reddit.post_proxy(post, message.chat)
                 else:
-                    self._plaintext_helper(message, '/redditposts all call only be used in private chat.')
+                    self._plaintext_helper(message, '/reddit all call only be used in private chat.')
         else:
             url = opt
             self.reddit.post_proxy(url, message.chat)
