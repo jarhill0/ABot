@@ -1,5 +1,7 @@
 import hnpy
 
+from html_janitor import Cleaner
+
 ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 
@@ -40,16 +42,18 @@ class HN:
                    '{}\nOptions:\n{}'.format(item.title,
                                              item.link,
                                              item.score,
-                                             item.text if hasattr(item, 'text') else '',
+                                             Cleaner.clean(item.text) if hasattr(item, 'text') else '',
                                              options)
 
         if item.type == 'pollopt':
             poll = item.poll
-            return 'Option (+{}) {} from <a href="{}">{}</a>'.format(item.score, item.text.replace('<p>', '\n'),
+            return 'Option (+{}) {} from <a href="{}">{}</a>'.format(item.score,
+                                                                     Cleaner.clean(item.text.replace('<p>', '\n')),
                                                                      poll.title, poll.link)
 
         if item.type == 'comment':
-            main = '^ <a href="{}">{}</a> [-]\n{}'.format(item.link, item.by.name, item.text.replace('<p>', '\n'))
+            main = '^ <a href="{}">{}</a> [-]\n{}'.format(item.link, item.by.name,
+                                                          Cleaner.clean(item.text.replace('<p>', '\n')))
             if comm_link_parent:
                 main += '\nReply to: {}'.format(item.parent.link)
             return main
