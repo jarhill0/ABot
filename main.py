@@ -33,6 +33,7 @@ import web_archive
 import wolfram_alpha
 from chunkdecorator import chunk
 from db_handler import db
+from html_janitor import Cleaner
 from htmlsplit import HTMLsplit
 from music import add
 from reddit_handler import RedditHandler
@@ -678,7 +679,7 @@ class ABot(MappedCommandBot):
             response = 'Enter a HN item ID or a HN listing letter.'
             self._plaintext_helper(message, response)
             return
-        self._html_chunker(message, response)
+        self._html_chunker(message, Cleaner.clean(response))
 
     def hn_replies(self, message, opts):
         """View replies to HN item with specified ID or letter code."""
@@ -695,7 +696,7 @@ class ABot(MappedCommandBot):
             response = 'Enter a HN item ID or short name.'
             self._plaintext_helper(message, response)
             return
-        self._html_chunker(message, response)
+        self._html_chunker(message, Cleaner.clean(response))
 
     @chunk
     def remindme(self, message, opts):
