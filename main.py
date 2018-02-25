@@ -33,6 +33,7 @@ import web_archive
 import wolfram_alpha
 from chunkdecorator import chunk
 from db_handler import db
+from htmlsplit import HTMLsplit
 from music import add
 from reddit_handler import RedditHandler
 from reminders import Reminder
@@ -627,9 +628,46 @@ class ABot(MappedCommandBot):
         """View top HN posts."""
         self._hn_helper(message, opts, self.hn.top)
 
+    @staticmethod
+    def _html_chunker(message, text):
+        print('\n' * 10)
+        splitter = HTMLsplit()
+        pieces = []
+
+        this_piece = []
+        for line in text.split('\n'):
+            this_piece.append(line)
+            splitter.feed(line)
+
+            if splitter.can_split:
+                pieces.append('\n'.join(this_piece))
+                this_piece = []
+
+        pieces.append('\n'.join(this_piece))
+
+        if not all(len(p) < 4096 for p in pieces):
+            message.chat.send_message('That content is too long to be sent here.')
+            return
+
+        # helper -- better than copy-paste!
+        def send():
+            content = '\n'.join(this_chunk)
+            message.chat.send_message(content, parse_mode='HTML')
+
+        this_chunk = []
+        total_len = -1  # -1 to account for one extra space
+        for part in pieces:
+            part_len = len(part)
+            if total_len + part_len + 1 > 4096:
+                send()
+                this_chunk = []
+                total_len = -1
+            this_chunk.append(part)
+            total_len += 1 + part_len  # the 1 for the space
+        send()
+
     def hn_item(self, message, opts):
         """View HN item with specified ID."""
-        # todo manual chunking (HTML)
         words = opts.partition(' ')[2].split()
         opt = words[0].lower() if words else None
         if opt and opt.isdigit():
@@ -638,11 +676,13 @@ class ABot(MappedCommandBot):
             response = self.hn.view(item_letter=opt, chat_id=str(message.chat.id))
         else:
             response = 'Enter a HN item ID or a HN listing letter.'
-        self._plaintext_helper(message, response, parse_mode='HTML')
+            self._plaintext_helper(message, response)
+            return
+        self._html_chunker(message, response)
 
     def hn_replies(self, message, opts):
         """View replies to HN item with specified ID or letter code."""
-        # todo manual chunking (HTML)
+
         words = opts.partition(' ')[2].split()
         opt = words[0].lower() if words else None
         lim_opt = words[1] if len(words) > 1 else ''
@@ -653,7 +693,9 @@ class ABot(MappedCommandBot):
             response = self.hn.replies(lim, item_letter=opt, chat_id=str(message.chat.id))
         else:
             response = 'Enter a HN item ID or short name.'
-        self._plaintext_helper(message, response, parse_mode='HTML')
+            self._plaintext_helper(message, response)
+            return
+        self._html_chunker(message, response)
 
     def remindme(self, message, opts):
         """Get a reminder about a topic."""
