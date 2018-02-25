@@ -31,6 +31,7 @@ import startup
 import urban_dict
 import web_archive
 import wolfram_alpha
+from chunkdecorator import chunk
 from db_handler import db
 from music import add
 from reddit_handler import RedditHandler
@@ -207,6 +208,7 @@ class ABot(MappedCommandBot):
                                                                                        self.text_commands)
             self._plaintext_helper(message, resp)
 
+    @chunk
     def help(self, message, unused):
         """View list of commands."""
         try:
@@ -215,6 +217,7 @@ class ABot(MappedCommandBot):
             # can't message that user…
             pass
 
+    @chunk
     def botfather_commands(self, message, unused):
         self._plaintext_helper(message, self._bf_cmds)
 
@@ -271,6 +274,7 @@ class ABot(MappedCommandBot):
         else:
             self._plaintext_helper(message, 'Say something after /whyme (e.g. /whyme What the hell?!)')
 
+    @chunk
     def wa(self, message, command_text):
         """Evaluate query with WolframAlpha."""
         query = command_text.partition(' ')[2]
@@ -342,6 +346,7 @@ class ABot(MappedCommandBot):
         else:
             message.reply('You gotta gimme something to search!')
 
+    @chunk
     def ud(self, message, command_text):
         """Define a word using Urban Dictionary."""
         term = command_text.partition(' ')[2].strip()
@@ -412,6 +417,7 @@ class ABot(MappedCommandBot):
             self._plaintext_helper(message, '{} is not a valid comic number.'.format(opt))
 
     @staticmethod
+    @chunk
     def send_launch_message(chat, messages=None, launch=None):
         if not messages:
             if launch:
@@ -467,6 +473,7 @@ class ABot(MappedCommandBot):
         else:
             self._plaintext_helper(message, 'Specify a subreddit after /redditposts (e.g. /redditposts funny)')
 
+    # handles chunking on its own
     def proxy_posts(self, message, opts):
         """View Reddit post specified by link or number."""
         words = opts.partition(' ')[2].split()
@@ -622,6 +629,7 @@ class ABot(MappedCommandBot):
 
     def hn_item(self, message, opts):
         """View HN item with specified ID."""
+        # todo manual chunking (HTML)
         words = opts.partition(' ')[2].split()
         opt = words[0].lower() if words else None
         if opt and opt.isdigit():
@@ -634,6 +642,7 @@ class ABot(MappedCommandBot):
 
     def hn_replies(self, message, opts):
         """View replies to HN item with specified ID or letter code."""
+        # todo manual chunking (HTML)
         words = opts.partition(' ')[2].split()
         opt = words[0].lower() if words else None
         lim_opt = words[1] if len(words) > 1 else ''
@@ -666,6 +675,7 @@ class ABot(MappedCommandBot):
         response = 'I will remind you about "{}" at {}.'.format(message_text, fmtted_time)
         self._plaintext_helper(message, response)
 
+    @chunk
     def myreminders(self, message, unused):
         """View your reminders."""
         my_remrs = []
@@ -679,7 +689,7 @@ class ABot(MappedCommandBot):
         self._plaintext_helper(message, response)
 
     def music(self, message, text):
-        """See a video from http://telegramusic.ml ."""
+        """See a video from http://telegramusic.ml."""
         words = text.partition(' ')[2].split()
         if words:
             word = words[0]
