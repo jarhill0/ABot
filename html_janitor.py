@@ -1,3 +1,4 @@
+from html import escape
 from html.parser import HTMLParser
 
 
@@ -39,7 +40,7 @@ class Cleaner(HTMLParser):
         del self._tag_path[-1]
 
     def handle_data(self, data):
-        self._text_parts.append(data)
+        self._text_parts.append(escape(data))
 
 
 class ValidationError(ValueError):
