@@ -1,5 +1,7 @@
 import datetime
 
+from pawt.exceptions import APIException
+
 from db_handler import db
 
 
@@ -8,7 +10,10 @@ def remind(reminder, tg):
         raise ValueError('reminder is not a Reminder.')
 
     text = 'Reminder: {}'.format(reminder.message)
-    tg.user(reminder.user_id).chat.send_message(text)
+    try:
+        tg.user(reminder.user_id).chat.send_message(text)
+    except APIException:
+        pass
     db['reminders'].delete(time=reminder.time, message=reminder.message, user_id=reminder.user_id)
 
 
