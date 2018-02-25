@@ -697,6 +697,7 @@ class ABot(MappedCommandBot):
             return
         self._html_chunker(message, response)
 
+    @chunk
     def remindme(self, message, opts):
         """Get a reminder about a topic."""
         remind_reg = re.compile(r'/remindme(?:@{un})? ([^"“”/]+) ?(["“][^"“”]+["”])?'.format(un=self._username),
