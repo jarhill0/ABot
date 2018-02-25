@@ -126,6 +126,10 @@ class ABot(MappedCommandBot):
 
         self._username = self.tg.get_me().username
 
+    def exception_handled(self, e):
+        logging.exception('Exception in command.')
+        return True
+
     def schedule_xkcd(self, tg=None):
         # tg is unused but must be accepted to be scheduled
         sched = self.xkcd_sched
@@ -791,7 +795,7 @@ def main():
             try:
                 bot.run(timeout=15)
             except Exception:  # bot catches keyboardinterrupts and exits gracefully
-                logging.exception('Exception encountered.')
+                logging.exception('Exception in bot meta.')
                 time.sleep(5)
             else:
                 # the bot has decided to stop running
