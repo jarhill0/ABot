@@ -26,7 +26,8 @@ class Cleaner(HTMLParser):
         self._tag_path.append(tag)
 
         if self.level <= 1:  # it will only ever be one, not zero, but this reads more nicely
-            self._text_parts.append('<{}>'.format(tag))
+            items = [tag] + ['{}={!r}'.format(a[0], a[1]) for a in attrs]
+            self._text_parts.append('<{}>'.format(' '.join(items)))
 
     def handle_endtag(self, tag):
         if self._tag_path[-1] != tag:
