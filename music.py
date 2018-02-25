@@ -2,6 +2,7 @@ import requests
 
 
 def add(message, text):
+    """Follow with a link to add to http://telegramusic.ml."""
     words = text.partition(' ')[2].split()
     if not words:
         message.reply('Please provide a link.')
