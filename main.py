@@ -631,7 +631,8 @@ class ABot(MappedCommandBot):
 
     @staticmethod
     def _html_chunker(message, text):
-        print('\n' * 10)
+        message = Cleaner.clean(message)
+
         splitter = HTMLsplit()
         pieces = []
 
@@ -679,7 +680,7 @@ class ABot(MappedCommandBot):
             response = 'Enter a HN item ID or a HN listing letter.'
             self._plaintext_helper(message, response)
             return
-        self._html_chunker(message, Cleaner.clean(response))
+        self._html_chunker(message, response)
 
     def hn_replies(self, message, opts):
         """View replies to HN item with specified ID or letter code."""
@@ -696,7 +697,7 @@ class ABot(MappedCommandBot):
             response = 'Enter a HN item ID or short name.'
             self._plaintext_helper(message, response)
             return
-        self._html_chunker(message, Cleaner.clean(response))
+        self._html_chunker(message, response)
 
     @chunk
     def remindme(self, message, opts):
