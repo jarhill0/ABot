@@ -631,7 +631,7 @@ class ABot(MappedCommandBot):
 
     @staticmethod
     def _html_chunker(message, text):
-        message = Cleaner.clean(message)
+        text = Cleaner.clean(text)
 
         splitter = HTMLsplit()
         pieces = []
