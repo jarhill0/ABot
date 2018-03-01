@@ -14,4 +14,5 @@ def chunk(func):
         except TooLong as tl:
             tl.send_chunked()
 
+    chunk_wrapper.__doc__ = func.__doc__
     return chunk_wrapper
