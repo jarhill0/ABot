@@ -1,8 +1,10 @@
 import praw
 import prawcore
+from pawt.exceptions import APIException
 
 import config
 import db_handler
+from imgur import direct_link
 
 
 class RedditHandler:
@@ -81,10 +83,6 @@ class RedditHandler:
                 output = output[4000:]
             return
 
-        elif post.url[:17] in ('https://i.redd.it', 'http://i.redd.it/'):
-            chat.send_photo(post.url, caption=output[:200])
-            return
-
         elif post.url[:17] in ['https://v.redd.it', 'http://v.redd.it/']:
             if post.media['reddit_video']['is_gif']:
                 url = post.media['reddit_video']['fallback_url']
@@ -97,6 +95,32 @@ class RedditHandler:
                 chat.send_video(url, caption=caption)
             return
         else:
+            url = direct_link(post.url) or post.url  # convert imgur/gfycat links to direct links
+            if url.endswith('.gifv'):
+                url = url[:-4] + 'mp4'  # strip the v
+
+            if url.endswith('.mp4'):
+                try:
+                    chat.send_video(url, caption=output[:200])
+                    return
+                except APIException:
+                    # it ain't a gif
+                    pass
+            elif url.endswith('.gif'):
+                try:
+                    chat.send_document(url, caption=output[:200])
+                    return
+                except APIException:
+                    # it ain't a gif
+                    pass
+            else:
+                try:
+                    chat.send_photo(url, caption=output[:200])
+                    return
+                except APIException:
+                    # it ain't a photo
+                    pass
+
             output += '\n\n' + post.url
             chat.send_message(output)
             return
