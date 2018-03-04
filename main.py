@@ -189,15 +189,15 @@ class ABot(MappedCommandBot):
             self.rates[id_pair] = [message_time]
             return True
         times = self.rates[id_pair]  # direct reference to a mutable list
-        if len(times) < 10:
-            # fewer than 10 messages with this ID pair ever. Start tracking and validate
+        if len(times) < 11:
+            # fewer than 11 messages with this ID pair ever. Start tracking and validate
             times.append(message_time)
             return True
-        if message_time - times[0] >= 60:  # if it's been at least a minute since 10 messages ago
+        if message_time - times[0] >= 60:  # if it's been at least a minute since 11 messages ago
             del times[0]
-            times.append(message_time)  # length of list should always be 10
+            times.append(message_time)  # length of list should always be 11
             return True
-        return False  # we had 10 messages within a minute. Don't update the list.
+        return False  # we had 11 messages within a minute. Don't update the list.
 
     def perform_extra_task(self):
         self.reminder_sched.run(blocking=False)
