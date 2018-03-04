@@ -189,7 +189,7 @@ class ABot(MappedCommandBot):
             self.rates[id_pair] = [message_time]
             return True
         times = self.rates[id_pair]  # direct reference to a mutable list
-        if len(times) < 10:
+        if len(times) <= 10:
             # fewer than 10 messages with this ID pair ever. Start tracking and validate
             times.append(message_time)
             return True
