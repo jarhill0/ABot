@@ -6,6 +6,8 @@ import config
 import db_handler
 from imgur import direct_link
 
+IMAGE_ENDINGS = ('.jpg', '.png', '.tif', '.tiff', '.bmp')
+
 
 class RedditHandler:
     def __init__(self, tg):
@@ -113,7 +115,7 @@ class RedditHandler:
                 except APIException:
                     # it ain't a gif
                     pass
-            else:
+            elif any(url.lower().endswith(ie) for ie in IMAGE_ENDINGS):
                 try:
                     chat.send_photo(url, caption=output[:200])
                     return
