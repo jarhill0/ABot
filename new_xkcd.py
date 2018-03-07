@@ -1,6 +1,7 @@
-from xxkcd import xkcd
-
 from db_handler import db
+from myxkcdwrapper import Xkcd
+
+xkcd = Xkcd()
 
 
 def get_submitted():
@@ -11,7 +12,7 @@ def get_submitted():
 
 
 def check_update():
-    new_comic = xkcd(xkcd.latest())
+    new_comic = xkcd.latest()
     submitted = get_submitted()
     if new_comic.num not in submitted:
         text = new_comic.title

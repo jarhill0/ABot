@@ -11,7 +11,6 @@ import requests
 from pawt import Telegram
 from pawt.bots import MappedCommandBot
 from pawt.exceptions import *
-from xxkcd import xkcd
 
 import archive_is
 import bitcoin
@@ -36,6 +35,7 @@ from db_handler import db
 from html_janitor import Cleaner
 from htmlsplit import HTMLsplit
 from music import add
+from myxkcdwrapper import Xkcd, XkcdError
 from reddit_handler import RedditHandler
 from reminders import Reminder
 from scheduler import SpecialSched
@@ -113,6 +113,7 @@ class ABot(MappedCommandBot):
 
         self.db = db
         self.reddit = RedditHandler(self.tg)
+        self._xkcd = Xkcd()
         self.rates = dict()
         self.subscriptions = helpers.Subscriptions(['xkcd', 'launches'], self.db)
         self.hn = hn.HN(self.db)
@@ -398,16 +399,16 @@ class ABot(MappedCommandBot):
         opt = words[0] if len(words) > 0 else None
         valid = True
         if not opt:
-            comic = xkcd(xkcd.latest())
+            comic = self._xkcd.latest()
         elif opt.startswith('rand'):
-            comic = xkcd(xkcd.random())
+            comic = self._xkcd.random()
         elif opt.isdigit():
-            comic = xkcd(int(opt))
-            if comic.num == xkcd.latest() and int(opt) != xkcd.latest():
-                # package defaults to the latest comic when given a bad number.
+            try:
+                comic = self._xkcd.comic(int(opt))
+            except XkcdError:
                 valid = False
         else:
-            comic = xkcd(xkcd.latest())
+            comic = self._xkcd.latest()
 
         if valid:
             title = '{} (#{})'.format(comic.title, comic.num)[:200]
