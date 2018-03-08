@@ -262,7 +262,7 @@ class ABot(MappedCommandBot):
 
     @staticmethod
     def secretcommand(message, unused):
-        message.reply.send_message("Doesn't work any more, you cheeky devil :)")
+        message.reply.send_message("Doesn't work anymore, you cheeky devil :)")
 
     # noinspection PyPep8Naming
     def lelxD(self, message, unused):
