@@ -91,7 +91,7 @@ class RedditHandler:
                 caption = output[:200]
                 chat.send_video(url, caption=caption)
             else:
-                url = post.media['reddit_video']['scrubber_media_url']
+                url = post.media['reddit_video']['fallback_url']
                 extra_part = ' (Silent preview. Full video available at {})'.format(post.url)
                 caption = output[:200 - len(extra_part)] + extra_part  # make sure extra part is added
                 chat.send_video(url, caption=caption)
