@@ -742,7 +742,11 @@ class ABot(MappedCommandBot):
 
     def leet(self, message, text):
         """1337."""
-        self._plaintext_helper(message, leet(text.partition(' ')[2]))
+        text = text.partition(' ')[2]
+        if text:
+            self._plaintext_helper(message, leet(text))
+        else:
+            self._plaintext_helper(message, 'Please enter a phrase (e.g. /leet haxor)')
 
     def music(self, message, text):
         """See a video from http://telegramusic.ml."""
