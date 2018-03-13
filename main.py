@@ -34,6 +34,7 @@ from chunkdecorator import chunk
 from db_handler import db
 from html_janitor import Cleaner
 from htmlsplit import HTMLsplit
+from leet import leet
 from music import add
 from myxkcdwrapper import Xkcd, XkcdError
 from reddit_handler import RedditHandler
@@ -67,6 +68,7 @@ class ABot(MappedCommandBot):
         text_command_map['/hn_replies'] = self.hn_replies
         text_command_map['/hn_show'] = self.hn_show
         text_command_map['/hn_top'] = self.hn_top
+        text_command_map['/leet'] = self.leet
         text_command_map['/lelxd'] = self.lelxD
         text_command_map['/lenny'] = self.lenny
         text_command_map['/lmddgtfy'] = self.lmddgtfy
@@ -737,6 +739,10 @@ class ABot(MappedCommandBot):
         # build response with time and message of each event.
         response = 'Your reminders:\n' + '\n'.join('{}: {}'.format(reminders.format_time(r[0]), r[1]) for r in my_remrs)
         self._plaintext_helper(message, response)
+
+    def leet(self, message, text):
+        """1337."""
+        self._plaintext_helper(message, leet(text))
 
     def music(self, message, text):
         """See a video from http://telegramusic.ml."""
