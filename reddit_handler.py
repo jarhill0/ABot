@@ -81,7 +81,7 @@ class RedditHandler:
             output += '\n\n---\n\n' + post.selftext
             while output:
                 # in case the message is longer than 4000 chars
-                chat.send_message(output[:4000])
+                chat.send_message(output[:4000], parse_mode='Markdown')
                 output = output[4000:]
             return
 
