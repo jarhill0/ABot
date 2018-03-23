@@ -69,7 +69,7 @@ class RedditHandler:
             return
 
         try:
-            output = '{} ({})'.format(post.title, post.subreddit_name_prefixed)
+            output = '{} ({})\n\n{}'.format(post.title, post.subreddit_name_prefixed, post.shortlink)
         except prawcore.Forbidden:
             chat.send_message('Reddit post: access denied.')
             return
