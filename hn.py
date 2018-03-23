@@ -1,4 +1,5 @@
 import hnpy
+from pawt.models.reply_markup import InlineKeyboardMarkupBuilder
 
 ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -89,13 +90,21 @@ class HN:
 
     def _listing_helper(self, listing, limit, chat_id):
         limit = self._constrain(limit)
-        text = []
+        builder = InlineKeyboardMarkupBuilder()
 
         posts = {l: -1 for l in ALPHABET}
 
         for n, post in enumerate(listing(limit)):
-            text.append('**{}**: [{}]({}) (+{})'.format(ALPHABET[n], post.title, post.link, post.score))
+            builder.add_button('(+{}) {} '.format(post.score, post.title),
+                               callback_data='hn:{};view:{}'.format(post.id, chat_id))
+            builder.new_row()
             posts[ALPHABET[n]] = post.id
         self.store_posts(posts, chat_id)
 
-        return '\n'.join(text)
+        return builder.build()
+
+    @staticmethod
+    def replies_button(chat_id, post_id):
+        builder = InlineKeyboardMarkupBuilder()
+        builder.add_button('View replies', callback_data='hn:{};replies:{}'.format(post_id, chat_id))
+        return builder.build()

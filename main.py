@@ -128,7 +128,8 @@ class ABot(MappedCommandBot):
         self.schedule_launches()
         self.schedule_reminders()
 
-        self.cq_map = {'reddit': self.reddit_callback}
+        self.cq_map = {'reddit': self.reddit_callback,
+                       'hn': self.hn_callback}
 
         self._username = self.tg.get_me().username
 
@@ -621,10 +622,11 @@ class ABot(MappedCommandBot):
             num = int(count)
         else:
             num = 5
-        response = func(num, str(message.chat.id))
-        self._plaintext_helper(message, response,
+
+        reply_markup = func(num, str(message.chat.id))
+        self._plaintext_helper(message, 'Posts from Hacker News:',
                                disable_web_page_preview=True,
-                               parse_mode='Markdown')
+                               parse_mode='Markdown', reply_markup=reply_markup)
 
     def hn_ask(self, message, opts):
         """View Ask HN posts."""
@@ -646,8 +648,7 @@ class ABot(MappedCommandBot):
         """View top HN posts."""
         self._hn_helper(message, opts, self.hn.top)
 
-    @staticmethod
-    def _html_chunker(message, text):
+    def _html_chunker(self, chat_id, text, reply_markup=None):
         text = Cleaner.clean(text)
 
         splitter = HTMLsplit()
@@ -665,13 +666,13 @@ class ABot(MappedCommandBot):
         pieces.append('\n'.join(this_piece))
 
         if not all(len(p) < 4096 for p in pieces):
-            message.chat.send_message('That content is too long to be sent here.')
+            self.tg.chat(chat_id).send_message('That content is too long to be sent here.')
             return
 
         # helper -- better than copy-paste!
-        def send():
+        def send(markup=None):
             content = '\n'.join(this_chunk)
-            message.chat.send_message(content, parse_mode='HTML')
+            self.tg.chat(chat_id).send_message(content, parse_mode='HTML', reply_markup=markup)
 
         this_chunk = []
         total_len = -1  # -1 to account for one extra space
@@ -683,7 +684,7 @@ class ABot(MappedCommandBot):
                 total_len = -1
             this_chunk.append(part)
             total_len += 1 + part_len  # the 1 for the space
-        send()
+        send(reply_markup)
 
     def hn_item(self, message, opts):
         """View HN item with specified ID."""
@@ -693,11 +694,13 @@ class ABot(MappedCommandBot):
             response = self.hn.view(opt)
         elif opt:
             response = self.hn.view(item_letter=opt, chat_id=str(message.chat.id))
+            opt = self.hn.get_posts(str(message.chat.id))[opt.upper()]
         else:
             response = 'Enter a HN item ID or a HN listing letter.'
             self._plaintext_helper(message, response)
             return
-        self._html_chunker(message, response)
+        reply_markup = self.hn.replies_button(message.chat.id, opt)
+        self._html_chunker(message.chat.id, response, reply_markup=reply_markup)
 
     def hn_replies(self, message, opts):
         """View replies to HN item with specified ID or letter code."""
@@ -714,7 +717,7 @@ class ABot(MappedCommandBot):
             response = 'Enter a HN item ID or short name.'
             self._plaintext_helper(message, response)
             return
-        self._html_chunker(message, response)
+        self._html_chunker(message.chat.id, response)
 
     @chunk
     def remindme(self, message, opts):
@@ -795,11 +798,25 @@ class ABot(MappedCommandBot):
             self._plaintext_helper(message, 'Cannot get number {!r}.'.format(num))
 
     def reddit_callback(self, data, cq):
-        cq.answer('Here you go: ',cache_time=0)
+        cq.answer('Here you go: ', cache_time=0)
         post_id, _, chat_id = data.partition(':')
         chat = self.tg.chat(chat_id)
         link = 'https://redd.it/' + post_id
         self.reddit.post_proxy(link, chat)
+
+    def hn_callback(self, data, cq):
+        cq.answer('Here you go: ', cache_time=0)
+        post_info, _, chat_id = data.partition(':')
+        post_id, _, method = post_info.partition(';')
+
+        reply_markup = None
+
+        if method == 'view':
+            response = self.hn.view(item_id=post_id, chat_id=str(chat_id))
+            reply_markup = self.hn.replies_button(chat_id, post_id)
+        elif method == 'replies':
+            response = self.hn.replies(5, item_id=post_id, chat_id=str(chat_id))
+        self._html_chunker(chat_id, response, reply_markup=None)
 
 
 def main():
