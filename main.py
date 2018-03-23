@@ -816,7 +816,7 @@ class ABot(MappedCommandBot):
             reply_markup = self.hn.replies_button(chat_id, post_id)
         elif method == 'replies':
             response = self.hn.replies(5, item_id=post_id, chat_id=str(chat_id))
-        self._html_chunker(chat_id, response, reply_markup=None)
+        self._html_chunker(chat_id, response, reply_markup=reply_markup)
 
 
 def main():
