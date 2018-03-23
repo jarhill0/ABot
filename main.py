@@ -127,6 +127,8 @@ class ABot(MappedCommandBot):
         self.schedule_launches()
         self.schedule_reminders()
 
+        self.cq_map = {'reddit': self.reddit_callback}
+
         self._username = self.tg.get_me().username
 
     def exception_handled(self, e):
@@ -206,6 +208,12 @@ class ABot(MappedCommandBot):
         self.reminder_sched.run(blocking=False)
         self.xkcd_sched.run(blocking=False)
         self.launch_sched.run(blocking=False)
+
+    def callback_query_handler(self, callback_query):
+        name, _, data = callback_query.data.partition(':')
+        func = self.cq_map.get(name)
+        if func:
+            func(data, callback_query)
 
     @staticmethod
     def _plaintext_helper(message, text, *args, **kwargs):
@@ -783,6 +791,12 @@ class ABot(MappedCommandBot):
             self._plaintext_helper(message, link)
         else:
             self._plaintext_helper(message, 'Cannot get number {!r}.'.format(num))
+
+    def reddit_callback(self, data, cq):
+        post_id, _, chat_id = data.partition(':')
+        chat = self.tg.chat(chat_id)
+        link = 'https://redd.it/' + post_id
+        self.reddit.post_proxy(link, chat)
 
 
 def main():

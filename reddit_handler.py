@@ -1,6 +1,7 @@
 import praw
 import prawcore
 from pawt.exceptions import APIException
+from pawt.models.reply_markup import InlineKeyboardMarkupBuilder
 
 import config
 import db_handler
@@ -34,11 +35,12 @@ class RedditHandler:
                 return
 
         if guessing_game:
-            body = ['Hot posts from a random subreddit. Take a guess!']
+            body = 'Hot posts from a random subreddit. Take a guess!'
         else:
             name = 'r/' + sub.display_name if magic else sub.display_name_prefixed
-            body = ['Hot posts from {}:'.format(name)]
-        body.append('')  # add extra newline after header.
+            body = 'Hot posts from {}:'.format(name)
+
+        builder = InlineKeyboardMarkupBuilder()
 
         posts_dict = dict()
         n = 1
@@ -46,7 +48,9 @@ class RedditHandler:
         for submission in sub.hot(limit=number + 5):
             if len(posts_dict) < number:
                 if not submission.stickied or magic:  # don't exclude stickies from r/all and r/popular
-                    body.append('#{}: {} - {}'.format(n, submission.title, submission.shortlink))
+                    text = '#{}: {}'.format(n, submission.title)
+                    builder.add_button(text, callback_data='reddit:{}:{}'.format(submission.id, chat.id))
+                    builder.new_row()
                     posts_dict[str(n)] = submission.shortlink
                     n += 1
 
@@ -54,7 +58,7 @@ class RedditHandler:
         if guessing_game:
             self.db['redditguessanswer'].upsert(dict(chat=str(chat.id), sub=sub.display_name_prefixed), ['chat'])
 
-        chat.send_message('\n'.join(body), disable_web_page_preview=True)
+        chat.send_message(body, reply_markup=builder.build())
         return
 
     def post_proxy(self, link, chat):
@@ -81,7 +85,10 @@ class RedditHandler:
             output += '\n\n---\n\n' + post.selftext
             while output:
                 # in case the message is longer than 4000 chars
-                chat.send_message(output[:4000], parse_mode='Markdown')
+                try:
+                    chat.send_message(output[:4000], parse_mode='Markdown')
+                except APIException:
+                    chat.send_message(output[:4000])
                 output = output[4000:]
             return
 
