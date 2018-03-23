@@ -3,6 +3,7 @@ import multiprocessing
 import re
 import sys
 import time
+import traceback
 import urllib.parse
 from random import randrange
 
@@ -132,6 +133,7 @@ class ABot(MappedCommandBot):
         self._username = self.tg.get_me().username
 
     def exception_handled(self, e):
+        traceback.print_exc()
         logging.exception('Exception in command.')
         return True
 
@@ -793,6 +795,7 @@ class ABot(MappedCommandBot):
             self._plaintext_helper(message, 'Cannot get number {!r}.'.format(num))
 
     def reddit_callback(self, data, cq):
+        cq.answer('Here you go: ',cache_time=0)
         post_id, _, chat_id = data.partition(':')
         chat = self.tg.chat(chat_id)
         link = 'https://redd.it/' + post_id
