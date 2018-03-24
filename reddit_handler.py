@@ -69,7 +69,7 @@ class RedditHandler:
             return
 
         try:
-            output = '{} ({})\n\n{}'.format(post.title, post.subreddit_name_prefixed, post.shortlink)
+            title_info = '{} ({})\n\n{}'.format(post.title, post.subreddit_name_prefixed, post.shortlink)
         except prawcore.Forbidden:
             chat.send_message('Reddit post: access denied.')
             return
@@ -82,25 +82,26 @@ class RedditHandler:
             return
 
         if post.is_self:
-            output += '\n\n---\n\n' + post.selftext
-            while output:
+            chat.send_message(title_info, disable_web_page_preview=True)
+            text = post.selftext
+            while text:
                 # in case the message is longer than 4000 chars
                 try:
-                    chat.send_message(output[:4000], parse_mode='Markdown')
+                    chat.send_message(text[:4000], parse_mode='Markdown')
                 except APIException:
-                    chat.send_message(output[:4000])
-                output = output[4000:]
+                    chat.send_message(text[:4000])
+                text = text[4000:]
             return
 
         elif post.url[:17] in ['https://v.redd.it', 'http://v.redd.it/']:
             if post.media['reddit_video']['is_gif']:
                 url = post.media['reddit_video']['fallback_url']
-                caption = output[:200]
+                caption = title_info[:200]
                 chat.send_video(url, caption=caption)
             else:
                 url = post.media['reddit_video']['fallback_url']
                 extra_part = ' (Silent preview. Full video available at {})'.format(post.url)
-                caption = output[:200 - len(extra_part)] + extra_part  # make sure extra part is added
+                caption = title_info[:200 - len(extra_part)] + extra_part  # make sure extra part is added
                 chat.send_video(url, caption=caption)
             return
         else:
@@ -110,28 +111,28 @@ class RedditHandler:
 
             if url.endswith('.mp4'):
                 try:
-                    chat.send_video(url, caption=output[:200])
+                    chat.send_video(url, caption=title_info[:200])
                     return
                 except APIException:
                     # it ain't a gif
                     pass
             elif url.endswith('.gif'):
                 try:
-                    chat.send_document(url, caption=output[:200])
+                    chat.send_document(url, caption=title_info[:200])
                     return
                 except APIException:
                     # it ain't a gif
                     pass
             elif any(url.lower().endswith(ie) for ie in IMAGE_ENDINGS):
                 try:
-                    chat.send_photo(url, caption=output[:200])
+                    chat.send_photo(url, caption=title_info[:200])
                     return
                 except APIException:
                     # it ain't a photo
                     pass
 
-            output += '\n\n' + post.url
-            chat.send_message(output)
+            chat.send_message(title_info, disable_web_page_preview=True)
+            chat.send_message(post.url)
             return
 
     def get_subreddit_from_post(self, link):
