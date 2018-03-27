@@ -118,6 +118,7 @@ class ABot(MappedCommandBot):
         self.reddit = RedditHandler(self.tg)
         self._xkcd = Xkcd()
         self.rates = dict()
+        self.cq_rates = dict()
         self.subscriptions = helpers.Subscriptions(['xkcd', 'launches'], self.db)
         self.hn = hn.HN(self.db)
 
@@ -206,6 +207,22 @@ class ABot(MappedCommandBot):
             times.append(message_time)  # length of list should always be 11
             return True
         return False  # we had 11 messages within a minute. Don't update the list.
+
+    def validate_cq(self, chat_id):
+        chat_id = str(chat_id)
+        timestamp = time.monotonic()
+        if chat_id not in self.cq_rates.keys():
+            self.cq_rates[chat_id] = [timestamp]
+            return True
+        times = self.cq_rates[chat_id]
+        if len(times) < 10:
+            times.append(timestamp)
+            return True
+        if timestamp - times[0] >= 60:
+            del times[0]
+            times.append(timestamp)
+            return True
+        return False
 
     def perform_extra_task(self):
         self.reminder_sched.run(blocking=False)
@@ -798,15 +815,21 @@ class ABot(MappedCommandBot):
             self._plaintext_helper(message, 'Cannot get number {!r}.'.format(num))
 
     def reddit_callback(self, data, cq):
-        cq.answer('Here you go: ', cache_time=0)
         post_id, _, chat_id = data.partition(':')
+        if not self.validate_cq(chat_id):
+            cq.answer('Rate limited.', cache_time=0)
+            return
+        cq.answer('Here you go: ', cache_time=0)
         chat = self.tg.chat(chat_id)
         link = 'https://redd.it/' + post_id
         self.reddit.post_proxy(link, chat)
 
     def hn_callback(self, data, cq):
-        cq.answer('Here you go: ', cache_time=0)
         post_info, _, chat_id = data.partition(':')
+        if not self.validate_cq(chat_id):
+            cq.answer('Rate limited.', cache_time=0)
+            return
+        cq.answer('Here you go: ', cache_time=0)
         post_id, _, method = post_info.partition(';')
 
         reply_markup = None
