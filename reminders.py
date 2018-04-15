@@ -1,6 +1,7 @@
 import datetime
 
 from pawt.exceptions import APIException
+from pawt.models.reply_markup import InlineKeyboardMarkupBuilder
 
 from db_handler import db
 
@@ -10,8 +11,11 @@ def remind(reminder, tg):
         raise ValueError('reminder is not a Reminder.')
 
     text = 'Reminder: {}'.format(reminder.message)
+    builder = InlineKeyboardMarkupBuilder()
+    builder.add_button('Snooze (10 min)', callback_data='reminder:{u}:{m}'.format(u=reminder.user_id,
+                                                                                  m=reminder.message))
     try:
-        tg.user(reminder.user_id).chat.send_message(text)
+        tg.user(reminder.user_id).chat.send_message(text, reply_markup=builder.build())
     except APIException:
         pass
     db['reminders'].delete(time=reminder.time, message=reminder.message, user_id=reminder.user_id)

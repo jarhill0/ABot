@@ -130,7 +130,8 @@ class ABot(MappedCommandBot):
         self.schedule_reminders()
 
         self.cq_map = {'reddit': self.reddit_callback,
-                       'hn': self.hn_callback}
+                       'hn': self.hn_callback,
+                       'reminder': self.reminder_callback}
 
         self._username = self.tg.get_me().username
 
@@ -840,6 +841,14 @@ class ABot(MappedCommandBot):
         elif method == 'replies':
             response = self.hn.replies(5, item_id=post_id, chat_id=str(chat_id))
         self._html_chunker(chat_id, response, reply_markup=reply_markup)
+
+    def reminder_callback(self, data, cq):
+        userchat_id, _, message = data.partition(':')
+        if not self.validate_cq(userchat_id):
+            cq.answer('Rate limited.', cache_time=0)
+            return
+        self.set_reminder(time.time() + 10 * 60, message, userchat_id)
+        cq.answer('Snoozed.')
 
 
 def main():
