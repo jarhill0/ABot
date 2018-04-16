@@ -157,9 +157,16 @@ class ABot(MappedCommandBot):
                 chat.send_photo(img[0], caption=img[1])
                 chat.send_message(alt)
 
-    def alert_launch_channels(self, tg):
-        subscribers = self.subscriptions.get_subscribers('launches')
+    @staticmethod
+    def about_equal_times(exp, measured):
+        return abs(exp - measured) < 120  # +/- 2 minutes
+
+    def alert_launch_channels(self, tg, exp_launch_time):
+        launchlibrary.refresh()
         next_launch = launchlibrary.get_next_launch()
+        if not about_equal_times(exp_launch_time, next_launch['start']):
+            return  # it's changed since we scheduled this
+        subscribers = self.subscriptions.get_subscribers('launches')
         for chat_id in subscribers:
             self.send_launch_message(tg.chat(chat_id), launch=next_launch)
 
@@ -174,7 +181,7 @@ class ABot(MappedCommandBot):
             times = [launch_time - 5 * 60 * 60, launch_time - 30 * 60]
             for time_ in times:
                 if time_ > time.time():
-                    launch_sched.enterabs(time_, 21, self.alert_launch_channels)
+                    launch_sched.enterabs(time_, 21, self.alert_launch_channels, (launch_time,))
         launch_sched.enter(24 * 60 * 60, 22, self.schedule_launches)
         self.launch_sched = launch_sched
 
