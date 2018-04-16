@@ -82,7 +82,8 @@ class RedditHandler:
             return
 
         if post.is_self:
-            chat.send_message(title_info, disable_web_page_preview=True)
+            title_info = '[{}]({}) ({})'.format(post.title, post.shortlink, post.subreddit_name_prefixed)
+            chat.send_message(title_info, disable_web_page_preview=True, parse_mode='Markdown')
             text = post.selftext
             while text:
                 # in case the message is longer than 4000 chars
