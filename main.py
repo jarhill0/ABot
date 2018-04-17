@@ -792,22 +792,21 @@ class ABot(MappedCommandBot):
         if words:
             word = words[0]
 
-            if word.lower().startswith('new'):
+            if word.lower().startswith('new') or word.lower() == 'latest':
                 # get the newest number
-                word = requests.get('http://telegramusic.ml/api/').content.decode('utf-8')
-
-            try:
-                num = int(word)
-                assert num > 0
-            except (ValueError, AssertionError):
-                self._plaintext_helper(message, '{!r} is not a valid number.'.format(word))
-                return
+                url = 'http://telegramusic.ml/api/latest'
+            else:
+                try:
+                    num = int(word)
+                    assert num > 0
+                except (ValueError, AssertionError):
+                    self._plaintext_helper(message, '{!r} is not a valid number.'.format(word))
+                    return
+                else:
+                    url = 'http://telegramusic.ml/api/{num}'.format(num=num)
 
         else:
-            max_num = int(requests.get('http://telegramusic.ml/api/').content.decode('utf-8'))
-            num = randrange(1, max_num)
-
-        url = 'http://telegramusic.ml/api/{num}/'.format(num=num)
+            url = 'http://telegramusic.ml/api/random'
 
         try:
             response = requests.get(url)
