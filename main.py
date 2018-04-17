@@ -855,7 +855,7 @@ class ABot(MappedCommandBot):
             cq.answer('Rate limited.', cache_time=0)
             return
         self.set_reminder(time.time() + 10 * 60, message, userchat_id)
-        cq.answer('Snoozed.')
+        cq.answer('Snoozed {!r}.'.format(message))
 
 
 def main():
