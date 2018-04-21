@@ -5,7 +5,6 @@ import sys
 import time
 import traceback
 import urllib.parse
-from random import randrange
 
 import dateparser
 import requests
@@ -174,6 +173,7 @@ class ABot(MappedCommandBot):
             times = [launch_time - 5 * 60 * 60, launch_time - 30 * 60]
             for time_ in times:
                 if time_ > time.time():
+                    launch_sched.enterabs(time_ - 60, 23, launchlibrary.refresh)
                     launch_sched.enterabs(time_, 21, self.alert_launch_channels)
         launch_sched.enter(24 * 60 * 60, 22, self.schedule_launches)
         self.launch_sched = launch_sched
