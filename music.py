@@ -14,7 +14,7 @@ def add(message, text):
     response = requests.post('http://telegramusic.ml/add/',
                              data={'url': link, 'name': name})
     if response.status_code == 200:
-        id_ = response.json()['id']
-        message.reply('Your song is live at http://telegramusic.ml/{}/'.format(id_))
+        location = response.json()['link']
+        message.reply('Your song is live at http://telegramusic.ml{}'.format(location))
     else:
         message.reply('Could not add that link. Try another?')
