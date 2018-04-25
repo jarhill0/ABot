@@ -1,9 +1,12 @@
 import datetime
+import logging
 
 from pawt.exceptions import APIException
 from pawt.models.reply_markup import InlineKeyboardMarkupBuilder
 
 from db_handler import db
+
+logging.basicConfig(filename='bot.log', level=logging.WARNING)
 
 
 def remind(reminder, tg):
@@ -17,7 +20,10 @@ def remind(reminder, tg):
     try:
         tg.user(reminder.user_id).chat.send_message(text, reply_markup=builder.build())
     except APIException:
-        pass
+        try:
+            tg.user(reminder.user_id).chat.send_message(text)  # markup callback data too long...
+        except APIException:
+            logging.exception('Reminder exception')
     db['reminders'].delete(time=reminder.time, message=reminder.message, user_id=reminder.user_id)
 
 
