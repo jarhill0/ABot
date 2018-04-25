@@ -842,8 +842,9 @@ class ABot(MappedCommandBot):
         self._html_chunker(chat_id, response, reply_markup=reply_markup)
 
     def reminder_callback(self, data, cq):
-        userchat_id, _, message = data.partition(':')
-        if not self.validate_cq(userchat_id):
+        userchat_id = cq.user.id
+        message = cq.message.text.partition(':')[2].strip()  # "Reminder: Whatever"
+        if not self.validate_cq(userchat_id):  # todo validate at top level instead
             cq.answer('Rate limited.', cache_time=0)
             return
         self.set_reminder(time.time() + 10 * 60, message, userchat_id)

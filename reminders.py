@@ -15,15 +15,11 @@ def remind(reminder, tg):
 
     text = 'Reminder: {}'.format(reminder.message)
     builder = InlineKeyboardMarkupBuilder()
-    builder.add_button('Snooze (10 min)', callback_data='reminder:{u}:{m}'.format(u=reminder.user_id,
-                                                                                  m=reminder.message))
+    builder.add_button('Snooze (10 min)', callback_data='reminder:')
     try:
         tg.user(reminder.user_id).chat.send_message(text, reply_markup=builder.build())
     except APIException:
-        try:
-            tg.user(reminder.user_id).chat.send_message(text)  # markup callback data too long...
-        except APIException:
-            logging.exception('Reminder exception')
+        logging.exception('Reminder exception')
     db['reminders'].delete(time=reminder.time, message=reminder.message, user_id=reminder.user_id)
 
 
