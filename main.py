@@ -747,7 +747,12 @@ class ABot(MappedCommandBot):
             self._plaintext_helper(message, 'Please provide a date for the reminder.')
             return
         time_str = remind_search.group(1)
-        message_text = remind_search.group(2)[1:-1] if remind_search.group(2) else 'Do the thing!'
+        if remind_search.group(2):
+            message_text = remind_search.group(2)[1:-1]
+        elif message.reply_to_message:
+            message_text = message.reply_to_message.get_text_content()
+        else:
+            message_text = 'Do the thing!'
         ev_time = dateparser.parse(date_string=time_str.strip(), settings={'PREFER_DATES_FROM': 'future'})
         if ev_time is None:
             self._plaintext_helper(message, "Sorry, I couldn't understand that time.")

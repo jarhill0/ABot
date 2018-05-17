@@ -1,6 +1,7 @@
 import datetime
 import logging
 
+from pawt import MAX_LENGTH
 from pawt.exceptions import APIException
 from pawt.models.reply_markup import InlineKeyboardMarkupBuilder
 
@@ -13,7 +14,7 @@ def remind(reminder, tg):
     if not isinstance(reminder, Reminder):
         raise ValueError('reminder is not a Reminder.')
 
-    text = 'Reminder: {}'.format(reminder.message)
+    text = 'Reminder: {}'.format(reminder.message)[:MAX_LENGTH['text']]
     builder = InlineKeyboardMarkupBuilder()
     builder.add_button('Snooze (10 min)', callback_data='reminder:')
     try:
