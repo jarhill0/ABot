@@ -11,10 +11,10 @@ def add(message, text):
     user = message.user
     name = user.full_name if user else 'a friend'  # message might not have a user
     link = words[0]
-    response = requests.post('http://telegramusic.ml/add/',
+    response = requests.post('https://telegramusic.ml/add/',
                              data={'url': link, 'name': name})
     if response.status_code == 200:
         location = response.json()['link']
-        message.reply('Your song is live at http://telegramusic.ml{}'.format(location))
+        message.reply('Your song is live at https://telegramusic.ml{}'.format(location))
     else:
         message.reply('Could not add that link. Try another?')
