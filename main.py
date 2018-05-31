@@ -814,7 +814,13 @@ class ABot(MappedCommandBot):
 
         content = response.json()
         if content:
-            link = '{num}: https://www.youtube.com/watch?v={id} (from {name})'.format(**content)
+            t = content.get('type', 'youtube')
+            if t == 'youtube':
+                link = '{num}: https://www.youtube.com/watch?v={id} (from {name})'.format(**content)
+            elif t == 'bandcamp':
+                link = '{num}: {id} (from {name})'.format(**content)
+            else:
+                link = 'Unknown item type.'
             self._plaintext_helper(message, link)
         else:
             self._plaintext_helper(message, 'Cannot get number {!r}.'.format(num))
