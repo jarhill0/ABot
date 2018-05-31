@@ -265,7 +265,7 @@ class ABot(MappedCommandBot):
 
     def source(self, message, unused):
         """View source."""
-        self._plaintext_helper(message, 'Inspect my insides! http://github.com/jarhill0/ABot')
+        self._plaintext_helper(message, 'Inspect my insides! https://github.com/jarhill0/ABot')
 
     def settings(self, message, unused):
         """View available settings."""
@@ -785,7 +785,7 @@ class ABot(MappedCommandBot):
             self._plaintext_helper(message, 'Please enter a phrase (e.g. /leet haxor)')
 
     def music(self, message, text):
-        """See a video from http://telegramusic.ml."""
+        """See a video from https://telegramusic.ml."""
         words = text.partition(' ')[2].split()
         if words:
             word = words[0]
