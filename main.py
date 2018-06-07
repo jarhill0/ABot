@@ -130,7 +130,8 @@ class ABot(MappedCommandBot):
 
         self.cq_map = {'reddit': self.reddit_callback,
                        'hn': self.hn_callback,
-                       'reminder': self.reminder_callback}
+                       'reminder': self.reminder_callback,
+                       'ud': self.ud_callback}
 
         self._username = self.tg.get_me().username
 
@@ -389,8 +390,7 @@ class ABot(MappedCommandBot):
         """Define a word using Urban Dictionary."""
         term = command_text.partition(' ')[2].strip()
         if term:
-            reply = urban_dict.build_message(term)
-            self._plaintext_helper(message, reply, parse_mode='Markdown')
+            urban_dict.send_message(message.chat, term)
         else:
             self._plaintext_helper(message, 'Please follow the command with a search term.')
 
@@ -860,6 +860,13 @@ class ABot(MappedCommandBot):
             return
         self.set_reminder(time.time() + 10 * 60, message, userchat_id)
         cq.answer('Snoozed {!r}.'.format(message))
+
+    def ud_callback(self, data, cq):
+        chat_id, _, data = data.partition(':')
+        index, _, term = data.partition(':')
+        index = int(index)
+        urban_dict.send_message(self.tg.chat(chat_id), term, index)
+        cq.answer("Here's the next definition for {!r}:".format(term))
 
 
 def main():
