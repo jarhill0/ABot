@@ -213,13 +213,13 @@ class ABot(MappedCommandBot):
             return True
         return False  # we had 11 messages within a minute. Don't update the list.
 
-    def validate_cq(self, chat_id):
-        chat_id = str(chat_id)
+    def validate_cq(self, user_id):
+        user_id = str(user_id)
         timestamp = time.monotonic()
-        if chat_id not in self.cq_rates.keys():
-            self.cq_rates[chat_id] = [timestamp]
+        if user_id not in self.cq_rates.keys():
+            self.cq_rates[user_id] = [timestamp]
             return True
-        times = self.cq_rates[chat_id]
+        times = self.cq_rates[user_id]
         if len(times) < 10:
             times.append(timestamp)
             return True
@@ -236,6 +236,8 @@ class ABot(MappedCommandBot):
 
     def callback_query_handler(self, callback_query):
         name, _, data = callback_query.data.partition(':')
+        if not self.validate_cq(callback_query.user.id):
+            return
         func = self.cq_map.get(name)
         if func:
             func(data, callback_query)
@@ -846,9 +848,6 @@ class ABot(MappedCommandBot):
 
     def reddit_callback(self, data, cq):
         post_id, _, chat_id = data.partition(':')
-        if not self.validate_cq(chat_id):
-            cq.answer('Rate limited.', cache_time=0)
-            return
         cq.answer('Here you go: ', cache_time=0)
         chat = self.tg.chat(chat_id)
         link = 'https://redd.it/' + post_id
@@ -856,9 +855,6 @@ class ABot(MappedCommandBot):
 
     def hn_callback(self, data, cq):
         post_info, _, chat_id = data.partition(':')
-        if not self.validate_cq(chat_id):
-            cq.answer('Rate limited.', cache_time=0)
-            return
         cq.answer('Here you go: ', cache_time=0)
         post_id, _, method = post_info.partition(';')
 
@@ -874,9 +870,6 @@ class ABot(MappedCommandBot):
     def reminder_callback(self, data, cq):
         userchat_id = cq.user.id
         message = cq.message.text.partition(':')[2].strip()  # "Reminder: Whatever"
-        if not self.validate_cq(userchat_id):  # todo validate at top level instead
-            cq.answer('Rate limited.', cache_time=0)
-            return
         self.set_reminder(time.time() + 10 * 60, message, userchat_id)
         cq.answer('Snoozed {!r}.'.format(message))
 
