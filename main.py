@@ -41,6 +41,7 @@ from reddit_handler import RedditHandler
 from reminders import Reminder
 from scheduler import SpecialSched
 from statuscheck import StatusChecker, StatusDummy
+from youtube import get_nth_result, get_reply_markup
 
 
 class ABot(MappedCommandBot):
@@ -102,6 +103,7 @@ class ABot(MappedCommandBot):
         text_command_map['/whyme'] = self.whyme
         text_command_map['/wtf'] = self.wtf
         text_command_map['/xkcd'] = self.xkcd
+        text_command_map['/yt'] = self.youtube
         text_command_map['/yyy'] = self.yyy
 
         super().__init__(token, text_command_map, caption_command_map, url=url, session=session)
@@ -131,7 +133,8 @@ class ABot(MappedCommandBot):
         self.cq_map = {'reddit': self.reddit_callback,
                        'hn': self.hn_callback,
                        'reminder': self.reminder_callback,
-                       'ud': self.ud_callback}
+                       'ud': self.ud_callback,
+                       'yt': self.yt_callback}
 
         self._username = self.tg.get_me().username
 
@@ -825,6 +828,22 @@ class ABot(MappedCommandBot):
         else:
             self._plaintext_helper(message, 'Cannot get number {!r}.'.format(num))
 
+    def youtube(self, message, text):
+        """Get the first youtube result for a certain query."""
+        query = text.partition(' ')[2]
+        if not query:
+            return message.reply('Follow the /yt command with a query.')
+        self.youtube_helper(query, message.chat)
+
+    @staticmethod
+    def youtube_helper(query, chat, n=0):
+        link = get_nth_result(query, n)
+        if not link:
+            chat.send_message('No result for search {!r}.'.format(query))
+        else:
+            markup = get_reply_markup(chat.id, query, n + 1)
+            chat.send_message(link, reply_markup=markup)
+
     def reddit_callback(self, data, cq):
         post_id, _, chat_id = data.partition(':')
         if not self.validate_cq(chat_id):
@@ -867,6 +886,13 @@ class ABot(MappedCommandBot):
         index = int(index)
         urban_dict.send_message(self.tg.chat(chat_id), term, index)
         cq.answer("Here's the next definition for {!r}:".format(term))
+
+    def yt_callback(self, data, cq):
+        chat_id, _, data = data.partition(':')
+        n, _, query = data.partition(':')
+        n = int(n)
+        self.youtube_helper(query, self.tg.chat(chat_id), n)
+        cq.answer('Next result for {!r}:'.format(query))
 
 
 def main():
