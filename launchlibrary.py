@@ -106,7 +106,8 @@ def _get_new_agency_launches(agency_id):
         # Some API error; let's not bring down the whole bot.
         return []
     for launch in new_launches:
-        if any(ag['id'] == agency_id for ag in launch['rocket']['agencies']):
+        agencies = launch['rocket']['agencies']
+        if agencies is not None and any(ag['id'] == agency_id for ag in agencies):
             output.append(launch)
 
     return output
