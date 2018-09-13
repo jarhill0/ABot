@@ -463,12 +463,10 @@ class ABot(MappedCommandBot):
 
     @staticmethod
     @chunk
-    def send_launch_message(chat, messages=None, launch=None):
-        if not messages:
-            if launch:
-                messages = launchlibrary.build_launch_message(launch)
-            else:
-                messages = launchlibrary.build_launch_message(launchlibrary.get_next_launch())
+    def send_launch_message(chat, launch=None):
+        if not launch:
+            launch = launchlibrary.get_next_launch()
+        messages = launchlibrary.build_launch_message(launch)
 
         pic, text = messages
 
