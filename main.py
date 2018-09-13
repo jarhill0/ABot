@@ -8,7 +8,7 @@ import urllib.parse
 
 import dateparser
 import requests
-from pawt import Telegram
+from pawt import Telegram, InlineKeyboardMarkupBuilder
 from pawt.bots import MappedCommandBot
 from pawt.exceptions import *
 
@@ -96,6 +96,7 @@ class ABot(MappedCommandBot):
         text_command_map['/start'] = self.start
         text_command_map['/startup'] = self.startup
         text_command_map['/subscribe'] = self.subscribe
+        text_command_map['/timezone'] = self.timezone
         text_command_map['/ud'] = self.ud
         text_command_map['/unsubscribe'] = self.unsubscribe
         text_command_map['/utensil'] = self.utensil
@@ -134,7 +135,8 @@ class ABot(MappedCommandBot):
                        'hn': self.hn_callback,
                        'reminder': self.reminder_callback,
                        'ud': self.ud_callback,
-                       'yt': self.yt_callback}
+                       'yt': self.yt_callback,
+                       'tz': self.tz_callback}
 
         self._username = self.tg.get_me().username
 
@@ -762,6 +764,9 @@ class ABot(MappedCommandBot):
         if ev_time is None:
             self._plaintext_helper(message, "Sorry, I couldn't understand that time.")
             return
+        user_tz = reminders.get_timezone(message.user.id)
+        if user_tz is not None:
+            ev_time = ev_time.replace(tzinfo=user_tz)
         timestamp = ev_time.timestamp()
         self.set_reminder(timestamp, message_text, message.user.id)
         fmtted_time = reminders.format_time(ev_time)
@@ -778,7 +783,9 @@ class ABot(MappedCommandBot):
 
         my_remrs.sort()
         # build response with time and message of each event.
-        response = 'Your reminders:\n' + '\n'.join('{}: {}'.format(reminders.format_time(r[0]), r[1]) for r in my_remrs)
+        user_tz = reminders.get_timezone(message.user.id)
+        response = 'Your reminders:\n' + '\n'.join('{}: {}'.format(reminders.format_time(r[0], user_tz), r[1]) for r in
+                                                   my_remrs)
         self._plaintext_helper(message, response)
 
     def leet(self, message, text):
@@ -846,6 +853,34 @@ class ABot(MappedCommandBot):
             markup = get_reply_markup(chat.id, query, n + 1)
             chat.send_message(link, reply_markup=markup)
 
+    def timezone(self, message, text):
+        """Set your offset from UTC."""
+        arg = text.partition(' ')[2]
+        if arg:
+            try:
+                offset = int(arg)
+            except ValueError:
+                self._plaintext_helper(message, 'Timezone offsets must be valid integers.')
+            else:
+                reminders.set_timezone(message.user.id, offset)
+                self._plaintext_helper(message, 'Your timezone has been set to {}.'.format(
+                    reminders.get_timezone(message.user.id)))
+        else:
+            keyboard_builder = InlineKeyboardMarkupBuilder()
+            keyboard_builder.add_button(text='Pacific', callback_data='tz:-8')
+            keyboard_builder.add_button(text='DST Pacific', callback_data='tz:-7')
+            keyboard_builder.new_row()
+            keyboard_builder.add_button(text='Amsterdam', callback_data='tz:1')
+            keyboard_builder.add_button(text='DST Amsterdam', callback_data='tz:2')
+            keyboard_builder.new_row()
+            keyboard_builder.add_button(text='Eastern', callback_data='tz:-5')
+            keyboard_builder.add_button(text='DST Eastern', callback_data='tz:-4')
+
+            message.chat.send_message('Your current time zone setting is {}. To change it, use /timezone followed by '
+                                      'your offset from UTC in hours, or tap one of these '
+                                      'suggestions:'.format(reminders.get_timezone(message.user.id)),
+                                      reply_markup=keyboard_builder.build())
+
     def reddit_callback(self, data, cq):
         post_id, _, chat_id = data.partition(':')
         cq.answer('Here you go: ', cache_time=0)
@@ -886,6 +921,12 @@ class ABot(MappedCommandBot):
         n = int(n)
         self.youtube_helper(query, self.tg.chat(chat_id), n)
         cq.answer('Next result for {!r}:'.format(query))
+
+    @staticmethod
+    def tz_callback(data, cq):
+        offset = int(data)
+        reminders.set_timezone(cq.user.id, offset)
+        cq.answer('Offset set to {}.'.format(offset))
 
 
 def main():

@@ -9,7 +9,7 @@ spork = 'hi every1 im new!!!!!!! holds up spork my name is katy but u can call m
 settings = 'Current settings:\n/redditlimit followed by a number to set limit of reddit posts displayed by ' \
            '/redditposts (example usage: `/redditlimit 5`)\n/subscribe or /unsubscribe followed by a topic (' \
            '`xkcd`, `launches`, etc.) to subscribe or unsubscribe the current chat from notifications about ' \
-           'that topic'
+           'that topic\n/timezone followed by a number between -24 and 24 to set your offset from UTC'
 
 marines = 'What the fuck did you just fucking say about me, you little bitch? I’ll have you know I graduated top of ' \
           'my class in the Navy Seals, and I’ve been involved in numerous secret raids on Al-Quaeda, and I have over ' \
