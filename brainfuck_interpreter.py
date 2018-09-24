@@ -2,130 +2,110 @@ import time
 
 
 class Cell:
-    def __init__(self):
-        self.left = None
-        self.right = None
+    def __init__(self, *, left=None, right=None):
+        self._left = left
+        self._right = right
         self.value = 0
 
+    def __repr__(self):
+        return str(self.value)
+
     def increment(self):
-        if self.value == 255:
-            self.value = 0
-        else:
-            self.value += 1
+        self.value = (self.value + 1) % 256
 
     def decrement(self):
-        if self.value == 0:
-            self.value = 255
-        else:
-            self.value -= 1
+        self.value = (self.value - 1) % 256
+
+    def right(self):
+        if self._right is None:
+            self._right = Cell(left=self)
+        return self._right
+
+    def left(self):
+        if self._left is None:
+            self._left = Cell(right=self)
+        return self._left
 
 
-def step_right(cell):
-    if cell.right is None:
-        cell.right = Cell()
-        cell.right.left = cell
-    return cell.right
+class Input:
+    def __init__(self, string):
+        self._string = string
+        self._index = 0
+
+    def get_char(self):
+        if self._index >= len(self._string):
+            return 0
+        retval = ord(self._string[self._index]) % 256
+        self._index += 1
+        return retval
 
 
-def step_left(cell):
-    if cell.left is None:
-        cell.left = Cell()
-        cell.left.right = cell
-    return cell.left
-
-
-def find_closing_bracket(string):
-    nested_level = 0
+def match_brackets(string):
+    stack = []
+    pairs = {}
 
     for i, char in enumerate(string):
-
         if char == '[':
-            nested_level += 1
-        elif char == ']':
-            nested_level -= 1
-            if nested_level == 0:
-                return i
-
-    raise ValueError('No closing bracket found')
-
-
-def find_opening_bracket(string):
-    nested_level = 0
-
-    for i, char in enumerate(reversed(string)):
-
+            stack.append(i)
         if char == ']':
-            nested_level += 1
-        elif char == '[':
-            nested_level -= 1
-            if nested_level == 0:
-                return i
+            if len(stack) == 0:
+                raise ValueError('invalid brackets')
+            other = stack.pop(-1)
+            pairs[other] = i
+            pairs[i] = other
 
-    raise ValueError('No opening bracket found')
+    if len(stack) != 0:
+        raise ValueError('invalid brackets')
+    return pairs
 
 
 def execute(code, input_):
-    valid_chars = ['<', '>', '+', '-', '.', ',', '[', ']']
     pointer = Cell()
+    input_ = Input(input_)
     code_index = 0
-    output_text = ''
+    bracket_pairs = match_brackets(code)
+    output = []
     start = time.time()
 
-    while True:
-        if code_index < len(code):
-            char = code[code_index]
-        else:
-            break
+    while code_index < len(code):
+        char = code[code_index]
         if time.time() > start + 10:
-            return "Timed out.\nOutput:\n" + output_text
+            return 'Timed out.\nOutput:\n' + ''.join(output)
 
-        if char in valid_chars:
+        if char == '<':
+            pointer = pointer.left()
 
-            if char == '<':
-                # noinspection PyNoneFunctionAssignment
-                pointer = step_left(pointer)
+        elif char == '>':
+            pointer = pointer.right()
 
-            elif char == '>':
-                # noinspection PyNoneFunctionAssignment
-                pointer = step_right(pointer)
+        elif char == '+':
+            pointer.increment()
 
-            elif char == '+':
-                pointer.increment()
+        elif char == '-':
+            pointer.decrement()
 
-            elif char == '-':
-                pointer.decrement()
+        elif char == '.':
+            output.append(chr(pointer.value))
 
-            elif char == '.':
-                output_text += chr(pointer.value)
+        elif char == ',':
+            pointer.value = input_.get_char()
 
-            elif char == ',':
-                try:
-                    pointer.value = ord(input_[0]) % 256
-                except IndexError:
-                    pointer.value = 0
-                else:
-                    input_ = input_[1:]
+        elif char == '[':
+            if pointer.value == 0:
+                code_index = bracket_pairs[code_index]
 
-            elif char == '[':
-                if pointer.value == 0:
-                    code_index += find_closing_bracket(code[code_index:])
-
-            elif char == ']':
-                if pointer.value != 0:
-                    code_index -= find_opening_bracket(code[:code_index + 1])
+        elif char == ']':
+            if pointer.value != 0:
+                code_index = bracket_pairs[code_index]
 
         code_index += 1
 
-    return "Output:\n" + output_text
+    return 'Output:\n' + ''.join(output)
 
 
 def main(my_code, input_=''):
     # noinspection PyBroadException
     try:
-        return execute(my_code, input_)[:1000]
+        return execute(my_code, input_)[:4077]
     except Exception:
         return 'Error.'
-
-
-if __name__ == '__main__':
-    print(main('random test', input_='hello'))
