@@ -868,11 +868,15 @@ class ABot(MappedCommandBot):
             keyboard_builder.add_button(text='Pacific', callback_data='tz:-8')
             keyboard_builder.add_button(text='DST Pacific', callback_data='tz:-7')
             keyboard_builder.new_row()
+            keyboard_builder.add_button(text='Eastern', callback_data='tz:-5')
+            keyboard_builder.add_button(text='DST Eastern', callback_data='tz:-4')
+            keyboard_builder.new_row()
             keyboard_builder.add_button(text='Amsterdam', callback_data='tz:1')
             keyboard_builder.add_button(text='DST Amsterdam', callback_data='tz:2')
             keyboard_builder.new_row()
-            keyboard_builder.add_button(text='Eastern', callback_data='tz:-5')
-            keyboard_builder.add_button(text='DST Eastern', callback_data='tz:-4')
+            keyboard_builder.add_button(text='Jerusalem', callback_data='tz:2')
+            keyboard_builder.add_button(text='DST Jerusalem', callback_data='tz:3')
+
 
             message.chat.send_message('Your current time zone setting is {}. To change it, use /timezone followed by '
                                       'your offset from UTC in hours, or tap one of these '
