@@ -9,7 +9,7 @@ from datetime import timedelta, timezone
 
 import dateparser
 import requests
-from pawt import Telegram, InlineKeyboardMarkupBuilder
+from pawt import InlineKeyboardMarkupBuilder, Telegram
 from pawt.bots import MappedCommandBot
 from pawt.exceptions import *
 
