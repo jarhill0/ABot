@@ -758,13 +758,14 @@ class ABot(MappedCommandBot):
             message_text = message.reply_to_message.get_text_content()
         else:
             message_text = 'Do the thing!'
-        ev_time = dateparser.parse(date_string=time_str.strip(), settings={'PREFER_DATES_FROM': 'future'})
+        user_tz = reminders.get_timezone(message.user.id)
+        if not user_tz:
+            user_tz = datetime.tzinfo('US/Pacific')
+        ev_time = dateparser.parse(date_string=time_str.strip(), settings={'PREFER_DATES_FROM': 'future', 'TIMEZONE': user_tz})
         if ev_time is None:
             self._plaintext_helper(message, "Sorry, I couldn't understand that time.")
             return
-        user_tz = reminders.get_timezone(message.user.id)
-        if user_tz is not None:
-            ev_time = ev_time.replace(tzinfo=user_tz)
+        ev_time = ev_time.replace(tzinfo=user_tz)
         timestamp = ev_time.timestamp()
         self.set_reminder(timestamp, message_text, message.user.id)
         fmtted_time = reminders.format_time(ev_time)
