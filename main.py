@@ -5,6 +5,7 @@ import sys
 import time
 import traceback
 import urllib.parse
+from datetime import timedelta, timezone
 
 import dateparser
 import requests
@@ -760,12 +761,14 @@ class ABot(MappedCommandBot):
             message_text = 'Do the thing!'
         user_tz = reminders.get_timezone(message.user.id)
         if not user_tz:
-            user_tz = datetime.tzinfo('US/Pacific')
-        ev_time = dateparser.parse(date_string=time_str.strip(), settings={'PREFER_DATES_FROM': 'future', 'TIMEZONE': user_tz})
+            user_tz = timezone(timedelta(hours=-8))  # incredibly silly default -- doesn't account for DST
+        ev_time = dateparser.parse(date_string=time_str.strip(),
+                                   settings={'PREFER_DATES_FROM': 'future',
+                                             'TIMEZONE': user_tz.tzname(None),
+                                             'RETURN_AS_TIMEZONE_AWARE': True})
         if ev_time is None:
             self._plaintext_helper(message, "Sorry, I couldn't understand that time.")
             return
-        ev_time = ev_time.replace(tzinfo=user_tz)
         timestamp = ev_time.timestamp()
         self.set_reminder(timestamp, message_text, message.user.id)
         fmtted_time = reminders.format_time(ev_time)
@@ -877,7 +880,6 @@ class ABot(MappedCommandBot):
             keyboard_builder.new_row()
             keyboard_builder.add_button(text='Jerusalem', callback_data='tz:2')
             keyboard_builder.add_button(text='DST Jerusalem', callback_data='tz:3')
-
 
             message.chat.send_message('Your current time zone setting is {}. To change it, use /timezone followed by '
                                       'your offset from UTC in hours, or tap one of these '
