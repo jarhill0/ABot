@@ -74,12 +74,12 @@ class RedditHandler:
             chat.send_message('Reddit post: access denied.')
             return
 
-        nsfw_setting = self.db['nsfw'].find_one(chat=str(chat.id))
-        nsfw_setting = nsfw_setting['setting'] if nsfw_setting else False
-
-        if post.over_18 and chat.type.value != 'private' and not nsfw_setting:
-            chat.send_message('NSFW. Click it yourself.')
-            return
+        if post.over_18 and chat.type.value != 'private':
+            nsfw_setting = self.db['nsfw'].find_one(chat=str(chat.id))
+            nsfw_setting = nsfw_setting['setting'] if nsfw_setting else False
+            if not nsfw_setting:
+                chat.send_message('NSFW. Click it yourself.')
+                return
 
         if post.is_self:
             title_info = '[{}]({}) ({})'.format(post.title, post.shortlink, post.subreddit_name_prefixed)
