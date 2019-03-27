@@ -59,6 +59,7 @@ class ABot(MappedCommandBot):
         text_command_map['/botfather_commands'] = self.botfather_commands
         text_command_map['/choice'] = self.choice
         text_command_map['/delete'] = self.delete
+        text_command_map['/fewh'] = self.fewh
         text_command_map['/frog'] = self.frog
         text_command_map['/helloworld'] = self.helloworld
         text_command_map['/help'] = self.help
@@ -267,6 +268,10 @@ class ABot(MappedCommandBot):
     @chunk
     def botfather_commands(self, message, unused):
         self._plaintext_helper(message, self._bf_cmds)
+
+    def fewh(self, message, unused):
+        """Learn appropriate spelling."""
+        self._plaintext_helper(message, 'phew*')
 
     def helloworld(self, message, unused):
         """Say hello."""
