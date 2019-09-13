@@ -915,7 +915,11 @@ class ABot(MappedCommandBot):
     def reminder_callback(self, data, cq):
         userchat_id = cq.user.id
         message = cq.message.text.partition(':')[2].strip()  # "Reminder: Whatever"
-        self.set_reminder(time.time() + 10 * 60, message, userchat_id)
+        try:
+            delay = int(data.partition(':')[0].strip())
+        except ValueError:
+            delay = 10
+        self.set_reminder(time.time() + delay * 60, message, userchat_id)
         cq.answer('Snoozed {!r}.'.format(message))
 
     def ud_callback(self, data, cq):

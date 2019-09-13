@@ -16,7 +16,9 @@ def remind(reminder, tg):
 
     text = 'Reminder: {}'.format(reminder.message)[:MAX_LENGTH['text']]
     builder = InlineKeyboardMarkupBuilder()
-    builder.add_button('Snooze (10 min)', callback_data='reminder:')
+    builder.add_button('Snooze (10 min)', callback_data='reminder:10:')
+    builder.new_row()
+    builder.add_button('Snooze (1 hour)', callback_data='reminder:60:')
     try:
         tg.user(reminder.user_id).chat.send_message(text, reply_markup=builder.build())
     except APIException:
