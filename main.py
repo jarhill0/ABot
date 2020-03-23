@@ -804,14 +804,14 @@ class ABot(MappedCommandBot):
             self._plaintext_helper(message, 'Please enter a phrase (e.g. /leet haxor)')
 
     def music(self, message, text):
-        """See a video from https://telegramusic.ml."""
+        """See a video from https://telegramusic.appspot.com."""
         words = text.partition(' ')[2].split()
         if words:
             word = words[0]
 
             if word.lower().startswith('new') or word.lower() == 'latest':
                 # get the newest number
-                url = 'https://telegramusic.ml/api/latest'
+                url = 'https://telegramusic.appspot.com/api/latest'
             else:
                 try:
                     num = int(word)
@@ -820,10 +820,10 @@ class ABot(MappedCommandBot):
                     self._plaintext_helper(message, '{!r} is not a valid number.'.format(word))
                     return
                 else:
-                    url = 'https://telegramusic.ml/api/{num}'.format(num=num)
+                    url = 'https://telegramusic.appspot.com/api/{num}'.format(num=num)
 
         else:
-            url = 'https://telegramusic.ml/api/random'
+            url = 'https://telegramusic.appspot.com/api/random'
 
         try:
             response = requests.get(url)
