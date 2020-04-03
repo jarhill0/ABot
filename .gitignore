@@ -3,3 +3,4 @@ praw.ini
 data/launches.json
 data/mydatabase.db
 config.py
+bot.log
