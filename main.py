@@ -52,6 +52,7 @@ class ABot(MappedCommandBot):
         # WITH BOTH!
 
         text_command_map['/addmusic'] = add
+        text_command_map['/angry'] = self.angry
         text_command_map['/archive'] = self.archive
         text_command_map['/archive2'] = self.archive2
         text_command_map['/bf'] = self.bf
@@ -61,6 +62,7 @@ class ABot(MappedCommandBot):
         text_command_map['/delete'] = self.delete
         text_command_map['/fewh'] = self.fewh
         text_command_map['/frog'] = self.frog
+        text_command_map['/frustrated'] = self.frustrated
         text_command_map['/helloworld'] = self.helloworld
         text_command_map['/help'] = self.help
         text_command_map['/hn'] = self.hn_top
@@ -268,6 +270,14 @@ class ABot(MappedCommandBot):
     @chunk
     def botfather_commands(self, message, unused):
         self._plaintext_helper(message, self._bf_cmds)
+
+    def angry(self, message, unused):
+        """Translate some vocabulary."""
+        self._plaintext_helper(message, '"frustrated"')
+
+    def frustrated(self, message, unused):
+        """Reveal true meaning."""
+        self._plaintext_helper(message, "He's angry.")
 
     def fewh(self, message, unused):
         """Learn appropriate spelling."""

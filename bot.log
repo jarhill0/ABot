@@ -1,0 +1,149 @@
+ERROR:root:Exception in command.
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/bot.py", line 33, in run
+    self.message_handler(update.message)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/command_bot.py", line 13, in message_handler
+    self._handle_message(message)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/command_bot.py", line 38, in _handle_message
+    self.text_command_handler(message, command, cmd_text)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/mapped_command_bot.py", line 16, in text_command_handler
+    handler(message, command_params)
+  File "/Users/jarhill/PycharmProjects/ABot/chunkdecorator.py", line 13, in chunk_wrapper
+    func(*args, **kwargs)
+  File "/Users/jarhill/PycharmProjects/ABot/main.py", line 765, in remindme
+    settings={'PREFER_DATES_FROM': 'future', 'TIMEZONE': user_tz})
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/conf.py", line 78, in wrapper
+    kwargs['settings'] = settings.replace(**kwargs['settings'])
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/conf.py", line 56, in replace
+    raise TypeError('Invalid {{"{}": {}}}'.format(k, v))
+TypeError: Invalid {"TIMEZONE": None}
+ERROR:root:Exception in command.
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/bot.py", line 33, in run
+    self.message_handler(update.message)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/command_bot.py", line 13, in message_handler
+    self._handle_message(message)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/command_bot.py", line 38, in _handle_message
+    self.text_command_handler(message, command, cmd_text)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/mapped_command_bot.py", line 16, in text_command_handler
+    handler(message, command_params)
+  File "/Users/jarhill/PycharmProjects/ABot/chunkdecorator.py", line 13, in chunk_wrapper
+    func(*args, **kwargs)
+  File "/Users/jarhill/PycharmProjects/ABot/main.py", line 768, in remindme
+    settings=settings)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/conf.py", line 84, in wrapper
+    return f(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/__init__.py", line 40, in parse
+    data = parser.get_date_data(date_string, date_formats)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/date.py", line 371, in get_date_data
+    language, date_string, date_formats, settings=self._settings)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/date.py", line 168, in parse
+    return instance._parse()
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/date.py", line 178, in _parse
+    date_obj = parser()
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/date.py", line 191, in _try_freshness_parser
+    return freshness_date_parser.get_date_data(self._get_translated_date(), self._settings)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/freshness_date_parser.py", line 147, in get_date_data
+    date, period = self.parse(date_string, settings)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/freshness_date_parser.py", line 55, in parse
+    _settings_tz = settings.TIMEZONE.lower()
+AttributeError: 'datetime.timezone' object has no attribute 'lower'
+ERROR:root:Exception in command.
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/bot.py", line 33, in run
+    self.message_handler(update.message)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/command_bot.py", line 13, in message_handler
+    self._handle_message(message)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/command_bot.py", line 38, in _handle_message
+    self.text_command_handler(message, command, cmd_text)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/mapped_command_bot.py", line 16, in text_command_handler
+    handler(message, command_params)
+  File "/Users/jarhill/PycharmProjects/ABot/chunkdecorator.py", line 13, in chunk_wrapper
+    func(*args, **kwargs)
+  File "/Users/jarhill/PycharmProjects/ABot/main.py", line 768, in remindme
+    settings=settings)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/conf.py", line 84, in wrapper
+    return f(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/__init__.py", line 40, in parse
+    data = parser.get_date_data(date_string, date_formats)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/date.py", line 371, in get_date_data
+    language, date_string, date_formats, settings=self._settings)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/date.py", line 168, in parse
+    return instance._parse()
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/date.py", line 178, in _parse
+    date_obj = parser()
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/date.py", line 191, in _try_freshness_parser
+    return freshness_date_parser.get_date_data(self._get_translated_date(), self._settings)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/freshness_date_parser.py", line 147, in get_date_data
+    date, period = self.parse(date_string, settings)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/freshness_date_parser.py", line 55, in parse
+    _settings_tz = settings.TIMEZONE.lower()
+AttributeError: 'datetime.timezone' object has no attribute 'lower'
+ERROR:root:Exception in command.
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/bot.py", line 33, in run
+    self.message_handler(update.message)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/command_bot.py", line 13, in message_handler
+    self._handle_message(message)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/command_bot.py", line 38, in _handle_message
+    self.text_command_handler(message, command, cmd_text)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/mapped_command_bot.py", line 16, in text_command_handler
+    handler(message, command_params)
+  File "/Users/jarhill/PycharmProjects/ABot/chunkdecorator.py", line 13, in chunk_wrapper
+    func(*args, **kwargs)
+  File "/Users/jarhill/PycharmProjects/ABot/main.py", line 767, in remindme
+    'RETURN_AS_TIMEZONE_AWARE': True})
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/conf.py", line 84, in wrapper
+    return f(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/__init__.py", line 40, in parse
+    data = parser.get_date_data(date_string, date_formats)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/date.py", line 371, in get_date_data
+    language, date_string, date_formats, settings=self._settings)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/date.py", line 168, in parse
+    return instance._parse()
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/date.py", line 178, in _parse
+    date_obj = parser()
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/date.py", line 191, in _try_freshness_parser
+    return freshness_date_parser.get_date_data(self._get_translated_date(), self._settings)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/freshness_date_parser.py", line 147, in get_date_data
+    date, period = self.parse(date_string, settings)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/freshness_date_parser.py", line 55, in parse
+    _settings_tz = settings.TIMEZONE.lower()
+AttributeError: 'datetime.timezone' object has no attribute 'lower'
+ERROR:root:Exception in command.
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/bot.py", line 33, in run
+    self.message_handler(update.message)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/command_bot.py", line 13, in message_handler
+    self._handle_message(message)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/command_bot.py", line 38, in _handle_message
+    self.text_command_handler(message, command, cmd_text)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pawt/bots/mapped_command_bot.py", line 16, in text_command_handler
+    handler(message, command_params)
+  File "/Users/jarhill/PycharmProjects/ABot/chunkdecorator.py", line 13, in chunk_wrapper
+    func(*args, **kwargs)
+  File "/Users/jarhill/PycharmProjects/ABot/main.py", line 767, in remindme
+    'RETURN_AS_TIMEZONE_AWARE': True})
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/conf.py", line 84, in wrapper
+    return f(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/__init__.py", line 40, in parse
+    data = parser.get_date_data(date_string, date_formats)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/date.py", line 371, in get_date_data
+    language, date_string, date_formats, settings=self._settings)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/date.py", line 168, in parse
+    return instance._parse()
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/date.py", line 178, in _parse
+    date_obj = parser()
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/date.py", line 191, in _try_freshness_parser
+    return freshness_date_parser.get_date_data(self._get_translated_date(), self._settings)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/freshness_date_parser.py", line 147, in get_date_data
+    date, period = self.parse(date_string, settings)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/freshness_date_parser.py", line 92, in parse
+    self.now = apply_timezone(utc_dt, settings.TIMEZONE)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/utils/__init__.py", line 136, in apply_timezone
+    new_datetime = apply_tzdatabase_timezone(date_time, tz_string)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/dateparser/utils/__init__.py", line 114, in apply_tzdatabase_timezone
+    usr_timezone = timezone(pytz_string)
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pytz/__init__.py", line 180, in timezone
+    raise UnknownTimeZoneError(zone)
+pytz.exceptions.UnknownTimeZoneError: 'US/Los_Angeles'
