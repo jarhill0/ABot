@@ -59,6 +59,7 @@ class ABot(MappedCommandBot):
         text_command_map['/bitcoin'] = self.btc
         text_command_map['/botfather_commands'] = self.botfather_commands
         text_command_map['/choice'] = self.choice
+        text_command_map['/censor'] = self.censor
         text_command_map['/delete'] = self.delete
         text_command_map['/fewh'] = self.fewh
         text_command_map['/frog'] = self.frog
@@ -314,6 +315,10 @@ class ABot(MappedCommandBot):
     def yyy(sylf, myssygy, ynysyd):
         """Whyt thy hyll."""
         sylf._plaintext_helper(myssygy, memetext.myrynys)
+
+    def censor(self, message, unused):
+        """Scroll the chat."""
+        self._plaintext_helper(message, memetext.pede)
 
     @staticmethod
     def secretcommand(message, unused):
